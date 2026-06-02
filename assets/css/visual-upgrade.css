@@ -1121,3 +1121,33 @@
   text-align:center;
   white-space:nowrap;
 }
+
+/* =========================================================
+   KPIカードのみ：背景画像をカード枠いっぱいに表示
+   ※総覧ヘッダー・4枚カード・JSは触らない
+   ========================================================= */
+.stats .stat-card{
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  background:#fbf2dc;
+  background-image:none;
+}
+
+.stats .stat-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  z-index:0;
+  pointer-events:none;
+  background:url('../img/imperial/kpi-card-bg.png') center center / 100% 100% no-repeat;
+}
+
+.stats .stat-card > *{
+  position:relative;
+  z-index:1;
+}
+
+.stats .stat-card .kpi-corner{
+  z-index:4;
+}
