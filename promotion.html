@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>昇格評定 — 資格・免許管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/common.css">
+<link rel="stylesheet" href="assets/css/visual-upgrade.css">
+<link rel="stylesheet" href="assets/css/saas-ui.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar" id="sidebar"></aside>
+<div class="page-content">
+<main class="page-main">
+
+  <div class="page-header">
+    <!-- ヘッダー背景画像: 昇格評定向けの画像をここに差し込む -->
+    <div class="page-header-img-slot">
+      <img src="assets/img/imperial/bg-theater.png" alt="" aria-hidden="true">
+    </div>
+    <div class="page-heading">
+      <div class="page-icon" data-icon="promotion" aria-hidden="true"></div>
+      <div class="page-title-block">
+        <div class="page-title">昇格評定</div>
+        <div class="page-title-en">PROMOTION REVIEW</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-tools">
+      <div class="table-count">昇格候補 計 <strong id="promo-count">—</strong> 名</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>氏名</th>
+            <th>センター</th>
+            <th>職種</th>
+            <th>等級</th>
+            <th>状態</th>
+            <th>資格要件</th>
+          </tr>
+        </thead>
+        <tbody id="promo-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</div>
+</div>
+<div id="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/promotion.js"></script>
+<script>(async()=>{await Auth.requireAuth();renderSidebar('promotion');Modal.setup();APP.initHeader();await initPromotion();})();</script>
+</body>
+</html>
