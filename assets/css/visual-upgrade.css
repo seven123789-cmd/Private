@@ -953,201 +953,57 @@
   .page-header.page-header-v2 .page-title-en{font-size:14px;letter-spacing:.13em;}
 }
 
-
 /* ================================================================
-   Dashboard Requested Scope Fix 20260602
-   対象：総覧ヘッダー復旧、4カード背景復旧、4カード大型化、更新警鐘リスト整理。
-   指定外のサイドバー・KPI構造・既存HTMLは変更しない。
+   KPI CARD ONLY FIX 2026-06-03
+   対象：総覧画面の上段KPIカード5枚のみ
+   注意：総覧ヘッダー・サイドバー・下段4カードには触れない
    ================================================================ */
-
-/* 総覧ヘッダー：背景画像は枠に対して常に100%表示。黒帯・切れを出さない */
-.page-header.page-header-v2{
-  background:#071426;
-}
-
-.page-header.page-header-v2 .page-header-bg-img{
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  object-position:center center;
-}
-
-.page-header.page-header-v2::after{
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.26) 24%, rgba(0,0,0,.04) 52%, rgba(0,0,0,0) 78%);
-}
-
-.page-header.page-header-v2 .page-icon{
-  display:none;
-}
-
-.page-header.page-header-v2 .page-heading{
-  left:56px;
-  gap:0;
-}
-
-.page-header.page-header-v2 .page-title{
-  font-size:52px;
-  color:#ffe997;
-  text-shadow:
-    0 2px 0 #5a2108,
-    0 0 5px rgba(255,235,156,.75),
-    0 5px 12px rgba(0,0,0,.72),
-    2px 2px 0 rgba(43,12,4,.92);
-}
-
-.page-header.page-header-v2 .page-title-en{
-  color:#f7d978;
-  border-bottom:1px solid rgba(178, 20, 43, .78);
-  text-shadow:
-    0 1px 0 #4d1a08,
-    0 0 5px rgba(255,235,156,.62),
-    0 4px 10px rgba(0,0,0,.70);
-}
-
-@media(max-width:1200px){
-  .page-header.page-header-v2 .page-heading{left:46px;}
-  .page-header.page-header-v2 .page-title{font-size:46px;}
-  .page-header.page-header-v2 .page-title-en{font-size:17px;letter-spacing:.16em;}
-}
-
-/* KPI背景：画像の端に白い欠けが出ないよう、枠内へ100%表示 */
-.stats .stat-card{
-  background:
-    url('../img/imperial/kpi-card-bg.png') center center / 100% 100% no-repeat,
-    #fbf2dc;
-}
-
-/* 4枚カード：大きい方に合わせて高さを統一。背景画像は本文だけに固定表示 */
-.content-grid{
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  align-items:stretch;
-}
-
-.content-grid > .card{
-  display:flex;
-  flex-direction:column;
-  min-height:360px;
-  background:#fbf2dc;
-  border:2px solid #c3913d;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.content-grid > .card::before{
-  content:none;
-}
-
-.content-grid > .card .card-header{
-  flex:0 0 88px;
-  min-height:88px;
-  background:linear-gradient(180deg, #9b1020 0%, #850815 52%, #6f0610 100%);
-  border-bottom:3px solid #d0a044;
-}
-
-.content-grid > .card .card-header.card-header-navy,
-.content-grid > .card:nth-child(2) .card-header,
-.content-grid > .card:nth-child(4) .card-header{
-  background:linear-gradient(180deg, #0b3a43 0%, #07303a 48%, #04252d 100%);
-}
-
-.content-grid > .card .card-body{
-  flex:1 1 auto;
-  min-height:272px;
-  padding:22px 26px;
-  background-color:#fbf2dc;
-  background-position:center center;
-  background-size:100% 100%;
-  background-repeat:no-repeat;
-}
-
-.content-grid > .card:nth-child(1) .card-body{
-  background-image:url('../img/imperial/card-alert-bg.png');
-}
-
-.content-grid > .card:nth-child(2) .card-body{
-  background-image:url('../img/imperial/card-promotion-bg.png');
-}
-
-.content-grid > .card:nth-child(3) .card-body{
-  background-image:url('../img/imperial/card-coverage-bg.png');
-}
-
-.content-grid > .card:nth-child(4) .card-body{
-  background-image:url('../img/imperial/card-deadline-bg.png');
-}
-
-/* 更新警鐘：丸い30/90アイコンを廃止し、残日数を右側固定にする */
-#alert-list{
-  display:grid;
-  gap:12px;
-}
-
-#alert-list .alert-row{
-  display:grid;
-  grid-template-columns:minmax(0, 1fr) 128px;
-  align-items:center;
-  column-gap:16px;
-  min-height:64px;
-  padding:12px 14px;
-  background:rgba(255,250,235,.78);
-  border-bottom:1px solid rgba(181,139,72,.24);
-}
-
-#alert-list .alert-mark{
-  display:none;
-}
-
-#alert-list .alert-main{
-  min-width:0;
-}
-
-#alert-list .row-title{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-#alert-list .alert-days{
-  justify-self:end;
-  width:112px;
-  display:flex;
-  justify-content:flex-end;
-}
-
-#alert-list .badge{
-  min-width:94px;
-  justify-content:center;
-  text-align:center;
-  white-space:nowrap;
-}
-
-/* =========================================================
-   KPIカードのみ：背景画像をカード枠いっぱいに表示
-   ※総覧ヘッダー・4枚カード・JSは触らない
-   ========================================================= */
 .stats .stat-card{
   position:relative;
-  isolation:isolate;
   box-sizing:border-box;
-  background:#fbf2dc;
-  background-image:none;
+  min-height:238px;
+  padding:78px 18px 20px;
+  overflow:hidden;
+  background-image:url('../img/imperial/card-bg-ivory.png') !important;
+  background-size:100% 100% !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  background-color:#fbf2dc !important;
+  background-clip:border-box !important;
+  border:1px solid #c3913d;
+  border-radius:0;
+  box-shadow:
+    0 6px 16px rgba(73,45,13,.14),
+    0 0 0 1px rgba(255,236,166,.24) inset;
 }
 
-.stats .stat-card::before{
-  content:"";
-  position:absolute;
-  inset:-1px;
-  z-index:0;
-  pointer-events:none;
-  background:url('../img/imperial/kpi-card-bg.png') center center / 100% 100% no-repeat;
-}
-
-.stats .stat-card > *{
-  position:relative;
-  z-index:1;
-}
-
+/* 背景画像側に枠があるため、HTML追加の角装飾は非表示に戻す */
 .stats .stat-card .kpi-corner{
-  z-index:4;
+  display:none !important;
+}
+
+.stats .stat-card .stat-icon{
+  position:absolute;
+  top:12px;
+  left:50%;
+  width:64px;
+  height:64px;
+  transform:translateX(-50%);
+  background-position:center center;
+  background-size:contain;
+  background-repeat:no-repeat;
+  filter:drop-shadow(0 7px 8px rgba(0,0,0,.25));
+}
+
+.stats .stat-card .stat-top>span{
+  margin-top:0;
+  line-height:1.2;
+}
+
+.stats .stat-card .stat-value{
+  margin-top:18px;
+}
+
+.stats .stat-card .stat-sub{
+  margin-top:8px;
 }
