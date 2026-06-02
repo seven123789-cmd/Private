@@ -1123,31 +1123,36 @@
 }
 
 /* =========================================================
-   KPIカードのみ：背景画像をカード枠いっぱいに表示
-   ※総覧ヘッダー・4枚カード・JSは触らない
+   KPIカード5枚のみ：背景画像を枠いっぱいに表示
+   ※総覧ヘッダー・サイドバー・4枚カード・JSは変更しない
    ========================================================= */
 .stats .stat-card{
-  position:relative;
-  isolation:isolate;
   box-sizing:border-box;
-  background:#fbf2dc;
-  background-image:none;
+  overflow:hidden;
+  background-color:#fbf2dc;
+  background-image:url('../img/imperial/kpi-card-bg.png');
+  background-size:100% 100%;
+  background-position:center center;
+  background-repeat:no-repeat;
+  background-clip:border-box;
 }
 
 .stats .stat-card::before{
-  content:"";
-  position:absolute;
-  inset:-1px;
-  z-index:0;
-  pointer-events:none;
-  background:url('../img/imperial/kpi-card-bg.png') center center / 100% 100% no-repeat;
-}
-
-.stats .stat-card > *{
-  position:relative;
-  z-index:1;
+  content:none;
+  display:none;
 }
 
 .stats .stat-card .kpi-corner{
-  z-index:4;
+  display:none;
+}
+
+.stats .stat-card .stat-icon{
+  z-index:2;
+}
+
+.stats .stat-card .stat-top,
+.stats .stat-card .stat-value,
+.stats .stat-card .stat-sub{
+  position:relative;
+  z-index:2;
 }
