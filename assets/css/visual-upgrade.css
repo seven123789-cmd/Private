@@ -788,7 +788,7 @@
   background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
   border: 2px solid #c3913d;
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .content-grid > .card::before {
@@ -811,11 +811,13 @@
 .content-grid > .card .card-body {
   flex: 1 1 auto;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 22px 26px;
   background-color: #fbf2dc;
   background-position: center center;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  border-radius: 0 0 10px 10px;
 }
 
 .content-grid > .card:nth-child(1) .card-body {
