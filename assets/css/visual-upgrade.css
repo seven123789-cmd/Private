@@ -922,9 +922,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 272 / 384;
   min-height: 0;
-  padding: 22% 7% 7%;
+  padding: 52px 16px 28px;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -958,7 +958,7 @@
 .stats .stat-card .stat-top > span {
   display: block;
   margin: 0;
-  font-size: clamp(17px, 1.45vw, 23px);
+  font-size: clamp(18px, 1.55vw, 24px);
   line-height: 1.15;
   font-weight: 800;
   letter-spacing: .04em;
@@ -971,9 +971,9 @@
   top: auto;
   left: auto;
   transform: none;
-  width: clamp(44px, 20%, 62px);
-  height: clamp(44px, 20%, 62px);
-  margin: 8% auto 6%;
+  width: clamp(46px, 4.2vw, 64px);
+  height: clamp(46px, 4.2vw, 64px);
+  margin: 16px auto 10px;
   border: 0;
   border-radius: 0;
   background-color: transparent;
@@ -986,13 +986,13 @@
 
 .stats .stat-value {
   margin: 0;
-  font-size: clamp(44px, 4.4vw, 66px);
+  font-size: clamp(48px, 4.8vw, 72px);
   line-height: .98;
 }
 
 .stats .stat-sub {
-  margin-top: 5%;
-  font-size: clamp(11px, .85vw, 13px);
+  margin-top: 10px;
+  font-size: clamp(11px, .9vw, 13px);
   line-height: 1.35;
   color: #7a5a38;
 }
@@ -1017,4 +1017,23 @@
   .stats {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* 2026-06-03 KPI微調整 */
+.stats .stat-card .stat-top{font-size:28px;}
+.stats .stat-card .stat-icon{
+ width:72px;
+ height:72px;
+ margin:6% auto 0;
+}
+.stats .stat-card .stat-value{
+ font-size:64px;
+ margin-top:5%;
+}
+.stats .stat-card:last-child .stat-value{
+ font-size:58px;
+}
+.stats .stat-card .stat-sub{
+ margin-top:2%;
 }
