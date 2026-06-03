@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>原簿設定 — 資格・免許管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/common.css">
+<link rel="stylesheet" href="assets/css/visual-upgrade.css">
+<link rel="stylesheet" href="assets/css/saas-ui.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar" id="sidebar"></aside>
+<div class="page-content">
+<main class="page-main">
+
+  <div class="page-header">
+    <!-- ヘッダー背景画像: マスタ管理向けの画像をここに差し込む -->
+    <div class="page-header-img-slot">
+      <img src="assets/img/imperial/bg-theater.png" alt="" aria-hidden="true">
+    </div>
+    <div class="page-heading">
+      <div class="page-icon" data-icon="masters" aria-hidden="true"></div>
+      <div class="page-title-block">
+        <div class="page-title">原簿設定</div>
+        <div class="page-title-en">MASTER MANAGEMENT</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats" style="grid-template-columns: repeat(4, minmax(150px, 1fr));">
+    <div class="stat-card">
+      <div class="stat-top"><span>センター</span></div>
+      <div class="stat-icon" aria-hidden="true"></div>
+      <div class="stat-value tabular" id="master-centers">—</div>
+      <div class="stat-sub">登録センター数</div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-top"><span>職種</span></div>
+      <div class="stat-icon" aria-hidden="true"></div>
+      <div class="stat-value tabular" id="master-positions">—</div>
+      <div class="stat-sub">職種マスタ</div>
+    </div>
+    <div class="stat-card sakura">
+      <div class="stat-top"><span>資格区分</span></div>
+      <div class="stat-icon" aria-hidden="true"></div>
+      <div class="stat-value tabular" id="master-categories">—</div>
+      <div class="stat-sub">区分マスタ</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-top"><span>資格マスタ</span></div>
+      <div class="stat-icon" aria-hidden="true"></div>
+      <div class="stat-value tabular" id="master-licenses">—</div>
+      <div class="stat-sub">登録資格数</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-tools">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="tab-btn btn btn-sm btn-primary" data-master="centers">センター</button>
+        <button class="tab-btn btn btn-sm btn-secondary" data-master="divisions">本部</button>
+        <button class="tab-btn btn btn-sm btn-secondary" data-master="positions">職種</button>
+        <button class="tab-btn btn btn-sm btn-secondary" data-master="categories">資格区分</button>
+        <button class="tab-btn btn btn-sm btn-secondary" data-master="licenses">資格マスタ</button>
+      </div>
+      <div class="table-count" id="master-title">センターマスタ</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead id="master-head"></thead>
+        <tbody id="master-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</div>
+</div>
+<div id="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/masters.js"></script>
+<script>(async()=>{await Auth.requireAuth();renderSidebar('masters');Modal.setup();APP.initHeader();await initMasters();})();</script>
+</body>
+</html>
