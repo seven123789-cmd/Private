@@ -856,7 +856,7 @@
   padding: 10px 12px;
   background: rgba(255,250,235,.85);
   border-bottom: 1px solid rgba(181,139,72,.3);
-  margin: 4px 8px;
+  margin: 4px 6px;
   border-radius: 4px;
 }
 
@@ -1113,6 +1113,23 @@
 .stats .stat-card:first-child .stat-icon {
   background-image: url('../img/imperial/icons/kpi-expired.webp') !important;
 }
+
+/* 社員数：小アイコン非表示、背景に大きく表示 */
 .stats .stat-card:last-child .stat-icon {
-  background-image: url('../img/imperial/icons/kpi-employees.webp') !important;
+  display: none !important;
+}
+.stats .stat-card:last-child::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('../img/imperial/icons/kpi-employees-bg.webp') center center / 85% 85% no-repeat;
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+.stats .stat-card:last-child .stat-top,
+.stats .stat-card:last-child .stat-value,
+.stats .stat-card:last-child .stat-sub {
+  position: relative;
+  z-index: 1;
 }
