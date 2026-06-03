@@ -242,7 +242,8 @@ const APP = (() => {
     { id:'alerts',        label:'警鐘',       sub:'アラート一覧',         href:'alerts.html',            icon:'alerts', badge:true },
     { id:'promotion',     label:'昇格評定',   sub:'昇格・人事評価',       href:'promotion.html',         icon:'promotion', badge:false },
     { id:'masters',       label:'原簿設定',   sub:'マスタ管理',           href:'masters.html',           icon:'masters', badge:false },
-    { id:'master_import', label:'社員取込',   sub:'社員マスタ初期取込',   href:'master_import.html',     icon:'import', badge:false }
+    { id:'master_import', label:'社員取込',   sub:'社員マスタ初期取込',   href:'master_import.html',     icon:'import', badge:false },
+    { id:'external_links', label:'外部リンク', sub:'リンク集・登録',       href:'external_links.html',    icon:'masters', badge:false }
   ];
 
 
@@ -288,11 +289,30 @@ const APP = (() => {
     return `assets/img/imperial/sidebar/menu-${name}.png`;
   };
 
+  function normalizeExtHref(href) {
+    const raw = String(href || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    return 'https://' + raw;
+  }
+
+  function moveExtLink(id, direction) {
+    const links = loadExtLinks();
+    const idx = links.findIndex(l => l.id === id);
+    if (idx < 0) return;
+    const next = idx + direction;
+    if (next < 0 || next >= links.length) return;
+    const tmp = links[idx];
+    links[idx] = links[next];
+    links[next] = tmp;
+    saveExtLinks(links);
+  }
+
   function renderSidebar(active) {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
 
-    // 既存NAVメニュー（変更なし）
+    // 既存NAVメニュー
     const rows = NAV.map(n => `
       <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}">
         <span class="imperial-medal" aria-hidden="true">
@@ -305,36 +325,17 @@ const APP = (() => {
         ${n.badge ? '<span class="nav-badge imperial-alert-dot" id="nav-alert-badge" style="display:none">!</span>' : ''}
       </a>`).join('');
 
-    // 固定システムリンク
+    // 固定システムリンク（サイドバーに残す）
     const sysRows = SYSTEM_LINKS.map(n => `
-      <a class="linkhub-row sys-link" href="${n.href}" target="_blank" rel="noopener">
-        <span class="linkhub-emoji">${n.emoji}</span>
-        <span class="linkhub-copy">
-          <span class="linkhub-title">${n.label}</span>
-          <span class="linkhub-sub">${n.sub}</span>
+      <a class="sidebar-system-card" href="${n.href}" target="_blank" rel="noopener">
+        <span class="sidebar-system-emoji">${n.emoji}</span>
+        <span class="sidebar-system-copy">
+          <span class="sidebar-system-title">${n.label}</span>
+          <span class="sidebar-system-sub">${n.sub}</span>
         </span>
-        <span class="linkhub-open" aria-hidden="true">↗</span>
+        <span class="sidebar-system-open" aria-hidden="true">↗</span>
       </a>`).join('');
 
-    // カスタムリンク行を生成する内部関数
-    function buildExtRows() {
-      const links = loadExtLinks();
-      if (!links.length) {
-        return '<div class="linkhub-empty">必要な外部リンクをここに追加できます</div>';
-      }
-      return links.map(n => `
-        <div class="linkhub-row custom-link" data-ext-id="${n.id}">
-          <span class="linkhub-emoji">🔗</span>
-          <a class="linkhub-copy" href="${n.href}" target="_blank" rel="noopener">
-            <span class="linkhub-title">${escape(n.label)}</span>
-            <span class="linkhub-sub">${escape(n.href).substring(0, 34)}${n.href.length > 34 ? '…' : ''}</span>
-          </a>
-          <span class="linkhub-open" aria-hidden="true">↗</span>
-          <button class="ext-del-btn" data-ext-id="${n.id}" title="削除">✕</button>
-        </div>`).join('');
-    }
-
-    // サイドバーHTML全体を構築（既存構造を維持しつつ「関連システム」ブロックを追加）
     sb.innerHTML = `
       <div class="imperial-brand-card">
         <span class="icon-frame icon-frame-brand" aria-hidden="true">
@@ -348,34 +349,8 @@ const APP = (() => {
 
       <nav class="imperial-nav">${rows}</nav>
 
-      <div class="imperial-sidebar-separator"><span>外部連携</span></div>
-
-      <section class="linkhub-card" aria-label="外部連携リンク">
-        <div class="linkhub-head">
-          <div>
-            <div class="linkhub-head-title">外部連携</div>
-            <div class="linkhub-head-sub">関連システム・登録リンク</div>
-          </div>
-        </div>
-
-        <div class="linkhub-block">
-          <div class="linkhub-label">SYSTEM</div>
-          <div class="linkhub-list">${sysRows}</div>
-        </div>
-
-        <div class="linkhub-block">
-          <div class="linkhub-label">MY LINKS</div>
-          <div class="linkhub-list" id="custom-ext-links">${buildExtRows()}</div>
-        </div>
-
-        <div class="linkhub-form">
-          <input class="ext-input" id="ext-input-label" type="text" placeholder="リンク名" maxlength="20">
-          <div class="linkhub-url-row">
-            <input class="ext-input" id="ext-input-url" type="url" placeholder="リンク先URL https://...">
-            <button class="ext-add-btn" id="ext-add-btn" title="追加">＋</button>
-          </div>
-        </div>
-      </section>
+      <div class="imperial-sidebar-separator"><span>関連システム</span></div>
+      <div class="sidebar-system-section">${sysRows}</div>
 
       <div class="imperial-sidebar-separator"><span>管理メニュー</span></div>
 
@@ -390,42 +365,77 @@ const APP = (() => {
       </div>
 
       <div class="imperial-sidebar-future-space" aria-hidden="true"></div>`;
+  }
 
-    // ＋ボタンのイベント
-    document.getElementById('ext-add-btn').addEventListener('click', () => {
-      const labelEl = document.getElementById('ext-input-label');
-      const urlEl   = document.getElementById('ext-input-url');
+  function initExternalLinksPage() {
+    const listEl = document.getElementById('external-link-list');
+    const countEl = document.getElementById('external-link-count');
+    const labelEl = document.getElementById('external-link-label');
+    const urlEl = document.getElementById('external-link-url');
+    const addBtn = document.getElementById('external-link-add');
+    if (!listEl || !addBtn) return;
+
+    function render() {
+      const links = loadExtLinks();
+      if (countEl) countEl.textContent = `${links.length}件`;
+      if (!links.length) {
+        listEl.innerHTML = '<div class="external-link-empty">まだ外部リンクは登録されていません。よく使うForms・共有フォルダ・外部システムを登録してください。</div>';
+        return;
+      }
+      listEl.innerHTML = links.map((n, i) => `
+        <article class="external-link-item" data-ext-id="${n.id}">
+          <div class="external-link-mark" aria-hidden="true">🔗</div>
+          <div class="external-link-main">
+            <div class="external-link-name">${escape(n.label)}</div>
+            <div class="external-link-url">${escape(n.href)}</div>
+          </div>
+          <div class="external-link-actions">
+            <button class="btn btn-secondary btn-sm ext-move-up" data-ext-id="${n.id}" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn btn-secondary btn-sm ext-move-down" data-ext-id="${n.id}" ${i === links.length - 1 ? 'disabled' : ''}>↓</button>
+            <a class="btn btn-primary btn-sm" href="${escape(n.href)}" target="_blank" rel="noopener">開く ↗</a>
+            <button class="btn btn-danger btn-sm ext-remove" data-ext-id="${n.id}">削除</button>
+          </div>
+        </article>`).join('');
+
+      listEl.querySelectorAll('.ext-remove').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const id = e.currentTarget.dataset.extId;
+          removeExtLink(id);
+          render();
+          APP.toast('外部リンクを削除しました');
+        });
+      });
+      listEl.querySelectorAll('.ext-move-up').forEach(btn => {
+        btn.addEventListener('click', e => {
+          moveExtLink(e.currentTarget.dataset.extId, -1);
+          render();
+        });
+      });
+      listEl.querySelectorAll('.ext-move-down').forEach(btn => {
+        btn.addEventListener('click', e => {
+          moveExtLink(e.currentTarget.dataset.extId, 1);
+          render();
+        });
+      });
+    }
+
+    function add() {
       const label = labelEl.value.trim();
-      const href  = urlEl.value.trim();
-      if (!label || !href) { APP.toast('名前とURLを入力してください', 'warning'); return; }
+      const href = normalizeExtHref(urlEl.value);
+      if (!label || !href) { APP.toast('名前とリンク先を入力してください', 'warning'); return; }
       try { new URL(href); } catch { APP.toast('正しいURLを入力してください', 'error'); return; }
       addExtLink(label, href);
       labelEl.value = '';
       urlEl.value = '';
-      document.getElementById('custom-ext-links').innerHTML = buildExtRows();
-      bindDelButtons();
+      render();
       APP.toast(`「${label}」を追加しました`);
-    });
-
-    // Enterキーでも追加できるようにする
-    ['ext-input-label', 'ext-input-url'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', e => {
-        if (e.key === 'Enter') document.getElementById('ext-add-btn').click();
-      });
-    });
-
-    // ✕ボタンのイベントをバインドする関数
-    function bindDelButtons() {
-      document.querySelectorAll('.ext-del-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
-          const id = e.currentTarget.dataset.extId;
-          removeExtLink(id);
-          document.getElementById('custom-ext-links').innerHTML = buildExtRows();
-          bindDelButtons();
-        });
-      });
     }
-    bindDelButtons();
+
+    addBtn.addEventListener('click', add);
+    [labelEl, urlEl].forEach(el => el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') add();
+    }));
+    render();
   }
 
   function initHeader() {
@@ -451,7 +461,8 @@ const APP = (() => {
     escape, badge, alertBadge, toast, client, isSupabaseReady,
     query, insert, loadEmployees, loadLicenseRows, loadAlertRows,
     loadLicenseMaster, loadMasters, saveEmployeeLicense,
-    renderSidebar, initHeader, Auth, NAV
+    renderSidebar, initHeader, initExternalLinksPage, Auth, NAV,
+    loadExtLinks, addExtLink, removeExtLink
   };
 })();
 
