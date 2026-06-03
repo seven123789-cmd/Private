@@ -1064,3 +1064,53 @@
   font-size: clamp(10px, .82vw, 12px);
   line-height: 1.25;
 }
+
+/* =========================================================
+   KPIカード 期限切れ・社員数 大アイコン
+   ========================================================= */
+
+/* 期限切れ（1枚目）・社員数（5枚目）共通：縦レイアウト調整 */
+.stats .stat-card:first-child,
+.stats .stat-card:last-child {
+  justify-content: flex-start;
+  padding-top: clamp(14px, 6%, 20px);
+}
+
+/* タイトル（stat-top）を上に固定 */
+.stats .stat-card:first-child .stat-top,
+.stats .stat-card:last-child .stat-top {
+  order: 1;
+  margin-bottom: 4px;
+}
+
+/* 大アイコン */
+.stats .stat-card:first-child .stat-icon,
+.stats .stat-card:last-child .stat-icon {
+  order: 2;
+  width: clamp(64px, 6vw, 90px);
+  height: clamp(64px, 6vw, 90px);
+  margin: 6px auto 6px;
+  background-size: contain;
+}
+
+/* 数字 */
+.stats .stat-card:first-child .stat-value,
+.stats .stat-card:last-child .stat-value {
+  order: 3;
+  margin-top: 4px;
+}
+
+/* サブテキスト */
+.stats .stat-card:first-child .stat-sub,
+.stats .stat-card:last-child .stat-sub {
+  order: 4;
+  margin-top: 6px;
+}
+
+/* アイコン画像 差し替え */
+.stats .stat-card:first-child .stat-icon {
+  background-image: url('../img/imperial/icons/kpi-expired.webp') !important;
+}
+.stats .stat-card:last-child .stat-icon {
+  background-image: url('../img/imperial/icons/kpi-employees.webp') !important;
+}
