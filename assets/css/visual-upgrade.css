@@ -715,15 +715,25 @@
 
 /* =========================================================
    KPIカード5枚
-   - 濃度だけ調整
-   - 背景画像はカード枠いっぱいに表示
+   - 総覧ヘッダーには影響させない
+   - KPIカードだけ正方形に戻す
+   - 背景画像 kpi-card-bg.png をカード全面に直接敷く
    ========================================================= */
 
 .stats .stat-card {
   position: relative;
   box-sizing: border-box;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto;
+  padding: 26% 7% 7%;
   overflow: hidden;
-  background-color: #fbf2dc;
+  background:
+    url("../img/imperial/kpi-card-bg.png") center center / 100% 100% no-repeat,
+    #fbf2dc;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .stats .stat-card::before {
@@ -731,11 +741,30 @@
 }
 
 .stats .stat-card .stat-top,
-.stats .stat-card .stat-icon,
 .stats .stat-card .stat-value,
 .stats .stat-card .stat-sub {
   position: relative;
   z-index: 1;
+}
+
+.stats .stat-card .stat-icon {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  z-index: 1;
+  width: clamp(48px, 22%, 64px);
+  height: clamp(48px, 22%, 64px);
+  margin: 8% auto 0;
+}
+
+.stats .stat-card .stat-value {
+  margin-top: 7%;
+  font-size: clamp(44px, 23%, 62px);
+}
+
+.stats .stat-card .stat-sub {
+  margin-top: 4%;
 }
 
 .stats .stat-card .kpi-corner {
