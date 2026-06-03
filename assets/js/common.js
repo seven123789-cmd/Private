@@ -307,23 +307,29 @@ const APP = (() => {
 
     // 固定システムリンク
     const sysRows = SYSTEM_LINKS.map(n => `
-      <a class="ext-link-card sys-link" href="${n.href}" target="_blank" rel="noopener">
-        <span class="ext-link-emoji">${n.emoji}</span>
-        <span class="ext-link-copy">
-          <span class="ext-link-title">${n.label} <span class="ext-arrow">↗</span></span>
-          <span class="ext-link-sub">${n.sub}</span>
+      <a class="linkhub-row sys-link" href="${n.href}" target="_blank" rel="noopener">
+        <span class="linkhub-emoji">${n.emoji}</span>
+        <span class="linkhub-copy">
+          <span class="linkhub-title">${n.label}</span>
+          <span class="linkhub-sub">${n.sub}</span>
         </span>
+        <span class="linkhub-open" aria-hidden="true">↗</span>
       </a>`).join('');
 
     // カスタムリンク行を生成する内部関数
     function buildExtRows() {
-      return loadExtLinks().map(n => `
-        <div class="ext-link-card custom-link" data-ext-id="${n.id}">
-          <span class="ext-link-emoji">🔗</span>
-          <a class="ext-link-copy" href="${n.href}" target="_blank" rel="noopener">
-            <span class="ext-link-title">${escape(n.label)} <span class="ext-arrow">↗</span></span>
-            <span class="ext-link-sub">${escape(n.href).substring(0, 30)}…</span>
+      const links = loadExtLinks();
+      if (!links.length) {
+        return '<div class="linkhub-empty">必要な外部リンクをここに追加できます</div>';
+      }
+      return links.map(n => `
+        <div class="linkhub-row custom-link" data-ext-id="${n.id}">
+          <span class="linkhub-emoji">🔗</span>
+          <a class="linkhub-copy" href="${n.href}" target="_blank" rel="noopener">
+            <span class="linkhub-title">${escape(n.label)}</span>
+            <span class="linkhub-sub">${escape(n.href).substring(0, 34)}${n.href.length > 34 ? '…' : ''}</span>
           </a>
+          <span class="linkhub-open" aria-hidden="true">↗</span>
           <button class="ext-del-btn" data-ext-id="${n.id}" title="削除">✕</button>
         </div>`).join('');
     }
@@ -342,21 +348,34 @@ const APP = (() => {
 
       <nav class="imperial-nav">${rows}</nav>
 
-      <div class="imperial-sidebar-separator"><span>関連システム</span></div>
+      <div class="imperial-sidebar-separator"><span>外部連携</span></div>
 
-      <div class="ext-links-section">
-        ${sysRows}
-        <div id="custom-ext-links">${buildExtRows()}</div>
-        <div class="ext-add-area">
-          <div class="ext-add-row">
-            <input class="ext-input" id="ext-input-label" type="text" placeholder="名前" maxlength="20">
-            <button class="ext-add-btn" id="ext-add-btn" title="追加">＋</button>
-          </div>
-          <div style="margin-top:5px">
-            <input class="ext-input" id="ext-input-url" type="url" placeholder="https://..." style="width:100%;box-sizing:border-box">
+      <section class="linkhub-card" aria-label="外部連携リンク">
+        <div class="linkhub-head">
+          <div>
+            <div class="linkhub-head-title">外部連携</div>
+            <div class="linkhub-head-sub">関連システム・登録リンク</div>
           </div>
         </div>
-      </div>
+
+        <div class="linkhub-block">
+          <div class="linkhub-label">SYSTEM</div>
+          <div class="linkhub-list">${sysRows}</div>
+        </div>
+
+        <div class="linkhub-block">
+          <div class="linkhub-label">MY LINKS</div>
+          <div class="linkhub-list" id="custom-ext-links">${buildExtRows()}</div>
+        </div>
+
+        <div class="linkhub-form">
+          <input class="ext-input" id="ext-input-label" type="text" placeholder="リンク名" maxlength="20">
+          <div class="linkhub-url-row">
+            <input class="ext-input" id="ext-input-url" type="url" placeholder="リンク先URL https://...">
+            <button class="ext-add-btn" id="ext-add-btn" title="追加">＋</button>
+          </div>
+        </div>
+      </section>
 
       <div class="imperial-sidebar-separator"><span>管理メニュー</span></div>
 

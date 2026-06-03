@@ -628,129 +628,185 @@ button:hover,
 }
 
 /* ═══════════════════════════════════════════════
-   関連システム・外部リンクセクション
+   外部連携カード（サイドバーリンクハブ）
+   ※総覧ヘッダー・KPIカードには影響させない
 ═══════════════════════════════════════════════ */
 
-.ext-links-section {
+.linkhub-card {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  padding: 12px;
   margin-bottom: 4px;
+  border: 1px solid rgba(216,170,56,0.5);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,170,56,0.16), transparent 34%),
+    linear-gradient(180deg, rgba(7,28,34,0.94), rgba(4,18,24,0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,240,190,0.08),
+    0 10px 22px rgba(0,0,0,0.22);
 }
 
-/* リンクカード共通 */
-.ext-link-card {
+.linkhub-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border: 1px solid rgba(216,170,56,0.45);
-  border-radius: 10px;
-  background: linear-gradient(90deg, rgba(6,30,40,0.92), rgba(4,20,28,0.95));
-  text-decoration: none;
-  color: #f5dfa0;
-  transition: border-color .2s, background .2s;
-  position: relative;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(216,170,56,0.28);
 }
-.ext-link-card:hover {
-  border-color: rgba(216,170,56,0.85);
-  background: linear-gradient(90deg, rgba(10,45,55,0.98), rgba(6,30,40,0.98));
+.linkhub-head-title {
+  color: #f5dfa0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.linkhub-head-sub {
+  margin-top: 2px;
+  color: #b99854;
+  font-size: 10px;
+  letter-spacing: .04em;
 }
 
-.ext-link-emoji {
-  font-size: 20px;
-  flex: 0 0 26px;
+.linkhub-block {
+  display: grid;
+  gap: 6px;
+}
+.linkhub-label {
+  color: rgba(245,223,160,0.58);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+.linkhub-list {
+  display: grid;
+  gap: 6px;
+}
+
+.linkhub-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 9px;
+  border: 1px solid rgba(216,170,56,0.34);
+  border-radius: 10px;
+  background: rgba(3,18,25,0.74);
+  color: #f5dfa0;
+  text-decoration: none;
+  transition: border-color .18s, background .18s, transform .12s;
+}
+.linkhub-row:hover {
+  border-color: rgba(216,170,56,0.75);
+  background: rgba(8,34,42,0.9);
+  transform: translateY(-1px);
+}
+.linkhub-emoji {
+  font-size: 18px;
   text-align: center;
 }
-
-.ext-link-copy {
+.linkhub-copy {
   display: grid;
   gap: 2px;
   min-width: 0;
-  flex: 1;
-  text-decoration: none;
   color: inherit;
+  text-decoration: none;
 }
-.ext-link-title {
-  font-size: 15px;
-  font-weight: 700;
-  white-space: nowrap;
+.linkhub-title {
   overflow: hidden;
+  color: #f8e7b4;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
-.ext-link-sub {
-  font-size: 11px;
-  color: #c9a85c;
-  white-space: nowrap;
+.linkhub-sub {
   overflow: hidden;
+  color: #b99854;
+  font-size: 10px;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
-.ext-arrow {
+.linkhub-open {
+  color: rgba(245,223,160,0.62);
+  font-size: 12px;
+}
+.linkhub-empty {
+  padding: 8px 9px;
+  border: 1px dashed rgba(216,170,56,0.28);
+  border-radius: 9px;
+  color: rgba(245,223,160,0.52);
   font-size: 11px;
-  opacity: 0.6;
-  margin-left: 2px;
+  text-align: center;
 }
 
-/* カスタムリンク：削除ボタンのためpadding調整 */
 .custom-link {
-  padding-right: 36px;
+  grid-template-columns: 24px minmax(0,1fr) auto auto;
+  padding-right: 7px;
 }
 .ext-del-btn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: rgba(220,120,100,0.6);
-  font-size: 13px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(220,120,100,0.25);
+  border-radius: 50%;
+  background: rgba(60,10,10,0.16);
+  color: rgba(255,160,140,0.7);
+  font-size: 12px;
   cursor: pointer;
-  padding: 2px 5px;
-  border-radius: 4px;
-  transition: color .15s, background .15s;
+  transition: color .15s, background .15s, border-color .15s;
 }
 .ext-del-btn:hover {
-  color: #ff6b6b;
-  background: rgba(255,80,80,.12);
+  border-color: rgba(255,100,100,0.65);
+  background: rgba(255,80,80,.13);
+  color: #ff8b8b;
 }
 
-/* 追加フォーム */
-.ext-add-area {
-  margin-top: 4px;
-}
-.ext-add-row {
+.linkhub-form {
   display: grid;
-  grid-template-columns: 1fr auto;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(216,170,56,0.24);
+}
+.linkhub-url-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 34px;
   gap: 6px;
   align-items: center;
 }
 .ext-input {
-  background: rgba(3,18,25,0.9);
-  border: 1px solid rgba(216,170,56,0.35);
-  border-radius: 7px;
-  color: #f5dfa0;
-  font-size: 12px;
-  padding: 6px 8px;
-  outline: none;
-  font-family: var(--font-jp, sans-serif);
-  transition: border-color .2s;
+  width: 100%;
   min-width: 0;
+  box-sizing: border-box;
+  padding: 7px 9px;
+  border: 1px solid rgba(216,170,56,0.38);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(2,14,20,0.84);
+  color: #f5dfa0;
+  font-family: var(--font-jp, sans-serif);
+  font-size: 12px;
+  transition: border-color .18s, box-shadow .18s;
 }
-.ext-input::placeholder { color: #7a6840; }
-.ext-input:focus { border-color: rgba(216,170,56,0.75); }
-
+.ext-input::placeholder { color: rgba(190,160,95,0.62); }
+.ext-input:focus {
+  border-color: rgba(216,170,56,0.85);
+  box-shadow: 0 0 0 2px rgba(216,170,56,0.12);
+}
 .ext-add-btn {
-  background: linear-gradient(135deg, #9a6a10, #c49320);
-  border: none;
-  border-radius: 7px;
-  color: #fff8e1;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
   display: grid;
   place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,235,170,0.32);
+  border-radius: 9px;
+  background: linear-gradient(135deg, #a57516, #d0a33c);
+  color: #fff8e1;
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
   transition: filter .15s, transform .1s;
 }
-.ext-add-btn:hover  { filter: brightness(1.2); }
-.ext-add-btn:active { transform: scale(0.92); }
+.ext-add-btn:hover  { filter: brightness(1.14); }
+.ext-add-btn:active { transform: scale(0.94); }
