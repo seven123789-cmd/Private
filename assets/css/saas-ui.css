@@ -291,7 +291,7 @@
 .card {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255,252,241,.45), rgba(248,235,205,.35)),
+    linear-gradient(180deg, rgba(255,252,241,.25), rgba(248,235,205,.20)),
     url('../img/imperial/card-bg.webp') center/cover no-repeat,
     #fbf2dc;
   border: 1.5px solid rgba(190,138,40,.45);
