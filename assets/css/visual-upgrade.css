@@ -842,22 +842,22 @@
    ========================================================= */
 
 #alert-list {
-  display: grid;
-  gap: 6px;
-  max-height: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 0;
 }
 
 #alert-list .alert-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px;
+  display: flex;
   align-items: center;
-  column-gap: 8px;
-  min-height: 0;
-  padding: 8px 10px;
-  background: rgba(255,250,235,.78);
-  border-bottom: 1px solid rgba(181,139,72,.24);
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255,250,235,.85);
+  border-bottom: 1px solid rgba(181,139,72,.3);
+  margin: 4px 8px;
+  border-radius: 4px;
 }
 
 #alert-list .alert-mark {
@@ -865,6 +865,7 @@
 }
 
 #alert-list .alert-main {
+  flex: 1;
   min-width: 0;
 }
 
@@ -875,8 +876,7 @@
 }
 
 #alert-list .alert-days {
-  justify-self: end;
-  width: 80px;
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
 }
@@ -1087,10 +1087,12 @@
 .stats .stat-card:first-child .stat-icon,
 .stats .stat-card:last-child .stat-icon {
   order: 2;
-  width: clamp(64px, 6vw, 90px);
-  height: clamp(64px, 6vw, 90px);
+  width: clamp(72px, 6.5vw, 100px);
+  height: clamp(72px, 6.5vw, 100px);
   margin: 6px auto 6px;
   background-size: contain;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 /* 数字 */
