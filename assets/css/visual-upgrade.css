@@ -1145,3 +1145,67 @@
   padding-top: 6px;
   padding-bottom: 8px;
 }
+
+/* =========================================================
+   KPIカード 30日・90日 背景アイコン
+   ========================================================= */
+
+/* 小アイコン非表示 */
+.stats .stat-card:nth-child(2) .stat-icon,
+.stats .stat-card:nth-child(3) .stat-icon {
+  display: none !important;
+}
+
+/* 背景に大きく表示 */
+.stats .stat-card:nth-child(2)::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96%;
+  height: 82%;
+  background: url('../img/imperial/icons/kpi-30days-bg.webp') center center / contain no-repeat;
+  opacity: 0.65;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.stats .stat-card:nth-child(3)::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96%;
+  height: 82%;
+  background: url('../img/imperial/icons/kpi-90days-bg.webp') center center / contain no-repeat;
+  opacity: 0.65;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* テキストをアイコンの上に */
+.stats .stat-card:nth-child(2) .stat-top,
+.stats .stat-card:nth-child(2) .stat-value,
+.stats .stat-card:nth-child(2) .stat-sub,
+.stats .stat-card:nth-child(3) .stat-top,
+.stats .stat-card:nth-child(3) .stat-value,
+.stats .stat-card:nth-child(3) .stat-sub {
+  position: relative;
+  z-index: 1;
+}
+
+/* 数字に白光彩 */
+.stats .stat-card:nth-child(2) .stat-value,
+.stats .stat-card:nth-child(3) .stat-value {
+  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
+}
+
+/* 上ぎりぎり・数字下 */
+.stats .stat-card:nth-child(2),
+.stats .stat-card:nth-child(3) {
+  justify-content: space-between;
+  padding-top: 6px;
+  padding-bottom: 8px;
+}
