@@ -729,6 +729,7 @@
   overflow: hidden;
   background:
     url("../img/imperial/kpi-card-bg.webp") center center / 100% 100% no-repeat,
+    url('../img/imperial/card-bg.webp') center/cover no-repeat,
     #fbf2dc;
   border: none;
   border-radius: 0;
@@ -783,7 +784,7 @@
 .content-grid > .card {
   display: flex;
   flex-direction: column;
-  min-height: 360px;
+  min-height: 480px;
   background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
   border: 2px solid #c3913d;
   border-radius: 10px;
@@ -811,26 +812,23 @@
   flex: 1 1 auto;
   min-height: 272px;
   padding: 22px 26px;
-  background-color: #fbf2dc;
-  background-position: center center;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
+  background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
 }
 
 .content-grid > .card:nth-child(1) .card-body {
-  background-image: url("../img/imperial/card-alert-bg.webp");
+  background: url("../img/imperial/card-alert-bg.webp") center/100% 100% no-repeat, url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
 }
 
 .content-grid > .card:nth-child(2) .card-body {
-  background-image: url("../img/imperial/card-promotion-bg.webp");
+  background: url("../img/imperial/card-promotion-bg.webp") center/100% 100% no-repeat, url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
 }
 
 .content-grid > .card:nth-child(3) .card-body {
-  background-image: url("../img/imperial/card-coverage-bg.webp");
+  background: url("../img/imperial/card-coverage-bg.webp") center/100% 100% no-repeat, url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
 }
 
 .content-grid > .card:nth-child(4) .card-body {
-  background-image: url("../img/imperial/card-deadline-bg.webp");
+  background: url("../img/imperial/card-deadline-bg.webp") center/100% 100% no-repeat, url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
 }
 
 
