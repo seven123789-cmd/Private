@@ -855,3 +855,141 @@
   text-align: center;
   white-space: nowrap;
 }
+
+/* =========================================================
+   2026-06-03 総覧ヘッダー/KPIカード崩れ修正
+   - ヘッダー画像は拡大縮小しても切り抜かない
+   - KPIカードは5枚横並び時の比率・中身位置を固定
+   ========================================================= */
+
+.page-header.page-header-v2 {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: 1400 / 220;
+  overflow: hidden;
+}
+
+.page-header.page-header-v2 .page-header-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  object-position: center center;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 26px;
+}
+
+.stats .stat-card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 272 / 384;
+  min-height: 0;
+  padding: 52px 16px 28px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: center;
+  overflow: hidden;
+  background-color: #fbf2dc;
+  transform: none;
+}
+
+.stats .stat-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.stats .stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("../img/imperial/kpi-card-bg.png");
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: .72;
+}
+
+.stats .stat-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.stats .stat-card .stat-top > span {
+  display: block;
+  margin: 0;
+  font-size: clamp(18px, 1.55vw, 24px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #2a160c;
+  text-transform: none;
+}
+
+.stats .stat-icon {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: clamp(46px, 4.2vw, 64px);
+  height: clamp(46px, 4.2vw, 64px);
+  margin: 16px auto 10px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.stats .stat-value {
+  margin: 0;
+  font-size: clamp(48px, 4.8vw, 72px);
+  line-height: .98;
+}
+
+.stats .stat-sub {
+  margin-top: 10px;
+  font-size: clamp(11px, .9vw, 13px);
+  line-height: 1.35;
+  color: #7a5a38;
+}
+
+@media (max-width: 1320px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-header.page-header-v2 .page-heading {
+    left: 34px;
+  }
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
