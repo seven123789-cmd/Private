@@ -812,7 +812,7 @@
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 22px 26px;
+  padding: 10px 12px;
   background-color: #fbf2dc;
   background-position: center center;
   background-size: 100% 100%;
@@ -843,7 +843,7 @@
 
 #alert-list {
   display: grid;
-  gap: 12px;
+  gap: 6px;
   max-height: 380px;
   overflow-y: auto;
   padding-right: 4px;
@@ -851,11 +851,11 @@
 
 #alert-list .alert-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 128px;
+  grid-template-columns: minmax(0, 1fr) 90px;
   align-items: center;
-  column-gap: 16px;
-  min-height: 64px;
-  padding: 12px 14px;
+  column-gap: 8px;
+  min-height: 0;
+  padding: 8px 10px;
   background: rgba(255,250,235,.78);
   border-bottom: 1px solid rgba(181,139,72,.24);
 }
@@ -876,13 +876,13 @@
 
 #alert-list .alert-days {
   justify-self: end;
-  width: 112px;
+  width: 80px;
   display: flex;
   justify-content: flex-end;
 }
 
 #alert-list .badge {
-  min-width: 94px;
+  min-width: 70px;
   justify-content: center;
   text-align: center;
   white-space: nowrap;
