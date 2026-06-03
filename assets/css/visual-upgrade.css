@@ -812,14 +812,26 @@
   flex: 1 1 auto;
   min-height: 272px;
   padding: 22px 26px;
-  background: transparent;
+  background-color: #fbf2dc;
+  background-position: center center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
-.content-grid > .card:nth-child(1) .card-body,
-.content-grid > .card:nth-child(2) .card-body,
-.content-grid > .card:nth-child(3) .card-body,
+.content-grid > .card:nth-child(1) .card-body {
+  background-image: url("../img/imperial/card-alert-bg.webp");
+}
+
+.content-grid > .card:nth-child(2) .card-body {
+  background-image: url("../img/imperial/card-promotion-bg.webp");
+}
+
+.content-grid > .card:nth-child(3) .card-body {
+  background-image: url("../img/imperial/card-coverage-bg.webp");
+}
+
 .content-grid > .card:nth-child(4) .card-body {
-  background: transparent;
+  background-image: url("../img/imperial/card-deadline-bg.webp");
 }
 
 
