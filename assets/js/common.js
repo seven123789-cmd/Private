@@ -327,13 +327,14 @@ const APP = (() => {
 
     // 固定システムリンク（サイドバーに残す）
     const sysRows = SYSTEM_LINKS.map(n => `
-      <a class="sidebar-system-card" href="${n.href}" target="_blank" rel="noopener">
-        <img class="sidebar-system-avatar" src="assets/img/imperial/icons/${n.id}-icon.webp" alt="${n.label}">
-        <span class="sidebar-system-copy">
-          <span class="sidebar-system-title">${n.label}</span>
-          <span class="sidebar-system-sub">${n.sub}</span>
+      <a class="imperial-menu-card" href="${n.href}" target="_blank" rel="noopener">
+        <span class="imperial-medal" aria-hidden="true">
+          <img src="assets/img/imperial/icons/${n.id}-icon.webp" alt="" loading="eager" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
         </span>
-        <span class="sidebar-system-open" aria-hidden="true">↗</span>
+        <span class="imperial-menu-copy">
+          <span class="imperial-menu-title">${n.label}</span>
+          <span class="imperial-menu-sub">${n.sub}</span>
+        </span>
       </a>`).join('');
 
     sb.innerHTML = `
