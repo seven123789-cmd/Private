@@ -842,6 +842,9 @@
 #alert-list {
   display: grid;
   gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 #alert-list .alert-row {
