@@ -922,9 +922,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 272 / 384;
+  aspect-ratio: 1 / 1;
   min-height: 0;
-  padding: 52px 16px 28px;
+  padding: 22% 7% 7%;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -958,7 +958,7 @@
 .stats .stat-card .stat-top > span {
   display: block;
   margin: 0;
-  font-size: clamp(18px, 1.55vw, 24px);
+  font-size: clamp(17px, 1.45vw, 23px);
   line-height: 1.15;
   font-weight: 800;
   letter-spacing: .04em;
@@ -971,9 +971,9 @@
   top: auto;
   left: auto;
   transform: none;
-  width: clamp(46px, 4.2vw, 64px);
-  height: clamp(46px, 4.2vw, 64px);
-  margin: 16px auto 10px;
+  width: clamp(44px, 20%, 62px);
+  height: clamp(44px, 20%, 62px);
+  margin: 8% auto 6%;
   border: 0;
   border-radius: 0;
   background-color: transparent;
@@ -986,13 +986,13 @@
 
 .stats .stat-value {
   margin: 0;
-  font-size: clamp(48px, 4.8vw, 72px);
+  font-size: clamp(44px, 4.4vw, 66px);
   line-height: .98;
 }
 
 .stats .stat-sub {
-  margin-top: 10px;
-  font-size: clamp(11px, .9vw, 13px);
+  margin-top: 5%;
+  font-size: clamp(11px, .85vw, 13px);
   line-height: 1.35;
   color: #7a5a38;
 }

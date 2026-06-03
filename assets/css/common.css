@@ -626,3 +626,131 @@ button:hover,
   letter-spacing: .18em;
   color: #8c6330;
 }
+
+/* ═══════════════════════════════════════════════
+   関連システム・外部リンクセクション
+═══════════════════════════════════════════════ */
+
+.ext-links-section {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* リンクカード共通 */
+.ext-link-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid rgba(216,170,56,0.45);
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(6,30,40,0.92), rgba(4,20,28,0.95));
+  text-decoration: none;
+  color: #f5dfa0;
+  transition: border-color .2s, background .2s;
+  position: relative;
+}
+.ext-link-card:hover {
+  border-color: rgba(216,170,56,0.85);
+  background: linear-gradient(90deg, rgba(10,45,55,0.98), rgba(6,30,40,0.98));
+}
+
+.ext-link-emoji {
+  font-size: 20px;
+  flex: 0 0 26px;
+  text-align: center;
+}
+
+.ext-link-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+}
+.ext-link-title {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ext-link-sub {
+  font-size: 11px;
+  color: #c9a85c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ext-arrow {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
+/* カスタムリンク：削除ボタンのためpadding調整 */
+.custom-link {
+  padding-right: 36px;
+}
+.ext-del-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(220,120,100,0.6);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+.ext-del-btn:hover {
+  color: #ff6b6b;
+  background: rgba(255,80,80,.12);
+}
+
+/* 追加フォーム */
+.ext-add-area {
+  margin-top: 4px;
+}
+.ext-add-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  align-items: center;
+}
+.ext-input {
+  background: rgba(3,18,25,0.9);
+  border: 1px solid rgba(216,170,56,0.35);
+  border-radius: 7px;
+  color: #f5dfa0;
+  font-size: 12px;
+  padding: 6px 8px;
+  outline: none;
+  font-family: var(--font-jp, sans-serif);
+  transition: border-color .2s;
+  min-width: 0;
+}
+.ext-input::placeholder { color: #7a6840; }
+.ext-input:focus { border-color: rgba(216,170,56,0.75); }
+
+.ext-add-btn {
+  background: linear-gradient(135deg, #9a6a10, #c49320);
+  border: none;
+  border-radius: 7px;
+  color: #fff8e1;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  transition: filter .15s, transform .1s;
+}
+.ext-add-btn:hover  { filter: brightness(1.2); }
+.ext-add-btn:active { transform: scale(0.92); }
