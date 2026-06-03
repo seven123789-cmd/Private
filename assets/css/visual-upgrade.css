@@ -727,21 +727,19 @@
 }
 
 .stats .stat-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url("../img/imperial/kpi-card-bg.png");
-  background-size: 100% 100%;
-  background-position: center center;
-  background-repeat: no-repeat;
-  opacity: .72;
+  content: none;
 }
 
-.stats .stat-card > * {
+.stats .stat-card .stat-top,
+.stats .stat-card .stat-icon,
+.stats .stat-card .stat-value,
+.stats .stat-card .stat-sub {
   position: relative;
   z-index: 1;
+}
+
+.stats .stat-card .kpi-corner {
+  display: none;
 }
 
 
@@ -903,7 +901,7 @@
   box-shadow: none;
   text-align: center;
   overflow: hidden;
-  background-color: #fbf2dc;
+  background: url("../img/imperial/kpi-card-bg.png") center center / 100% 100% no-repeat, #fbf2dc;
   transform: none;
 }
 
@@ -913,21 +911,19 @@
 }
 
 .stats .stat-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url("../img/imperial/kpi-card-bg.png");
-  background-size: 100% 100%;
-  background-position: center center;
-  background-repeat: no-repeat;
-  opacity: .72;
+  content: none;
 }
 
-.stats .stat-card > * {
+.stats .stat-card .stat-top,
+.stats .stat-card .stat-icon,
+.stats .stat-card .stat-value,
+.stats .stat-card .stat-sub {
   position: relative;
   z-index: 1;
+}
+
+.stats .stat-card .kpi-corner {
+  display: none;
 }
 
 .stats .stat-card .stat-top > span {
