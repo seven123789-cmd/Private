@@ -922,9 +922,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 272 / 384;
+  aspect-ratio: 1 / 1;
   min-height: 0;
-  padding: 52px 16px 28px;
+  padding: clamp(32px, 14%, 42px) 7% clamp(16px, 6%, 22px);
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -1019,21 +1019,43 @@
   }
 }
 
+/* 2026-06-03 KPI再調整
+   - KPIカードのみ対象
+   - 枠は正方形固定
+   - 背景画像は100% 100%で維持
+   - 総覧ヘッダー系セレクタには触れない
+*/
+.stats .stat-card {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  padding: clamp(32px, 14%, 42px) 7% clamp(16px, 6%, 22px);
+  justify-content: flex-start;
+}
 
-/* 2026-06-03 KPI微調整 */
-.stats .stat-card .stat-top{font-size:28px;}
-.stats .stat-card .stat-icon{
- width:72px;
- height:72px;
- margin:6% auto 0;
+.stats .stat-card .stat-top > span {
+  font-size: clamp(18px, 1.45vw, 23px);
+  line-height: 1.12;
 }
-.stats .stat-card .stat-value{
- font-size:64px;
- margin-top:5%;
+
+.stats .stat-card .stat-icon {
+  width: clamp(56px, 25%, 68px);
+  height: clamp(56px, 25%, 68px);
+  margin: clamp(10px, 4%, 14px) auto 0;
 }
-.stats .stat-card:last-child .stat-value{
- font-size:58px;
+
+.stats .stat-card .stat-value {
+  font-size: clamp(46px, 4.35vw, 64px);
+  line-height: .95;
+  margin-top: clamp(6px, 3%, 10px);
 }
-.stats .stat-card .stat-sub{
- margin-top:2%;
+
+.stats .stat-card:last-child .stat-value {
+  font-size: clamp(42px, 4.1vw, 58px);
+}
+
+.stats .stat-card .stat-sub {
+  margin-top: clamp(3px, 2%, 6px);
+  font-size: clamp(10px, .82vw, 12px);
+  line-height: 1.25;
 }
