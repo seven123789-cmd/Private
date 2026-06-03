@@ -328,7 +328,7 @@ const APP = (() => {
     // 固定システムリンク（サイドバーに残す）
     const sysRows = SYSTEM_LINKS.map(n => `
       <a class="sidebar-system-card" href="${n.href}" target="_blank" rel="noopener">
-        <span class="sidebar-system-emoji">${n.emoji}</span>
+        <img class="sidebar-system-avatar" src="assets/img/imperial/icons/${n.id}-icon.webp" alt="${n.label}">
         <span class="sidebar-system-copy">
           <span class="sidebar-system-title">${n.label}</span>
           <span class="sidebar-system-sub">${n.sub}</span>
