@@ -1121,13 +1121,13 @@
 .stats .stat-card:last-child::after {
   content: '';
   position: absolute;
-  top: 20%;
+  top: 18%;
   left: 50%;
   transform: translateX(-50%);
-  width: 85%;
-  height: 75%;
+  width: 90%;
+  height: 72%;
   background: url('../img/imperial/icons/kpi-employees-bg.webp') center center / contain no-repeat;
-  opacity: 0.55;
+  opacity: 0.6;
   z-index: 0;
   pointer-events: none;
 }
@@ -1137,9 +1137,9 @@
   position: relative;
   z-index: 1;
 }
-/* タイトルを上ギリギリ、数字を下寄せ */
+/* 社員数：上ぎりぎり・数字一番下 */
 .stats .stat-card:last-child {
   justify-content: space-between;
-  padding-top: 8px;
-  padding-bottom: 10px;
+  padding-top: 6px;
+  padding-bottom: 8px;
 }
