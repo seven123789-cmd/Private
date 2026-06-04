@@ -1209,3 +1209,13 @@
   padding-top: 6px;
   padding-bottom: 8px;
 }
+
+/* タイトル上・数字下のorder設定 */
+.stats .stat-card:nth-child(2) .stat-top,
+.stats .stat-card:nth-child(3) .stat-top {
+  order: 1;
+}
+.stats .stat-card:nth-child(2) .stat-value,
+.stats .stat-card:nth-child(3) .stat-value {
+  order: 2;
+}
