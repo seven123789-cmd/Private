@@ -1311,3 +1311,35 @@
 /* 社員数（深緑金系）*/
 .stats .stat-card:last-child .stat-top span { color: #fff8d0; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
 .stats .stat-card:last-child .stat-value { color: #f5d060; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(200,160,20,.5); }
+
+/* =========================================================
+   KPIカード 文字視認性最終調整
+   ========================================================= */
+
+/* タイトル全カード統一（金色・黒縁） */
+.stats .stat-card .stat-top span {
+  color: #fff8e0 !important;
+  text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 0 2px 6px rgba(0,0,0,.8) !important;
+}
+
+/* 数字：各カードの画像色に合わせつつ黒縁で視認性確保 */
+.stats .stat-card:first-child .stat-value {
+  color: #f0c8a0 !important;
+  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
+}
+.stats .stat-card:nth-child(2) .stat-value {
+  color: #ffe878 !important;
+  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
+}
+.stats .stat-card:nth-child(3) .stat-value {
+  color: #b8e8ff !important;
+  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
+}
+.stats .stat-card:nth-child(4) .stat-value {
+  color: #c8d8ff !important;
+  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
+}
+.stats .stat-card:last-child .stat-value {
+  color: #ffd84a !important;
+  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
+}
