@@ -1219,3 +1219,71 @@
 .stats .stat-card:nth-child(3) .stat-value {
   order: 2;
 }
+
+/* =========================================================
+   KPIカード 期限切れ・昇格候補 背景アイコン更新
+   ========================================================= */
+
+/* 期限切れ背景 */
+.stats .stat-card:first-child::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96%;
+  height: 82%;
+  background: url('../img/imperial/icons/kpi-expired-bg.webp') center center / contain no-repeat;
+  opacity: 0.65;
+  z-index: 0;
+  pointer-events: none;
+}
+.stats .stat-card:first-child .stat-top,
+.stats .stat-card:first-child .stat-value,
+.stats .stat-card:first-child .stat-sub {
+  position: relative;
+  z-index: 1;
+}
+.stats .stat-card:first-child .stat-value {
+  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
+}
+.stats .stat-card:first-child {
+  justify-content: space-between;
+  padding-top: 6px;
+  padding-bottom: 8px;
+}
+.stats .stat-card:first-child .stat-icon {
+  display: none !important;
+}
+
+/* 昇格候補（4枚目）背景 */
+.stats .stat-card:nth-child(4)::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96%;
+  height: 82%;
+  background: url('../img/imperial/icons/kpi-promotion-bg.webp') center center / contain no-repeat;
+  opacity: 0.65;
+  z-index: 0;
+  pointer-events: none;
+}
+.stats .stat-card:nth-child(4) .stat-top,
+.stats .stat-card:nth-child(4) .stat-value,
+.stats .stat-card:nth-child(4) .stat-sub {
+  position: relative;
+  z-index: 1;
+}
+.stats .stat-card:nth-child(4) .stat-value {
+  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
+}
+.stats .stat-card:nth-child(4) {
+  justify-content: space-between;
+  padding-top: 6px;
+  padding-bottom: 8px;
+}
+.stats .stat-card:nth-child(4) .stat-icon {
+  display: none !important;
+}
