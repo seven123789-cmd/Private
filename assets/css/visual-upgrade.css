@@ -1287,3 +1287,27 @@
 .stats .stat-card:nth-child(4) .stat-icon {
   display: none !important;
 }
+
+/* =========================================================
+   KPIカード 全5枚 数字下寄せ・文字色最適化
+   ========================================================= */
+
+/* 期限切れ（暗い赤金系）*/
+.stats .stat-card:first-child .stat-top span { color: #f5e6c8; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+.stats .stat-card:first-child .stat-value { color: #e8c4a0; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(230,160,80,.6); }
+
+/* 30日以内（金・暖色系）*/
+.stats .stat-card:nth-child(2) .stat-top span { color: #fff8e0; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
+.stats .stat-card:nth-child(2) .stat-value { color: #fff0b0; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(255,200,50,.5); }
+
+/* 90日以内（青白・清楚系）*/
+.stats .stat-card:nth-child(3) .stat-top span { color: #e8f4ff; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.stats .stat-card:nth-child(3) .stat-value { color: #cce8ff; text-shadow: 0 2px 12px rgba(0,0,0,.8), 0 0 20px rgba(100,180,255,.5); }
+
+/* 昇格候補（青銀・清楚系）*/
+.stats .stat-card:nth-child(4) .stat-top span { color: #e8f0ff; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
+.stats .stat-card:nth-child(4) .stat-value { color: #d0e8ff; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(120,160,255,.5); }
+
+/* 社員数（深緑金系）*/
+.stats .stat-card:last-child .stat-top span { color: #fff8d0; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+.stats .stat-card:last-child .stat-value { color: #f5d060; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(200,160,20,.5); }
