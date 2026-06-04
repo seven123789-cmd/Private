@@ -1343,3 +1343,32 @@
   color: #ffd84a !important;
   text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
 }
+
+/* =========================================================
+   KPIカード 文字 雰囲気優先に再調整（黒縁廃止・光彩のみ）
+   ========================================================= */
+
+.stats .stat-card .stat-top span {
+  color: #fff8e0 !important;
+  text-shadow: 0 0 8px rgba(0,0,0,.9), 0 1px 3px rgba(0,0,0,.9) !important;
+}
+.stats .stat-card:first-child .stat-value {
+  color: #f5d8b0 !important;
+  text-shadow: 0 0 16px rgba(255,220,160,.9), 0 2px 6px rgba(0,0,0,.8) !important;
+}
+.stats .stat-card:nth-child(2) .stat-value {
+  color: #ffe878 !important;
+  text-shadow: 0 0 20px rgba(255,230,80,.9), 0 2px 6px rgba(0,0,0,.8) !important;
+}
+.stats .stat-card:nth-child(3) .stat-value {
+  color: #c8eeff !important;
+  text-shadow: 0 0 20px rgba(140,210,255,.9), 0 2px 6px rgba(0,0,0,.8) !important;
+}
+.stats .stat-card:nth-child(4) .stat-value {
+  color: #d8e8ff !important;
+  text-shadow: 0 0 20px rgba(160,190,255,.9), 0 2px 6px rgba(0,0,0,.8) !important;
+}
+.stats .stat-card:last-child .stat-value {
+  color: #ffd84a !important;
+  text-shadow: 0 0 20px rgba(255,200,30,.9), 0 2px 6px rgba(0,0,0,.8) !important;
+}
