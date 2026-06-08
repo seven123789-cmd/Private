@@ -1127,7 +1127,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-employees-bg.webp') center center / contain no-repeat;
-  opacity: 0.65;
+  opacity: 1;
   z-index: 0;
   pointer-events: none;
 }
@@ -1166,7 +1166,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-30days-bg.webp') center center / contain no-repeat;
-  opacity: 0.85;
+  opacity: 1;
   z-index: 0;
   pointer-events: none;
 }
@@ -1180,7 +1180,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-90days-bg.webp') center center / contain no-repeat;
-  opacity: 0.95;
+  opacity: 1;
   z-index: 0;
   pointer-events: none;
 }
@@ -1234,7 +1234,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-expired-bg.webp') center center / contain no-repeat;
-  opacity: 0.80;
+  opacity: 1;
   z-index: 0;
   pointer-events: none;
 }
@@ -1266,7 +1266,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-promotion-bg.webp') center center / contain no-repeat;
-  opacity: 0.95;
+  opacity: 1;
   z-index: 0;
   pointer-events: none;
 }
@@ -1371,4 +1371,28 @@
 .stats .stat-card:last-child .stat-value {
   color: #ffd84a !important;
   text-shadow: 0 0 20px rgba(255,200,30,.9), 0 2px 6px rgba(0,0,0,.8) !important;
+}
+
+
+/* =========================================================
+   KPIカード 画像濃度・期限切れタイトル色 調整
+   2026-06-08
+   - KPI背景画像は透過なし
+   - 期限切れタイトルのみ白文字から赤茶系へ変更
+   ========================================================= */
+
+.stats .stat-card:first-child::after,
+.stats .stat-card:nth-child(2)::after,
+.stats .stat-card:nth-child(3)::after,
+.stats .stat-card:nth-child(4)::after,
+.stats .stat-card:last-child::after {
+  opacity: 1;
+}
+
+.stats .stat-card:first-child .stat-top span {
+  color: #6f0018 !important;
+  text-shadow:
+    0 1px 0 rgba(255,248,220,.65),
+    0 0 8px rgba(255,230,160,.55),
+    0 2px 5px rgba(0,0,0,.35) !important;
 }
