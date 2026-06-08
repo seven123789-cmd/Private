@@ -312,6 +312,12 @@ const APP = (() => {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
 
+    const shell = sb.closest('.app-shell');
+    const COLLAPSE_KEY = 'license_sidebar_collapsed_v1';
+    const collapsed = localStorage.getItem(COLLAPSE_KEY) === '1';
+    if (shell) shell.classList.toggle('sidebar-collapsed', collapsed);
+    sb.classList.toggle('is-collapsed', collapsed);
+
     // 既存NAVメニュー
     const rows = NAV.map(n => `
       <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}">
@@ -337,6 +343,10 @@ const APP = (() => {
       </a>`).join('');
 
     sb.innerHTML = `
+      <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="サイドバーを折りたたむ" aria-expanded="${collapsed ? 'false' : 'true'}">
+        <span class="sidebar-toggle-mark" aria-hidden="true">${collapsed ? '›' : '‹'}</span>
+      </button>
+
       <div class="imperial-brand-card">
         <span class="icon-frame icon-frame-brand" aria-hidden="true">
           <img src="assets/img/imperial/icons/brand-emblem.png" alt="" loading="eager">
@@ -365,6 +375,20 @@ const APP = (() => {
       </div>
 
       <div class="imperial-sidebar-future-space" aria-hidden="true"></div>`;
+
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const nextCollapsed = !(shell?.classList.contains('sidebar-collapsed'));
+        if (shell) shell.classList.toggle('sidebar-collapsed', nextCollapsed);
+        sb.classList.toggle('is-collapsed', nextCollapsed);
+        localStorage.setItem(COLLAPSE_KEY, nextCollapsed ? '1' : '0');
+        toggleBtn.setAttribute('aria-expanded', nextCollapsed ? 'false' : 'true');
+        toggleBtn.setAttribute('aria-label', nextCollapsed ? 'サイドバーを展開する' : 'サイドバーを折りたたむ');
+        const mark = toggleBtn.querySelector('.sidebar-toggle-mark');
+        if (mark) mark.textContent = nextCollapsed ? '›' : '‹';
+      });
+    }
   }
 
   function initExternalLinksPage() {

@@ -12,7 +12,7 @@
 :root {
   --ui-header-height: 220px;
   --ui-header-radius: 14px;
-  --ui-kpi-height: 252px;
+  --ui-kpi-height: 190px;
   --ui-kpi-radius: 14px;
   --ui-kpi-gap: 22px;
   --ui-gold-text: #f7e7a2;
@@ -172,7 +172,7 @@
   margin: 0;
   min-height: var(--ui-kpi-height);
   height: var(--ui-kpi-height);
-  padding: 34px 18px 24px;
+  padding: 26px 18px 20px;
   text-align: center;
   overflow: hidden;
   isolation: isolate;
@@ -233,7 +233,7 @@
   position: static;
   display: block;
   width: 100%;
-  margin: 44px 0 0;
+  margin: 28px 0 0;
   padding: 0;
   transform: none;
 }
@@ -244,7 +244,7 @@
   position: static;
   display: block;
   width: 100%;
-  margin: 30px 0 0;
+  margin: 20px 0 0;
   padding: 0;
   transform: none;
 }
@@ -254,7 +254,7 @@
   display: block;
   margin: 0;
   padding: 0;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.2;
   font-weight: 800;
   letter-spacing: .05em;
@@ -269,7 +269,7 @@
 .stats .stat-card .stat-value,
 .stat-card .stat-value {
   font-family: Georgia, 'Times New Roman', 'Shippori Mincho', serif;
-  font-size: 72px;
+  font-size: 62px;
   line-height: .95;
   font-weight: 800;
   color: #6d3d05;
@@ -392,5 +392,150 @@
   .stats,
   .stats[style] {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------
+   04. SaaS型サイドバー折りたたみ
+   --------------------------------------------------------- */
+.app-shell {
+  transition: grid-template-columns .22s ease;
+}
+
+.app-shell.sidebar-collapsed {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+
+.sidebar-toggle-btn {
+  position: sticky;
+  top: 10px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin: 0 0 12px auto;
+  border: 1px solid rgba(216,170,56,.72);
+  border-radius: 999px;
+  color: #ffe79b;
+  background: linear-gradient(180deg, rgba(116,11,24,.96), rgba(62,5,14,.96));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,239,172,.20),
+    0 8px 16px rgba(0,0,0,.30);
+  cursor: pointer;
+}
+
+.sidebar-toggle-btn:hover {
+  filter: brightness(1.06);
+}
+
+.sidebar-toggle-mark {
+  display: block;
+  margin-top: -2px;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.app-shell.sidebar-collapsed .sidebar {
+  padding: 14px 10px 24px;
+}
+
+.app-shell.sidebar-collapsed .sidebar-toggle-btn {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.app-shell.sidebar-collapsed .imperial-brand-card {
+  justify-content: center;
+  height: 76px;
+  min-height: 76px;
+  padding: 8px;
+  margin-bottom: 14px;
+}
+
+.app-shell.sidebar-collapsed .imperial-brand-card .icon-frame,
+.app-shell.sidebar-collapsed .imperial-brand-card .icon-frame-brand {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+}
+
+.app-shell.sidebar-collapsed .imperial-brand-copy,
+.app-shell.sidebar-collapsed .imperial-menu-copy,
+.app-shell.sidebar-collapsed .imperial-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar-system-copy,
+.app-shell.sidebar-collapsed .sidebar-system-open,
+.app-shell.sidebar-collapsed .imperial-sidebar-separator,
+.app-shell.sidebar-collapsed .imperial-user-card > div:not(.imperial-user-avatar),
+.app-shell.sidebar-collapsed .imperial-sidebar-future-space {
+  display: none;
+}
+
+.app-shell.sidebar-collapsed .imperial-nav {
+  gap: 10px;
+}
+
+.app-shell.sidebar-collapsed .imperial-menu-card {
+  justify-content: center;
+  width: 100%;
+  height: 68px;
+  min-height: 68px;
+  padding: 6px;
+  gap: 0;
+  border-radius: 14px;
+}
+
+.app-shell.sidebar-collapsed .imperial-menu-card::before {
+  inset: 5px;
+}
+
+.app-shell.sidebar-collapsed .imperial-menu-card .imperial-medal,
+.app-shell.sidebar-collapsed .imperial-medal {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  margin: 0;
+}
+
+.app-shell.sidebar-collapsed .sidebar-system-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.app-shell.sidebar-collapsed .sidebar-system-card {
+  justify-content: center;
+  height: 64px;
+  padding: 8px;
+  border-radius: 14px;
+}
+
+.app-shell.sidebar-collapsed .sidebar-system-emoji {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  font-size: 22px;
+}
+
+.app-shell.sidebar-collapsed .imperial-user-card {
+  justify-content: center;
+  padding: 8px;
+  margin-top: 14px;
+}
+
+.app-shell.sidebar-collapsed .imperial-user-avatar {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+}
+
+@media (max-width: 760px) {
+  .app-shell.sidebar-collapsed {
+    display: block;
+  }
+
+  .app-shell.sidebar-collapsed .sidebar {
+    height: auto;
   }
 }
