@@ -14,7 +14,7 @@
   --ui-header-radius: 14px;
   --ui-kpi-height: 252px;
   --ui-kpi-radius: 14px;
-  --ui-kpi-gap: 18px;
+  --ui-kpi-gap: 22px;
   --ui-gold-text: #f7e7a2;
   --ui-gold-sub: #f2d98b;
   --ui-kpi-bg-top: rgba(255,250,230,.97);
@@ -136,15 +136,23 @@
 .stats {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-flow: row;
   gap: var(--ui-kpi-gap);
   align-items: stretch;
+  justify-items: stretch;
+  width: 100%;
+  max-width: 100%;
   margin: 0 0 26px;
-  max-width: none;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .stats[style] {
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
+  gap: var(--ui-kpi-gap);
 }
 
 .stats .stat-card,
@@ -155,17 +163,27 @@
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
+  grid-column: auto;
   min-width: 0;
-  width: auto;
+  max-width: 100%;
+  width: 100%;
+  flex: none;
+  aspect-ratio: auto;
+  margin: 0;
   min-height: var(--ui-kpi-height);
   height: var(--ui-kpi-height);
   padding: 34px 18px 24px;
   text-align: center;
   overflow: hidden;
+  isolation: isolate;
   border: 1px solid var(--ui-kpi-border);
   border-top-width: 4px;
   border-radius: var(--ui-kpi-radius);
-  background: linear-gradient(180deg, var(--ui-kpi-bg-top), var(--ui-kpi-bg-bottom));
+  background-image: linear-gradient(180deg, var(--ui-kpi-bg-top), var(--ui-kpi-bg-bottom));
+  background-color: #fbf2dc;
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.55),
     0 8px 18px rgba(88,57,14,.10);
@@ -188,7 +206,14 @@
 .kpi-corner {
   display: none;
   content: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
   background: none;
+  box-shadow: none;
+  border: 0;
 }
 
 .stats .stat-card .stat-top,
@@ -261,38 +286,34 @@
   text-align: center;
 }
 
-/* 状態色：classがあるページはclassを優先、総覧の5枚は並びでも補正 */
-.stat-card.danger,
-.stats .stat-card:nth-child(1) { border-top-color: #9b0018; }
+/* 状態色：class指定を基準に統一。classなしは総覧社員数と同じ金茶 */
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura),
+.stat-card:not(.danger):not(.warning):not(.info):not(.sakura) {
+  border-top-color: #8b691a;
+}
+
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-top > span,
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-value,
+.stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-top > span,
+.stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-value {
+  color: #71510a;
+}
+
+.stat-card.danger { border-top-color: #9b0018; }
 .stat-card.danger .stat-top > span,
-.stat-card.danger .stat-value,
-.stats .stat-card:nth-child(1) .stat-top > span,
-.stats .stat-card:nth-child(1) .stat-value { color: #8f0017; }
+.stat-card.danger .stat-value { color: #8f0017; }
 
-.stat-card.warning,
-.stats .stat-card:nth-child(2) { border-top-color: #b57408; }
+.stat-card.warning { border-top-color: #b57408; }
 .stat-card.warning .stat-top > span,
-.stat-card.warning .stat-value,
-.stats .stat-card:nth-child(2) .stat-top > span,
-.stats .stat-card:nth-child(2) .stat-value { color: #8a4407; }
+.stat-card.warning .stat-value { color: #8a4407; }
 
-.stat-card.info,
-.stats .stat-card:nth-child(3) { border-top-color: #00708a; }
+.stat-card.info { border-top-color: #00708a; }
 .stat-card.info .stat-top > span,
-.stat-card.info .stat-value,
-.stats .stat-card:nth-child(3) .stat-top > span,
-.stats .stat-card:nth-child(3) .stat-value { color: #006f8a; }
+.stat-card.info .stat-value { color: #006f8a; }
 
-.stat-card.sakura,
-.stats .stat-card:nth-child(4) { border-top-color: #8a2d7b; }
+.stat-card.sakura { border-top-color: #8a2d7b; }
 .stat-card.sakura .stat-top > span,
-.stat-card.sakura .stat-value,
-.stats .stat-card:nth-child(4) .stat-top > span,
-.stats .stat-card:nth-child(4) .stat-value { color: #7e2b78; }
-
-.stats .stat-card:nth-child(5) { border-top-color: #8b691a; }
-.stats .stat-card:nth-child(5) .stat-top > span,
-.stats .stat-card:nth-child(5) .stat-value { color: #71510a; }
+.stat-card.sakura .stat-value { color: #7e2b78; }
 
 /* 総覧本文カードの不要な背景画像系だけ無効化 */
 .card-alert::before,
