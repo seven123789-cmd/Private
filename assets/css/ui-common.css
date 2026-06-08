@@ -304,6 +304,49 @@
   background: none;
 }
 
+
+/* ---------------------------------------------------------
+   03. サイドバー背景共通
+   --------------------------------------------------------- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background:
+    linear-gradient(180deg, rgba(4,10,16,.18) 0%, rgba(5,9,13,.10) 46%, rgba(5,6,9,.20) 100%),
+    url("../img/imperial/sidebar/sidebar-sakura-bg.webp") center top / 100% 100% no-repeat,
+    linear-gradient(180deg, #071421 0%, #241810 58%, #08090d 100%);
+  border-right: 4px solid rgba(173,122,38,.90);
+  box-shadow:
+    inset -12px 0 22px rgba(0,0,0,.42),
+    inset 0 0 34px rgba(218,170,74,.055),
+    8px 0 22px rgba(42,25,6,.22);
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.20), transparent 18%, transparent 82%, rgba(0,0,0,.22)),
+    linear-gradient(180deg, rgba(255,220,120,.04), transparent 22%, transparent 78%, rgba(255,220,120,.035));
+  opacity: .72;
+}
+
+.sidebar::after {
+  content: none;
+  display: none;
+}
+
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 1180px) {
   .stats,
   .stats[style] {
