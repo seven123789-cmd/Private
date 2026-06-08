@@ -310,14 +310,13 @@ const APP = (() => {
     if (!sb) return;
 
     const shell = sb.closest('.app-shell');
-    const COLLAPSE_KEY = 'license_sidebar_collapsed_v1';
-    const collapsed = localStorage.getItem(COLLAPSE_KEY) === '1';
-    if (shell) shell.classList.toggle('sidebar-collapsed', collapsed);
-    sb.classList.toggle('is-collapsed', collapsed);
+    if (shell) shell.classList.remove('sidebar-collapsed');
+    sb.classList.remove('is-collapsed');
+    localStorage.removeItem('license_sidebar_collapsed_v1');
 
-    // 既存NAVメニュー（文字主体：画像アイコンは使わない）
+    // 既存NAVメニュー（文字主体：画像アイコン・折りたたみは使わない）
     const rows = NAV.map(n => `
-      <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}" data-short="${n.short || n.label.slice(0, 1)}">
+      <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}">
         <span class="imperial-menu-copy">
           <span class="imperial-menu-title">${n.label}</span>
           <span class="imperial-menu-sub">${n.sub || ''}</span>
@@ -327,7 +326,7 @@ const APP = (() => {
 
     // 固定システムリンク（通常メニューと同じ文字主体デザイン）
     const sysRows = SYSTEM_LINKS.map(n => `
-      <a class="imperial-menu-card imperial-system-menu-card" href="${n.href}" target="_blank" rel="noopener" data-short="${n.short || n.label.slice(0, 1)}">
+      <a class="imperial-menu-card imperial-system-menu-card" href="${n.href}" target="_blank" rel="noopener">
         <span class="imperial-menu-copy">
           <span class="imperial-menu-title">${n.label}</span>
           <span class="imperial-menu-sub">${n.sub}</span>
@@ -335,17 +334,10 @@ const APP = (() => {
       </a>`).join('');
 
     sb.innerHTML = `
-      <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="サイドバーを折りたたむ" aria-expanded="${collapsed ? 'false' : 'true'}">
-        <span class="sidebar-toggle-mark" aria-hidden="true">${collapsed ? '›' : '‹'}</span>
-      </button>
-
-      <div class="imperial-brand-card">
-        <span class="icon-frame icon-frame-brand" aria-hidden="true">
-          <img src="assets/img/imperial/icons/brand-emblem.png" alt="" loading="eager">
-        </span>
+      <div class="imperial-brand-card imperial-brand-card-textonly">
         <div class="imperial-brand-copy">
-          <div class="imperial-brand-title">資格・免許管理</div>
-          <div class="imperial-brand-sub">License Management System</div>
+          <div class="imperial-brand-title">統合管理システム</div>
+          <div class="imperial-brand-sub">Integrated Management System</div>
         </div>
       </div>
 
@@ -356,28 +348,14 @@ const APP = (() => {
 
       <div class="imperial-sidebar-separator"><span>管理メニュー</span></div>
 
-      <div class="imperial-menu-card imperial-admin-menu-card" data-short="管">
+      <div class="imperial-menu-card imperial-admin-menu-card">
         <span class="imperial-menu-copy">
           <span class="imperial-menu-title">管理者</span>
-          <span class="imperial-menu-sub">人事管理者</span>
+          <span class="imperial-menu-sub">システム設定</span>
         </span>
       </div>
 
       <div class="imperial-sidebar-future-space" aria-hidden="true"></div>`;
-
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const nextCollapsed = !(shell?.classList.contains('sidebar-collapsed'));
-        if (shell) shell.classList.toggle('sidebar-collapsed', nextCollapsed);
-        sb.classList.toggle('is-collapsed', nextCollapsed);
-        localStorage.setItem(COLLAPSE_KEY, nextCollapsed ? '1' : '0');
-        toggleBtn.setAttribute('aria-expanded', nextCollapsed ? 'false' : 'true');
-        toggleBtn.setAttribute('aria-label', nextCollapsed ? 'サイドバーを展開する' : 'サイドバーを折りたたむ');
-        const mark = toggleBtn.querySelector('.sidebar-toggle-mark');
-        if (mark) mark.textContent = nextCollapsed ? '›' : '‹';
-      });
-    }
   }
 
   function initExternalLinksPage() {

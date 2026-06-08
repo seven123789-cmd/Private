@@ -799,3 +799,258 @@
   background: rgba(255, 248, 226, .86);
   text-shadow: 0 1px 0 rgba(255, 255, 255, .85);
 }
+
+/* =========================================================
+   2026-06-08 統合管理システム化：サイドバー常時表示・画像レス
+   - 折りたたみ廃止
+   - ブランドカードは文字のみ
+   - 通常メニュー／関連システム／管理者を同一カード調へ統一
+   ========================================================= */
+.app-shell,
+.app-shell.sidebar-collapsed {
+  grid-template-columns: 318px minmax(0, 1fr);
+}
+
+.sidebar,
+.app-shell.sidebar-collapsed .sidebar {
+  width: 318px;
+  min-width: 318px;
+  max-width: 318px;
+  padding: 16px 14px 24px;
+}
+
+.sidebar-toggle-btn,
+.sidebar-toggle-mark {
+  display: none;
+}
+
+.imperial-brand-card,
+.app-shell.sidebar-collapsed .imperial-brand-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 124px;
+  height: auto;
+  padding: 22px 18px;
+  margin: 0 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6f0712 0%, #51050d 72%, #2a0709 100%);
+  border: 2px solid rgba(216, 170, 56, .92);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 236, 166, .28),
+    0 8px 18px rgba(0, 0, 0, .34);
+  text-align: center;
+}
+
+.imperial-brand-card .icon-frame,
+.imperial-brand-card .icon-frame-brand,
+.imperial-brand-card img,
+.app-shell.sidebar-collapsed .imperial-brand-card .icon-frame,
+.app-shell.sidebar-collapsed .imperial-brand-card .icon-frame-brand {
+  display: none;
+}
+
+.imperial-brand-copy,
+.app-shell.sidebar-collapsed .imperial-brand-copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.imperial-brand-title {
+  font-size: 28px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: #fff1bd;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .82);
+}
+
+.imperial-brand-sub {
+  font: 700 13px/1.1 var(--font-en);
+  letter-spacing: .12em;
+  color: #f0cc69;
+  text-transform: uppercase;
+}
+
+.imperial-nav,
+.sidebar-system-section,
+.app-shell.sidebar-collapsed .imperial-nav,
+.app-shell.sidebar-collapsed .sidebar-system-section {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar .imperial-menu-card,
+.sidebar .imperial-system-menu-card,
+.sidebar .imperial-admin-menu-card,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 68px;
+  height: 68px;
+  padding: 10px 18px 10px 20px;
+  border-radius: 14px;
+  color: #2b1a0b;
+  border: 1px solid rgba(216, 170, 56, .66);
+  background: linear-gradient(90deg, rgba(255, 248, 226, .98), rgba(244, 225, 184, .94));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .62),
+    0 4px 10px rgba(0, 0, 0, .20);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.sidebar .imperial-menu-card::before,
+.sidebar .imperial-system-menu-card::before,
+.sidebar .imperial-admin-menu-card::before,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card::before,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::before,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(203, 155, 67, .28);
+  border-radius: 11px;
+  pointer-events: none;
+}
+
+.sidebar .imperial-menu-card::after,
+.sidebar .imperial-system-menu-card::after,
+.sidebar .imperial-admin-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card::after {
+  content: "›";
+  display: block;
+  width: auto;
+  height: auto;
+  margin-left: auto;
+  border: 0;
+  border-radius: 0;
+  color: #a37723;
+  background: transparent;
+  font-family: inherit;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+.sidebar .imperial-system-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::after {
+  content: "↗";
+  font-size: 25px;
+}
+
+.sidebar .imperial-menu-card.active,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card.active {
+  color: #fff1bd;
+  border-color: rgba(241, 198, 90, .90);
+  background: linear-gradient(90deg, #9a0b1b, #700713);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 221, 139, .42),
+    0 7px 14px rgba(80, 0, 0, .28);
+}
+
+.sidebar .imperial-menu-copy,
+.sidebar .sidebar-system-copy,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-copy,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-copy,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-title,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-sub,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-title,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-sub {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sidebar .imperial-medal,
+.sidebar .imperial-medal img,
+.sidebar .sidebar-system-emoji,
+.sidebar .sidebar-system-avatar,
+.sidebar .imperial-user-avatar {
+  display: none;
+}
+
+.sidebar .imperial-menu-title,
+.sidebar .sidebar-system-title,
+.sidebar .imperial-user-name,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-title,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-title {
+  display: block;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  font-size: 24px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: inherit;
+  text-shadow: 0 1px 0 rgba(255, 249, 223, .85);
+}
+
+.sidebar .imperial-menu-card.active .imperial-menu-title,
+.sidebar .imperial-menu-card.active .imperial-menu-sub,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card.active .imperial-menu-title,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card.active .imperial-menu-sub {
+  color: #fff1bd;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .82);
+}
+
+.sidebar .imperial-menu-sub,
+.sidebar .sidebar-system-sub,
+.sidebar .imperial-user-role,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-sub,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-sub {
+  display: block;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: .03em;
+  color: rgba(87, 63, 36, .78);
+}
+
+.sidebar .imperial-sidebar-separator,
+.app-shell.sidebar-collapsed .imperial-sidebar-separator {
+  display: block;
+  margin: 18px 0 10px;
+  text-align: center;
+  color: #dfb84a;
+}
+
+.sidebar .imperial-sidebar-future-space {
+  height: 18px;
+}
+
+@media (max-width: 1200px) {
+  .app-shell,
+  .app-shell.sidebar-collapsed {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+  .sidebar,
+  .app-shell.sidebar-collapsed .sidebar {
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell,
+  .app-shell.sidebar-collapsed {
+    display: block;
+  }
+  .sidebar,
+  .app-shell.sidebar-collapsed .sidebar {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+  }
+}
