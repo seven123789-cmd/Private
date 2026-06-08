@@ -124,7 +124,7 @@
   flex: 0 0 92px;
   border-radius: 50%;
   overflow: hidden;
-  background: url("../img/imperial/icons/dashboard-emblem.webp") 48% center / cover no-repeat;
+  background: url("../img/imperial/icons/dashboard-emblem.png") 48% center / cover no-repeat;
   border: 0;
   box-shadow: 0 7px 13px rgba(0,0,0,.28);
   filter: drop-shadow(0 5px 6px rgba(0,0,0,.30));
@@ -237,7 +237,7 @@
   overflow-x: hidden;
   background:
     linear-gradient(180deg, rgba(4,10,16,.18) 0%, rgba(5,9,13,.10) 46%, rgba(5,6,9,.20) 100%),
-    url("../img/imperial/sidebar/sidebar-sakura-bg.webp") center top / 100% 100% no-repeat,
+    url("../img/imperial/sidebar/sidebar-sakura-bg.png") center top / 100% 100% no-repeat,
     linear-gradient(180deg, #071421 0%, #241810 58%, #08090d 100%);
   border-right: 4px solid rgba(173,122,38,.90);
   box-shadow:
@@ -277,7 +277,7 @@
    ================================================================ */
 
 .page-header-v2 .page-icon {
-  background-image: url("../img/imperial/icons/dashboard-emblem.webp");
+  background-image: url("../img/imperial/icons/dashboard-emblem.png");
   background-size: cover;
   background-position: 48% center;
   overflow: hidden;
@@ -304,6 +304,7 @@
   border: 1px solid rgba(195,145,61,.88);
   background:
     linear-gradient(180deg, rgba(255,250,236,.86), rgba(246,230,193,.82)),
+    url("../img/imperial/card-bg-ivory.png") center center / cover no-repeat,
     #fbf2dc;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.55),
@@ -393,7 +394,7 @@
   border: 1px solid rgba(135,84,25,.92);
   background:
     linear-gradient(180deg, rgba(255,246,221,.54), rgba(222,190,130,.24)),
-    url("../img/imperial/sidebar/sidebar-menu-paper.webp") center center / 100% 100% no-repeat,
+    url("../img/imperial/sidebar/sidebar-menu-paper.png") center center / 100% 100% no-repeat,
     #efe2c5;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.52),
@@ -728,8 +729,7 @@
   padding: 26% 7% 7%;
   overflow: hidden;
   background:
-    url("../img/imperial/kpi-card-bg.webp") center center / 100% 100% no-repeat,
-    url('../img/imperial/card-bg.webp') center/cover no-repeat,
+    url("../img/imperial/kpi-card-bg.png") center center / 100% 100% no-repeat,
     #fbf2dc;
   border: none;
   border-radius: 0;
@@ -784,8 +784,8 @@
 .content-grid > .card {
   display: flex;
   flex-direction: column;
-  height: 480px;
-  background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
+  min-height: 360px;
+  background: #fbf2dc;
   border: 2px solid #c3913d;
   border-radius: 10px;
   overflow: hidden;
@@ -810,50 +810,17 @@
 
 .content-grid > .card .card-body {
   flex: 1 1 auto;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 10px 12px;
+  min-height: 272px;
+  padding: 22px 26px;
   background-color: #fbf2dc;
-  border-radius: 0 0 10px 10px;
-  position: relative; /* ::after の基準 */
-}
-
-/* 背景画像をコンテンツと分離して ::after で敷く
-   pointer-events: none で文字選択・スクロールを妨げない */
-.content-grid > .card .card-body::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center bottom;
+  background-position: center center;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
-  opacity: 0.55;        /* 薄くして文字と競合しにくくする */
-  pointer-events: none;
-  z-index: 0;
-  border-radius: 0 0 10px 10px;
 }
 
-/* コンテンツを ::after より前面に */
-.content-grid > .card .card-body > * {
-  position: relative;
-  z-index: 1;
-}
 
-.content-grid > .card:nth-child(1) .card-body::after {
-  background-image: url("../img/imperial/card-alert-bg.webp");
-}
 
-.content-grid > .card:nth-child(2) .card-body::after {
-  background-image: url("../img/imperial/card-promotion-bg.webp");
-}
 
-.content-grid > .card:nth-child(3) .card-body::after {
-  background-image: url("../img/imperial/card-coverage-bg.webp");
-}
-
-.content-grid > .card:nth-child(4) .card-body::after {
-  background-image: url("../img/imperial/card-deadline-bg.webp");
-}
 
 
 /* =========================================================
@@ -861,22 +828,19 @@
    ========================================================= */
 
 #alert-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  overflow-y: auto;
-  padding: 8px 2px 0;
+  display: grid;
+  gap: 12px;
 }
 
 #alert-list .alert-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 128px;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: rgba(255,250,235,.85);
-  border-bottom: 1px solid rgba(181,139,72,.3);
-  margin: 2px 2px;
-  border-radius: 4px;
+  column-gap: 16px;
+  min-height: 64px;
+  padding: 12px 14px;
+  background: rgba(255,250,235,.78);
+  border-bottom: 1px solid rgba(181,139,72,.24);
 }
 
 #alert-list .alert-mark {
@@ -884,7 +848,6 @@
 }
 
 #alert-list .alert-main {
-  flex: 1;
   min-width: 0;
 }
 
@@ -895,176 +858,146 @@
 }
 
 #alert-list .alert-days {
-  flex-shrink: 0;
+  justify-self: end;
+  width: 112px;
   display: flex;
   justify-content: flex-end;
 }
 
 #alert-list .badge {
-  min-width: 70px;
+  min-width: 94px;
   justify-content: center;
   text-align: center;
   white-space: nowrap;
 }
 
 /* =========================================================
-   2026-06-08 KPIカード最終整理
-   - 上段KPIは数字中心
-   - KPI画像は使わない
-   - 総覧ヘッダーは変更しない
-   - 更新警鐘・昇格評定の本文背景画像は使わない
+   2026-06-03 総覧ヘッダー/KPIカード崩れ修正
+   - ヘッダー画像は拡大縮小しても切り抜かない
+   - KPIカードは5枚横並び時の比率・中身位置を固定
    ========================================================= */
+
+.page-header.page-header-v2 {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: 1400 / 220;
+  overflow: hidden;
+}
+
+.page-header.page-header-v2 .page-header-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  object-position: center center;
+}
 
 .stats {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 18px;
   align-items: stretch;
-  width: 100%;
-  box-sizing: border-box;
-  margin: 26px 0 26px;
+  margin-bottom: 26px;
 }
 
 .stats .stat-card {
   position: relative;
   box-sizing: border-box;
-  min-width: 0;
-  min-height: 210px;
-  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px 22px;
+  aspect-ratio: 272 / 384;
+  min-height: 0;
+  padding: 52px 16px 28px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   text-align: center;
   overflow: hidden;
-  border: 1px solid rgba(184, 135, 53, .62);
-  border-radius: 0;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.36), rgba(255,244,214,.18)),
-    url('../img/imperial/kpi-card-bg.webp') center center / 100% 100% no-repeat,
-    #fbf2dc;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 177, .45),
-    0 8px 18px rgba(73, 45, 13, .14);
+  background: url("../img/imperial/kpi-card-bg.png") center center / 100% 100% no-repeat, #fbf2dc;
   transform: none;
 }
 
 .stats .stat-card:hover {
   transform: none;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 177, .45),
-    0 8px 18px rgba(73, 45, 13, .14);
+  box-shadow: none;
 }
 
-.stats .stat-card::before,
-.stats .stat-card::after {
+.stats .stat-card::before {
   content: none;
-  display: none;
-  background: none;
-}
-
-.stats .stat-card .stat-icon,
-.stats .stat-card .kpi-corner {
-  display: none;
 }
 
 .stats .stat-card .stat-top,
+.stats .stat-card .stat-icon,
 .stats .stat-card .stat-value,
 .stats .stat-card .stat-sub {
   position: relative;
   z-index: 1;
 }
 
-.stats .stat-card .stat-top {
-  display: block;
-  margin: 0 0 20px;
+.stats .stat-card .kpi-corner {
+  display: none;
 }
 
 .stats .stat-card .stat-top > span {
   display: block;
   margin: 0;
-  font-size: clamp(24px, 1.8vw, 34px);
-  line-height: 1.12;
-  font-weight: 900;
-  letter-spacing: .06em;
-  color: #4e2a0f;
-  text-shadow:
-    0 1px 0 rgba(255,255,255,.9),
-    0 2px 5px rgba(80,45,20,.22);
-}
-
-.stats .stat-card .stat-value {
-  margin: 0;
-  font-family: var(--font-en);
-  font-size: clamp(72px, 5.3vw, 104px);
-  line-height: .95;
+  font-size: clamp(18px, 1.55vw, 24px);
+  line-height: 1.15;
   font-weight: 800;
-  color: #6b0912;
-  text-shadow:
-    0 2px 0 rgba(255,245,216,.95),
-    0 8px 18px rgba(90,45,10,.28);
+  letter-spacing: .04em;
+  color: #2a160c;
+  text-transform: none;
 }
 
-.stats .stat-card:last-child .stat-value {
-  font-size: clamp(60px, 4.7vw, 90px);
+.stats .stat-icon {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: clamp(46px, 4.2vw, 64px);
+  height: clamp(46px, 4.2vw, 64px);
+  margin: 16px auto 10px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  overflow: visible;
 }
 
-.stats .stat-card .stat-sub {
-  margin-top: 24px;
-  font-size: clamp(12px, .86vw, 14px);
+.stats .stat-value {
+  margin: 0;
+  font-size: clamp(48px, 4.8vw, 72px);
+  line-height: .98;
+}
+
+.stats .stat-sub {
+  margin-top: 10px;
+  font-size: clamp(11px, .9vw, 13px);
   line-height: 1.35;
   color: #7a5a38;
-  text-shadow: 0 1px 0 rgba(255,255,255,.7);
-}
-
-/* 状態別の上端ライン */
-.stats .stat-card::selection { background: transparent; }
-.stats .stat-card { border-top-width: 4px; }
-.stats .stat-card:first-child { border-top-color: #9f0b1e; }
-.stats .stat-card:nth-child(2) { border-top-color: #a86a08; }
-.stats .stat-card:nth-child(3) { border-top-color: #0b7790; }
-.stats .stat-card:nth-child(4) { border-top-color: #8b2a7a; }
-.stats .stat-card:last-child { border-top-color: #8a6612; }
-
-/* 状態別文字色：前回の雰囲気寄せ */
-.stats .stat-card:first-child .stat-top > span { color: #9f0b1e; }
-.stats .stat-card:first-child .stat-value { color: #8f0716; }
-
-.stats .stat-card:nth-child(2) .stat-top > span { color: #7a4300; }
-.stats .stat-card:nth-child(2) .stat-value { color: #7b2600; }
-
-.stats .stat-card:nth-child(3) .stat-top > span { color: #08758e; }
-.stats .stat-card:nth-child(3) .stat-value { color: #04708b; }
-
-.stats .stat-card:nth-child(4) .stat-top > span { color: #7b2b68; }
-.stats .stat-card:nth-child(4) .stat-value { color: #7b2b68; }
-
-.stats .stat-card:last-child .stat-top > span { color: #6d4b06; }
-.stats .stat-card:last-child .stat-value { color: #6d4b06; }
-
-/* 更新警鐘・昇格評定の本文背景画像は使わない */
-.content-grid > .card:nth-child(1) .card-body::after,
-.content-grid > .card:nth-child(2) .card-body::after {
-  content: none;
-  display: none;
-  background: none;
 }
 
 @media (max-width: 1320px) {
   .stats {
-    grid-template-columns: repeat(5, minmax(150px, 1fr));
-    gap: 14px;
-  }
-  .stats .stat-card {
-    min-height: 190px;
-    padding: 20px 12px 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 900px) {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-header.page-header-v2 .page-heading {
+    left: 34px;
   }
 }
 
@@ -1074,3 +1007,405 @@
   }
 }
 
+
+/* 2026-06-03 KPI微調整 */
+.stats .stat-card .stat-top{font-size:28px;}
+.stats .stat-card .stat-icon{
+ width:72px;
+ height:72px;
+ margin:6% auto 0;
+}
+.stats .stat-card .stat-value{
+ font-size:64px;
+ margin-top:5%;
+}
+.stats .stat-card:last-child .stat-value{
+ font-size:58px;
+}
+.stats .stat-card .stat-sub{
+ margin-top:2%;
+}
+
+/* =========================================================
+   2026-06-08 KPI画像差し替え・下段カード背景削除
+   - KPI画像はPNGをそのまま表示（透過なし / opacity:1）
+   - 期限切れ・30日以内の黒/白背景混入はPNG側を透過版へ差し替え
+   - 更新警鐘・昇格評定など下段カードの本文背景画像は使わない
+   ========================================================= */
+
+.stats .stat-card .stat-icon {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  z-index: 0;
+  width: 76%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin: 0;
+  transform: translateX(-50%);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
+  filter: none;
+  pointer-events: none;
+}
+
+.stats .stat-card.danger .stat-icon {
+  background-image: url("../img/imperial/icons/kpi-expired.png");
+}
+
+.stats .stat-card.warning .stat-icon {
+  background-image: url("../img/imperial/icons/kpi-30days.png");
+}
+
+.stats .stat-card.info .stat-icon {
+  background-image: url("../img/imperial/icons/kpi-90days.png");
+}
+
+.stats .stat-card.sakura .stat-icon {
+  background-image: url("../img/imperial/icons/kpi-promotion.png");
+}
+
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-icon {
+  background-image: url("../img/imperial/icons/kpi-employees.png");
+}
+
+.stats .stat-card .stat-top,
+.stats .stat-card .stat-value,
+.stats .stat-card .stat-sub {
+  position: relative;
+  z-index: 2;
+}
+
+.stats .stat-card .stat-top > span {
+  color: #fff4d7;
+  text-shadow:
+    0 2px 0 rgba(76, 36, 8, .90),
+    0 0 7px rgba(255, 247, 215, .86),
+    0 0 13px rgba(60, 30, 10, .45);
+}
+
+.stats .stat-card.danger .stat-top > span {
+  color: #8d1020;
+  text-shadow:
+    0 1px 0 rgba(255, 240, 205, .95),
+    0 0 6px rgba(255, 235, 190, .65),
+    0 2px 5px rgba(60, 20, 8, .24);
+}
+
+.stats .stat-card .stat-value {
+  margin-top: 44%;
+  text-shadow:
+    0 2px 0 rgba(255, 247, 215, .86),
+    0 4px 10px rgba(84, 43, 10, .26);
+}
+
+.stats .stat-card .stat-sub {
+  margin-top: 8px;
+}
+
+.content-grid > .card .card-body,
+.content-grid > .card:nth-child(1) .card-body,
+.content-grid > .card:nth-child(2) .card-body,
+.content-grid > .card:nth-child(3) .card-body,
+.content-grid > .card:nth-child(4) .card-body {
+  background-image: none;
+  background-color: #fbf2dc;
+}
+
+
+
+/* =========================================================
+   2026-06-08 UI統一修正
+   - 各ページヘッダーのアイコン非表示
+   - ヘッダー文字配色を総覧系に統一
+   - ヘッダー外枠を削除し、サイドバー同系の角丸だけ残す
+   - KPIカードをサイドバー系の角丸カードに寄せる
+   ========================================================= */
+
+/* ページヘッダー：総覧ヘッダーの文字雰囲気に統一、枠線は消す */
+.page-hero,
+.hero-panel,
+.imperial-page-hero,
+.imperial-hero,
+.employee-hero,
+.list-hero,
+.dashboard-hero,
+.page-header-visual {
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* ヘッダー内の丸アイコンは全ページで非表示 */
+.page-hero .hero-icon,
+.page-hero .page-icon,
+.page-hero .imperial-page-icon,
+.hero-panel .hero-icon,
+.hero-panel .page-icon,
+.hero-panel .imperial-page-icon,
+.imperial-page-hero .hero-icon,
+.imperial-page-hero .page-icon,
+.imperial-page-hero .imperial-page-icon,
+.employee-hero .hero-icon,
+.employee-hero .page-icon,
+.employee-hero .imperial-page-icon,
+.list-hero .hero-icon,
+.list-hero .page-icon,
+.list-hero .imperial-page-icon,
+.dashboard-hero .hero-icon,
+.dashboard-hero .page-icon,
+.dashboard-hero .imperial-page-icon,
+.page-header-visual .hero-icon,
+.page-header-visual .page-icon,
+.page-header-visual .imperial-page-icon,
+.hero-title-icon,
+.page-title-icon {
+  display: none;
+}
+
+/* ヘッダー文字色・影を総覧の金文字寄りへ */
+.page-hero h1,
+.page-hero .hero-title,
+.page-hero .page-title,
+.hero-panel h1,
+.hero-panel .hero-title,
+.hero-panel .page-title,
+.imperial-page-hero h1,
+.imperial-page-hero .hero-title,
+.imperial-page-hero .page-title,
+.employee-hero h1,
+.employee-hero .hero-title,
+.employee-hero .page-title,
+.list-hero h1,
+.list-hero .hero-title,
+.list-hero .page-title,
+.dashboard-hero h1,
+.dashboard-hero .hero-title,
+.dashboard-hero .page-title,
+.page-header-visual h1,
+.page-header-visual .hero-title,
+.page-header-visual .page-title {
+  color: #f7e7a2;
+  text-shadow:
+    0 2px 0 rgba(92, 45, 6, .95),
+    0 0 10px rgba(255, 230, 150, .45);
+  letter-spacing: .08em;
+}
+
+/* 英字サブタイトルも総覧寄り */
+.page-hero .hero-subtitle,
+.page-hero .page-subtitle,
+.hero-panel .hero-subtitle,
+.hero-panel .page-subtitle,
+.imperial-page-hero .hero-subtitle,
+.imperial-page-hero .page-subtitle,
+.employee-hero .hero-subtitle,
+.employee-hero .page-subtitle,
+.list-hero .hero-subtitle,
+.list-hero .page-subtitle,
+.dashboard-hero .hero-subtitle,
+.dashboard-hero .page-subtitle,
+.page-header-visual .hero-subtitle,
+.page-header-visual .page-subtitle {
+  color: #f2d98b;
+  text-shadow: 0 1px 0 rgba(60, 28, 0, .9);
+  letter-spacing: .16em;
+}
+
+/* KPIカード：画像アイコンなし、角丸カード化 */
+.stats-grid,
+.kpi-grid,
+.dashboard-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.stat-card,
+.kpi-card {
+  position: relative;
+  min-width: 0;
+  height: 252px;
+  min-height: 252px;
+  padding: 28px 18px 24px;
+  border: 1px solid rgba(196, 143, 44, .72);
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 230, .96), rgba(251, 238, 195, .86));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .55),
+    0 8px 18px rgba(86, 53, 11, .10);
+}
+
+.stat-card::before,
+.kpi-card::before {
+  display: none;
+}
+
+.stat-icon,
+.kpi-icon,
+.stat-card img,
+.kpi-card img {
+  display: none;
+}
+
+.stat-title,
+.kpi-title {
+  margin: 0 0 30px;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 800;
+  text-align: center;
+  color: #4d2806;
+  text-shadow:
+    0 1px 0 rgba(255, 248, 210, .95),
+    0 2px 5px rgba(120, 82, 20, .20);
+  letter-spacing: .05em;
+}
+
+.stat-value,
+.kpi-value {
+  display: block;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  font-size: 72px;
+  line-height: .95;
+  font-weight: 800;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #6f3e05;
+  text-shadow:
+    0 2px 0 rgba(255, 238, 175, .95),
+    0 5px 10px rgba(74, 41, 0, .22);
+}
+
+.stat-note,
+.kpi-note,
+.stat-caption,
+.kpi-caption {
+  margin-top: 28px;
+  text-align: center;
+  color: #7e633f;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* KPI状態別の細い上線と文字色 */
+.stat-card.expired,
+.kpi-card.expired,
+.stat-card.is-expired,
+.kpi-card.is-expired {
+  border-top: 4px solid #9b0018;
+}
+.stat-card.expired .stat-title,
+.kpi-card.expired .kpi-title,
+.stat-card.is-expired .stat-title,
+.kpi-card.is-expired .kpi-title,
+.stat-card.expired .stat-value,
+.kpi-card.expired .kpi-value,
+.stat-card.is-expired .stat-value,
+.kpi-card.is-expired .kpi-value {
+  color: #8f0017;
+}
+
+.stat-card.warning,
+.kpi-card.warning,
+.stat-card.days30,
+.kpi-card.days30,
+.stat-card.is-30days,
+.kpi-card.is-30days {
+  border-top: 4px solid #b57408;
+}
+.stat-card.warning .stat-title,
+.kpi-card.warning .kpi-title,
+.stat-card.days30 .stat-title,
+.kpi-card.days30 .kpi-title,
+.stat-card.is-30days .stat-title,
+.kpi-card.is-30days .kpi-title,
+.stat-card.warning .stat-value,
+.kpi-card.warning .kpi-value,
+.stat-card.days30 .stat-value,
+.kpi-card.days30 .kpi-value,
+.stat-card.is-30days .stat-value,
+.kpi-card.is-30days .kpi-value {
+  color: #8a4407;
+}
+
+.stat-card.days90,
+.kpi-card.days90,
+.stat-card.is-90days,
+.kpi-card.is-90days {
+  border-top: 4px solid #00708a;
+}
+.stat-card.days90 .stat-title,
+.kpi-card.days90 .kpi-title,
+.stat-card.is-90days .stat-title,
+.kpi-card.is-90days .kpi-title,
+.stat-card.days90 .stat-value,
+.kpi-card.days90 .kpi-value,
+.stat-card.is-90days .stat-value,
+.kpi-card.is-90days .kpi-value {
+  color: #006f8a;
+}
+
+.stat-card.promotion,
+.kpi-card.promotion,
+.stat-card.is-promotion,
+.kpi-card.is-promotion {
+  border-top: 4px solid #8a2d7b;
+}
+.stat-card.promotion .stat-title,
+.kpi-card.promotion .kpi-title,
+.stat-card.is-promotion .stat-title,
+.kpi-card.is-promotion .kpi-title,
+.stat-card.promotion .stat-value,
+.kpi-card.promotion .kpi-value,
+.stat-card.is-promotion .stat-value,
+.kpi-card.is-promotion .kpi-value {
+  color: #7e2b78;
+}
+
+.stat-card.employees,
+.kpi-card.employees,
+.stat-card.is-employees,
+.kpi-card.is-employees {
+  border-top: 4px solid #8b691a;
+}
+.stat-card.employees .stat-title,
+.kpi-card.employees .kpi-title,
+.stat-card.is-employees .stat-title,
+.kpi-card.is-employees .kpi-title,
+.stat-card.employees .stat-value,
+.kpi-card.employees .kpi-value,
+.stat-card.is-employees .stat-value,
+.kpi-card.is-employees .kpi-value {
+  color: #71510a;
+}
+
+/* 更新警鐘・昇格評定：背景画像を使わない */
+.card-alert::before,
+.card-promotion::before,
+.alert-panel::before,
+.promotion-panel::before {
+  display: none;
+  background: none;
+}
+
+/* 狭い画面の崩れ対策 */
+@media (max-width: 1180px) {
+  .stats-grid,
+  .kpi-grid,
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
