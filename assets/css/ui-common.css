@@ -12,7 +12,7 @@
 :root {
   --ui-header-height: 220px;
   --ui-header-radius: 14px;
-  --ui-kpi-height: 184px;
+  --ui-kpi-height: 190px;
   --ui-kpi-radius: 14px;
   --ui-kpi-gap: 22px;
   --ui-gold-text: #f7e7a2;
@@ -172,7 +172,7 @@
   margin: 0;
   min-height: var(--ui-kpi-height);
   height: var(--ui-kpi-height);
-  padding: 22px 18px 18px;
+  padding: 26px 18px 20px;
   text-align: center;
   overflow: hidden;
   isolation: isolate;
@@ -233,7 +233,7 @@
   position: static;
   display: block;
   width: 100%;
-  margin: 22px 0 0;
+  margin: 28px 0 0;
   padding: 0;
   transform: none;
 }
@@ -244,7 +244,7 @@
   position: static;
   display: block;
   width: 100%;
-  margin: 16px 0 0;
+  margin: 20px 0 0;
   padding: 0;
   transform: none;
 }
@@ -336,8 +336,9 @@
   overflow-y: auto;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% 0%, rgba(137, 20, 28, .28), transparent 36%),
-    linear-gradient(180deg, #071421 0%, #1d1510 58%, #08090d 100%);
+    linear-gradient(180deg, rgba(4,10,16,.18) 0%, rgba(5,9,13,.10) 46%, rgba(5,6,9,.20) 100%),
+    none center top / 100% 100% no-repeat,
+    linear-gradient(180deg, #071421 0%, #241810 58%, #08090d 100%);
   border-right: 4px solid rgba(173,122,38,.90);
   box-shadow:
     inset -12px 0 22px rgba(0,0,0,.42),
@@ -539,114 +540,262 @@
   }
 }
 
-
 /* ---------------------------------------------------------
-   05. サイドバー文字主体化（メニュー・関連システムの画像アイコン撤去）
+   05. サイドバー文字主体化（画像アイコン撤去）
    --------------------------------------------------------- */
-.imperial-nav {
+.sidebar {
+  background:
+    linear-gradient(180deg, rgba(5, 12, 18, .98) 0%, rgba(22, 15, 11, .98) 58%, rgba(8, 8, 10, .99) 100%);
+}
+
+.imperial-nav,
+.sidebar-system-section {
   display: grid;
   gap: 8px;
 }
 
-.sidebar .imperial-menu-card {
-  min-height: 70px;
-  height: 70px;
+.sidebar-system-section {
+  margin-top: 0;
+}
+
+.sidebar .imperial-menu-card,
+.sidebar .sidebar-system-card,
+.sidebar .imperial-user-card,
+.sidebar .imperial-admin-menu-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 10px 18px 10px 22px;
-  border-radius: 12px;
+  width: 100%;
+  min-height: 72px;
+  height: 72px;
+  padding: 12px 18px 12px 22px;
+  box-sizing: border-box;
+  border: 1px solid rgba(216, 170, 56, .66);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #2b1a0b;
+  background:
+    linear-gradient(90deg, rgba(255, 248, 226, .98), rgba(244, 225, 184, .94));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .62),
+    0 4px 10px rgba(0, 0, 0, .20);
 }
 
-.sidebar .imperial-menu-card .imperial-medal,
-.sidebar .imperial-menu-card .imperial-medal img,
-.sidebar-system-emoji,
-.imperial-user-avatar img {
-  display: none;
+.sidebar .imperial-menu-card::before,
+.sidebar .sidebar-system-card::before,
+.sidebar .imperial-user-card::before,
+.sidebar .imperial-admin-menu-card::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(203, 155, 67, .28);
+  border-radius: 11px;
+  pointer-events: none;
 }
 
-.sidebar .imperial-menu-card::before {
-  inset: 5px;
-}
-
-.sidebar .imperial-menu-card::after {
+.sidebar .imperial-menu-card::after,
+.sidebar .sidebar-system-card::after,
+.sidebar .imperial-admin-menu-card::after {
+  content: "›";
   margin-left: auto;
-}
-
-.sidebar .imperial-menu-copy {
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-}
-
-.sidebar .imperial-menu-title {
-  font-size: 22px;
-  line-height: 1.18;
-}
-
-.sidebar .imperial-menu-sub {
-  font-size: 12px;
-  line-height: 1.3;
+  color: #a37723;
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(216, 170, 56, .24);
 }
 
 .sidebar .imperial-menu-card.active {
-  border-left-width: 4px;
-  padding-left: 19px;
+  color: #fff1bd;
+  border-color: rgba(241, 198, 90, .90);
+  background: linear-gradient(90deg, #9a0b1b, #700713);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 221, 139, .42),
+    0 7px 14px rgba(80, 0, 0, .28);
 }
 
-.sidebar-system-card {
-  min-height: 70px;
-  height: 70px;
-  padding: 12px 18px 12px 22px;
-  gap: 0;
+.sidebar .imperial-system-menu-card,
+.sidebar .imperial-admin-menu-card {
+  color: #fff1bd;
+  border-color: rgba(216, 170, 56, .70);
+  background: linear-gradient(90deg, #08373a, #05272c 74%, #062125);
 }
 
-.sidebar-system-copy {
+.sidebar .imperial-system-menu-card::after {
+  content: "↗";
+  color: #f3c84f;
+  font-size: 28px;
+}
+
+.sidebar .imperial-admin-menu-card::after {
+  content: "›";
+  color: #f3c84f;
+}
+
+.sidebar .imperial-medal,
+.sidebar .imperial-medal img,
+.sidebar .sidebar-system-emoji,
+.sidebar .sidebar-system-avatar,
+.sidebar .imperial-user-avatar {
+  display: none;
+}
+
+.sidebar .imperial-menu-copy,
+.sidebar .sidebar-system-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
   min-width: 0;
 }
 
-.imperial-user-avatar {
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
-  font-size: 18px;
+.sidebar .imperial-menu-title,
+.sidebar .sidebar-system-title,
+.sidebar .imperial-user-name {
+  display: block;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  font-size: 25px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: inherit;
+  text-shadow: 0 1px 0 rgba(255, 249, 223, .85);
 }
 
-.app-shell.sidebar-collapsed .imperial-menu-card {
-  height: 54px;
-  min-height: 54px;
-  padding: 6px;
+.sidebar .imperial-menu-card.active .imperial-menu-title,
+.sidebar .imperial-system-menu-card .imperial-menu-title,
+.sidebar .imperial-admin-menu-card .imperial-menu-title {
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .82);
 }
 
-.app-shell.sidebar-collapsed .imperial-menu-card::before {
-  content: attr(data-menu);
-  inset: auto;
-  position: static;
+.sidebar .imperial-menu-sub,
+.sidebar .sidebar-system-sub,
+.sidebar .imperial-user-role {
+  display: block;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: .03em;
+  color: rgba(87, 63, 36, .78);
+}
+
+.sidebar .imperial-menu-card.active .imperial-menu-sub,
+.sidebar .imperial-system-menu-card .imperial-menu-sub,
+.sidebar .imperial-admin-menu-card .imperial-menu-sub {
+  color: rgba(255, 231, 155, .92);
+}
+
+.sidebar .imperial-sidebar-separator {
+  margin: 20px 0 10px;
+}
+
+/* 折りたたみ時：アイコンではなく1文字ラベルで表示 */
+.app-shell.sidebar-collapsed .imperial-brand-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.app-shell.sidebar-collapsed .imperial-nav,
+.app-shell.sidebar-collapsed .sidebar-system-section {
+  gap: 8px;
+}
+
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(216,170,56,.38);
-  border-radius: 10px;
-  color: #ffe7a3;
-  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
-  font-size: 0;
-  background: rgba(255,245,208,.08);
+  min-height: 58px;
+  height: 58px;
+  padding: 6px;
+  border-radius: 14px;
 }
 
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="index"]::before { content: "総"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="employees"]::before { content: "社"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="licenses"]::before { content: "資"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="facility"]::before { content: "所"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="alerts"]::before { content: "警"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="promotion"]::before { content: "昇"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="masters"]::before { content: "原"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="master_import"]::before { content: "取"; font-size: 18px; }
-.app-shell.sidebar-collapsed .imperial-menu-card[data-menu="external_links"]::before { content: "外"; font-size: 18px; }
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card::before,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::before,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card::before {
+  inset: 8px;
+  border-radius: 11px;
+}
 
-.app-shell.sidebar-collapsed .imperial-menu-card .imperial-menu-copy,
-.app-shell.sidebar-collapsed .imperial-menu-card::after,
-.app-shell.sidebar-collapsed .sidebar-system-section,
-.app-shell.sidebar-collapsed .imperial-user-card {
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card::after {
+  content: attr(data-short);
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(216, 170, 56, .58);
+  color: #f7e7a2;
+  background: rgba(106, 7, 17, .78);
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .70);
+}
+
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-card:not(.active)::after {
+  color: #b88924;
+  background: rgba(255, 248, 226, .86);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .85);
+}
+
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card::after {
+  color: #f7e7a2;
+  background: rgba(6, 39, 44, .86);
+}
+
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-copy,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-copy,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-title,
+.app-shell.sidebar-collapsed .sidebar .imperial-menu-sub,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-title,
+.app-shell.sidebar-collapsed .sidebar .sidebar-system-sub,
+.app-shell.sidebar-collapsed .sidebar .imperial-user-name,
+.app-shell.sidebar-collapsed .sidebar .imperial-user-role {
   display: none;
+}
+
+/* 関連システム・管理者も通常メニューと同じカード表現に統一 */
+.sidebar .imperial-system-menu-card,
+.sidebar .imperial-admin-menu-card {
+  color: #2b1a0b;
+  border-color: rgba(216, 170, 56, .66);
+  background:
+    linear-gradient(90deg, rgba(255, 248, 226, .98), rgba(244, 225, 184, .94));
+}
+
+.sidebar .imperial-system-menu-card .imperial-menu-title,
+.sidebar .imperial-admin-menu-card .imperial-menu-title {
+  text-shadow: 0 1px 0 rgba(255, 249, 223, .85);
+}
+
+.sidebar .imperial-system-menu-card .imperial-menu-sub,
+.sidebar .imperial-admin-menu-card .imperial-menu-sub {
+  color: rgba(87, 63, 36, .78);
+}
+
+.sidebar .imperial-system-menu-card::after {
+  content: "↗";
+  color: #a37723;
+}
+
+.sidebar .imperial-admin-menu-card::after {
+  content: "›";
+  color: #a37723;
+}
+
+.app-shell.sidebar-collapsed .sidebar .imperial-system-menu-card::after,
+.app-shell.sidebar-collapsed .sidebar .imperial-admin-menu-card::after {
+  color: #b88924;
+  background: rgba(255, 248, 226, .86);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .85);
 }

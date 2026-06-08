@@ -235,15 +235,15 @@ const APP = (() => {
 
   /* ナビ定義 */
   const NAV = [
-    { id:'index',         label:'総覧',       sub:'ダッシュボード',       href:'index.html',             icon:'dashboard', badge:false },
-    { id:'employees',     label:'社員名簿',   sub:'社員一覧・検索',       href:'employees.html',         icon:'employees', badge:false },
-    { id:'licenses',      label:'資格台帳',   sub:'資格・免許管理',       href:'licenses.html',          icon:'licenses', badge:false },
-    { id:'facility',      label:'事業所資格', sub:'事業所別管理',         href:'facility_licenses.html', icon:'facility', badge:false },
-    { id:'alerts',        label:'警鐘',       sub:'アラート一覧',         href:'alerts.html',            icon:'alerts', badge:true },
-    { id:'promotion',     label:'昇格評定',   sub:'昇格・人事評価',       href:'promotion.html',         icon:'promotion', badge:false },
-    { id:'masters',       label:'原簿設定',   sub:'マスタ管理',           href:'masters.html',           icon:'masters', badge:false },
-    { id:'master_import', label:'社員取込',   sub:'社員マスタ初期取込',   href:'master_import.html',     icon:'import', badge:false },
-    { id:'external_links', label:'外部リンク', sub:'リンク集・登録',       href:'external_links.html',    icon:'masters', badge:false }
+    { id:'index',          label:'総覧',       sub:'ダッシュボード',       href:'index.html',             short:'総', badge:false },
+    { id:'employees',      label:'社員名簿',   sub:'社員一覧・検索',       href:'employees.html',         short:'社', badge:false },
+    { id:'licenses',       label:'資格台帳',   sub:'資格・免許管理',       href:'licenses.html',          short:'資', badge:false },
+    { id:'facility',       label:'事業所資格', sub:'事業所別管理',         href:'facility_licenses.html', short:'所', badge:false },
+    { id:'alerts',         label:'警鐘',       sub:'アラート一覧',         href:'alerts.html',            short:'警', badge:true },
+    { id:'promotion',      label:'昇格評定',   sub:'昇格・人事評価',       href:'promotion.html',         short:'昇', badge:false },
+    { id:'masters',        label:'原簿設定',   sub:'マスタ管理',           href:'masters.html',           short:'原', badge:false },
+    { id:'master_import',  label:'社員取込',   sub:'社員マスタ初期取込',   href:'master_import.html',     short:'取', badge:false },
+    { id:'external_links', label:'外部リンク', sub:'リンク集・登録',       href:'external_links.html',    short:'外', badge:false }
   ];
 
 
@@ -255,14 +255,14 @@ const APP = (() => {
       label: '採用管理',
       sub: '採用・応募者管理',
       href: 'https://seven123789-cmd.github.io/recruit-app-clean/',
-      emoji: '📋'
+      short: '採'
     },
     {
       id: 'center',
       label: 'センター管理',
       sub: 'センターダッシュボード',
       href: 'https://seven123kick-art.github.io/center-dashboard/',
-      emoji: '🏢'
+      short: 'セ'
     }
   ];
 
@@ -315,9 +315,9 @@ const APP = (() => {
     if (shell) shell.classList.toggle('sidebar-collapsed', collapsed);
     sb.classList.toggle('is-collapsed', collapsed);
 
-    // 既存NAVメニュー
+    // 既存NAVメニュー（文字主体：画像アイコンは使わない）
     const rows = NAV.map(n => `
-      <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}">
+      <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}" data-short="${n.short || n.label.slice(0, 1)}">
         <span class="imperial-menu-copy">
           <span class="imperial-menu-title">${n.label}</span>
           <span class="imperial-menu-sub">${n.sub || ''}</span>
@@ -325,14 +325,13 @@ const APP = (() => {
         ${n.badge ? '<span class="nav-badge imperial-alert-dot" id="nav-alert-badge" style="display:none">!</span>' : ''}
       </a>`).join('');
 
-    // 固定システムリンク（サイドバーに残す）
+    // 固定システムリンク（通常メニューと同じ文字主体デザイン）
     const sysRows = SYSTEM_LINKS.map(n => `
-      <a class="sidebar-system-card" href="${n.href}" target="_blank" rel="noopener">
-        <span class="sidebar-system-copy">
-          <span class="sidebar-system-title">${n.label}</span>
-          <span class="sidebar-system-sub">${n.sub}</span>
+      <a class="imperial-menu-card imperial-system-menu-card" href="${n.href}" target="_blank" rel="noopener" data-short="${n.short || n.label.slice(0, 1)}">
+        <span class="imperial-menu-copy">
+          <span class="imperial-menu-title">${n.label}</span>
+          <span class="imperial-menu-sub">${n.sub}</span>
         </span>
-        <span class="sidebar-system-open" aria-hidden="true">↗</span>
       </a>`).join('');
 
     sb.innerHTML = `
@@ -357,12 +356,11 @@ const APP = (() => {
 
       <div class="imperial-sidebar-separator"><span>管理メニュー</span></div>
 
-      <div class="imperial-user-card">
-        <div class="imperial-user-avatar" aria-hidden="true">管</div>
-        <div>
-          <div class="imperial-user-name">管理者</div>
-          <div class="imperial-user-role">人事管理者</div>
-        </div>
+      <div class="imperial-menu-card imperial-admin-menu-card" data-short="管">
+        <span class="imperial-menu-copy">
+          <span class="imperial-menu-title">管理者</span>
+          <span class="imperial-menu-sub">人事管理者</span>
+        </span>
       </div>
 
       <div class="imperial-sidebar-future-space" aria-hidden="true"></div>`;
