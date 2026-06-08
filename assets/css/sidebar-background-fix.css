@@ -1,0 +1,8 @@
+
+/* sidebar background unify */
+.sidebar{
+background:
+radial-gradient(circle at 20% 10%, rgba(82,64,140,.30), transparent 35%),
+radial-gradient(circle at 90% 85%, rgba(155,120,40,.18), transparent 35%),
+linear-gradient(180deg,#05070d 0%,#10183a 35%,#2b1844 65%,#05070d 100%) !important;
+}
