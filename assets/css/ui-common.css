@@ -1,0 +1,327 @@
+/* =========================================================
+   ui-common.css
+   資格・免許管理システム 共通UI定義
+   2026-06-08
+
+   目的：
+   - 総覧を基準に、全ページのヘッダーサイズ・文字・KPIカードを統一
+   - ページ別CSSの後に読み込み、最終的な共通ルールとして適用
+   - 画像生成・ヘッダー画像自体の変更は行わない
+   ========================================================= */
+
+:root {
+  --ui-header-height: 220px;
+  --ui-header-radius: 14px;
+  --ui-kpi-height: 252px;
+  --ui-kpi-radius: 14px;
+  --ui-kpi-gap: 18px;
+  --ui-gold-text: #f7e7a2;
+  --ui-gold-sub: #f2d98b;
+  --ui-kpi-bg-top: rgba(255,250,230,.97);
+  --ui-kpi-bg-bottom: rgba(250,239,207,.90);
+  --ui-kpi-border: rgba(196,143,44,.62);
+}
+
+/* ---------------------------------------------------------
+   01. 全ページヘッダー共通
+   --------------------------------------------------------- */
+.page-header,
+.page-header.page-header-v2 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--ui-header-height);
+  height: var(--ui-header-height);
+  max-height: var(--ui-header-height);
+  margin-bottom: 28px;
+  padding: 0 36px;
+  overflow: hidden;
+  border: 0;
+  outline: 0;
+  border-radius: var(--ui-header-radius);
+  background: transparent;
+  box-shadow: none;
+}
+
+.page-header::before,
+.page-header::after,
+.page-header.page-header-v2::before,
+.page-header.page-header-v2::after {
+  content: none;
+  display: none;
+}
+
+.page-header-img-slot,
+.page-header .page-header-bg-img,
+.page-header.page-header-v2 .page-header-bg-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  border-radius: var(--ui-header-radius);
+  box-shadow: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.page-header-img-slot img,
+.page-header .page-header-bg-img,
+.page-header.page-header-v2 .page-header-bg-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  object-position: center center;
+  opacity: 1;
+}
+
+.page-header .page-heading,
+.page-header.page-header-v2 .page-heading {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.page-header .page-icon,
+.page-header.page-header-v2 .page-icon,
+.page-heading .page-icon {
+  display: none;
+}
+
+.page-header .page-title,
+.page-header.page-header-v2 .page-title {
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--ui-gold-text);
+  text-shadow:
+    0 2px 0 rgba(82,38,4,.95),
+    0 0 10px rgba(255,226,132,.40);
+}
+
+.page-header .page-title-en,
+.page-header.page-header-v2 .page-title-en {
+  margin-top: 8px;
+  padding-bottom: 0;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--ui-gold-sub);
+  text-shadow: 0 1px 0 rgba(60,28,0,.90);
+}
+
+.page-header .page-title-en::after,
+.page-header.page-header-v2 .page-title-en::after {
+  content: none;
+  display: none;
+}
+
+/* ---------------------------------------------------------
+   02. KPIカード共通
+   --------------------------------------------------------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--ui-kpi-gap);
+  align-items: stretch;
+  margin: 0 0 26px;
+  max-width: none;
+}
+
+.stats[style] {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  max-width: none;
+}
+
+.stats .stat-card,
+.stat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  min-width: 0;
+  width: auto;
+  min-height: var(--ui-kpi-height);
+  height: var(--ui-kpi-height);
+  padding: 34px 18px 24px;
+  text-align: center;
+  overflow: hidden;
+  border: 1px solid var(--ui-kpi-border);
+  border-top-width: 4px;
+  border-radius: var(--ui-kpi-radius);
+  background: linear-gradient(180deg, var(--ui-kpi-bg-top), var(--ui-kpi-bg-bottom));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.55),
+    0 8px 18px rgba(88,57,14,.10);
+  transform: none;
+  transition: none;
+}
+
+.stats .stat-card:hover,
+.stat-card:hover {
+  transform: none;
+}
+
+.stats .stat-card::before,
+.stats .stat-card::after,
+.stat-card::before,
+.stat-card::after,
+.stats .stat-icon,
+.stat-icon,
+.stats .kpi-corner,
+.kpi-corner {
+  display: none;
+  content: none;
+  background: none;
+}
+
+.stats .stat-card .stat-top,
+.stat-card .stat-top {
+  order: 1;
+  position: static;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  transform: none;
+}
+
+.stats .stat-card .stat-value,
+.stat-card .stat-value {
+  order: 2;
+  position: static;
+  display: block;
+  width: 100%;
+  margin: 44px 0 0;
+  padding: 0;
+  transform: none;
+}
+
+.stats .stat-card .stat-sub,
+.stat-card .stat-sub {
+  order: 3;
+  position: static;
+  display: block;
+  width: 100%;
+  margin: 30px 0 0;
+  padding: 0;
+  transform: none;
+}
+
+.stats .stat-card .stat-top > span,
+.stat-card .stat-top > span {
+  display: block;
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-align: center;
+  color: #4b2b08;
+  text-transform: none;
+  text-shadow:
+    0 1px 0 rgba(255,250,225,.96),
+    0 2px 5px rgba(94,55,8,.20);
+}
+
+.stats .stat-card .stat-value,
+.stat-card .stat-value {
+  font-family: Georgia, 'Times New Roman', 'Shippori Mincho', serif;
+  font-size: 72px;
+  line-height: .95;
+  font-weight: 800;
+  color: #6d3d05;
+  text-shadow:
+    0 2px 0 rgba(255,238,176,.95),
+    0 5px 12px rgba(67,35,0,.24);
+}
+
+.stats .stat-card .stat-sub,
+.stat-card .stat-sub {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #7c6445;
+  text-align: center;
+}
+
+/* 状態色：classがあるページはclassを優先、総覧の5枚は並びでも補正 */
+.stat-card.danger,
+.stats .stat-card:nth-child(1) { border-top-color: #9b0018; }
+.stat-card.danger .stat-top > span,
+.stat-card.danger .stat-value,
+.stats .stat-card:nth-child(1) .stat-top > span,
+.stats .stat-card:nth-child(1) .stat-value { color: #8f0017; }
+
+.stat-card.warning,
+.stats .stat-card:nth-child(2) { border-top-color: #b57408; }
+.stat-card.warning .stat-top > span,
+.stat-card.warning .stat-value,
+.stats .stat-card:nth-child(2) .stat-top > span,
+.stats .stat-card:nth-child(2) .stat-value { color: #8a4407; }
+
+.stat-card.info,
+.stats .stat-card:nth-child(3) { border-top-color: #00708a; }
+.stat-card.info .stat-top > span,
+.stat-card.info .stat-value,
+.stats .stat-card:nth-child(3) .stat-top > span,
+.stats .stat-card:nth-child(3) .stat-value { color: #006f8a; }
+
+.stat-card.sakura,
+.stats .stat-card:nth-child(4) { border-top-color: #8a2d7b; }
+.stat-card.sakura .stat-top > span,
+.stat-card.sakura .stat-value,
+.stats .stat-card:nth-child(4) .stat-top > span,
+.stats .stat-card:nth-child(4) .stat-value { color: #7e2b78; }
+
+.stats .stat-card:nth-child(5) { border-top-color: #8b691a; }
+.stats .stat-card:nth-child(5) .stat-top > span,
+.stats .stat-card:nth-child(5) .stat-value { color: #71510a; }
+
+/* 総覧本文カードの不要な背景画像系だけ無効化 */
+.card-alert::before,
+.card-promotion::before,
+.alert-panel::before,
+.promotion-panel::before {
+  display: none;
+  content: none;
+  background: none;
+}
+
+@media (max-width: 1180px) {
+  .stats,
+  .stats[style] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .page-header,
+  .page-header.page-header-v2 {
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+    padding: 0 20px;
+  }
+
+  .page-header .page-title,
+  .page-header.page-header-v2 .page-title {
+    font-size: 36px;
+  }
+
+  .stats,
+  .stats[style] {
+    grid-template-columns: 1fr;
+  }
+}

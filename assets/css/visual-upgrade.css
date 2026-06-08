@@ -713,299 +713,152 @@
 
 
 /* =========================================================
-   総覧ヘッダー / KPI / 総覧カード整理版
-   2026-06-08
-   - 実HTML確認済み：index.html の .page-header-v2 / .stats .stat-card を対象
-   - KPIは画像アイコン・疑似背景を使わない
-   - 旧nth-child背景画像補正をここで整理統合
+   KPIカード5枚
+   - 総覧ヘッダーには影響させない
+   - KPIカードだけ正方形に戻す
+   - 背景画像 kpi-card-bg.png をカード全面に直接敷く
    ========================================================= */
 
-/* ---------------------------------------------------------
-   01. 全ページヘッダー：アイコン非表示・文字色統一
-   --------------------------------------------------------- */
-
-.page-header .page-icon,
-.page-header-v2 .page-icon,
-.page-heading .page-icon {
-  display: none !important;
-}
-
-.page-header .page-heading,
-.page-header-v2 .page-heading {
-  gap: 0 !important;
-}
-
-.page-header .page-title,
-.page-header-v2 .page-title {
-  color: #f7e7a2 !important;
-  letter-spacing: .06em !important;
-  text-shadow:
-    0 2px 0 rgba(82, 38, 4, .95),
-    0 0 10px rgba(255, 226, 132, .40) !important;
-}
-
-.page-header .page-title-en,
-.page-header-v2 .page-title-en {
-  color: #f2d98b !important;
-  letter-spacing: .16em !important;
-  text-shadow: 0 1px 0 rgba(60, 28, 0, .90) !important;
-}
-
-/* 総覧ヘッダー：画像・配置・文字は維持し、外枠だけ消す */
-.page-header.page-header-v2 {
-  height: auto !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  aspect-ratio: 1400 / 220 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  border-radius: 0 !important;
-}
-
-.page-header.page-header-v2::before,
-.page-header.page-header-v2::after {
-  content: none !important;
-  display: none !important;
-}
-
-.page-header.page-header-v2 .page-header-bg-img {
-  position: absolute !important;
-  inset: 0 !important;
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: fill !important;
-  object-position: center center !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-.page-header.page-header-v2 .page-heading {
-  position: absolute !important;
-  left: 56px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  z-index: 2 !important;
-}
-
-/* ---------------------------------------------------------
-   02. KPIカード：5枚横並び・画像なし・角丸カード
-   --------------------------------------------------------- */
-
-.stats {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  gap: 18px !important;
-  align-items: stretch !important;
-  margin: 0 0 26px !important;
-}
-
 .stats .stat-card {
-  position: relative !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  min-width: 0 !important;
-  width: auto !important;
-  height: 188px !important;
-  min-height: 188px !important;
-  aspect-ratio: auto !important;
-  padding: 22px 18px 18px !important;
-  text-align: center !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(196, 143, 44, .62) !important;
-  border-top-width: 4px !important;
-  border-radius: 14px !important;
-  background: linear-gradient(180deg, rgba(255,250,230,.97), rgba(250,239,207,.92)) !important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.55),
-    0 8px 18px rgba(88,57,14,.10) !important;
-  transform: none !important;
+  position: relative;
+  box-sizing: border-box;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto;
+  padding: 26% 7% 7%;
+  overflow: hidden;
+  background:
+    url("../img/imperial/kpi-card-bg.webp") center center / 100% 100% no-repeat,
+    url('../img/imperial/card-bg.webp') center/cover no-repeat,
+    #fbf2dc;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-.stats .stat-card:hover {
-  transform: none !important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.55),
-    0 8px 18px rgba(88,57,14,.10) !important;
+.stats .stat-card::before {
+  content: none;
 }
 
-/* 古い画像アイコン・疑似背景・L字装飾を完全停止 */
-.stats .stat-card::before,
-.stats .stat-card::after,
-.stats .stat-icon,
-.stats .kpi-corner {
-  display: none !important;
-  content: none !important;
-  background: none !important;
-  background-image: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
+.stats .stat-card .stat-top,
+.stats .stat-card .stat-value,
+.stats .stat-card .stat-sub {
+  position: relative;
+  z-index: 1;
 }
 
-/* HTML順を固定：タイトル → 数字 → 説明 */
-.stats .stat-card .stat-top {
-  order: 1 !important;
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  z-index: 1 !important;
+.stats .stat-card .stat-icon {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  z-index: 1;
+  width: clamp(48px, 22%, 64px);
+  height: clamp(48px, 22%, 64px);
+  margin: 8% auto 0;
 }
 
 .stats .stat-card .stat-value {
-  order: 2 !important;
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  margin: 22px 0 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  z-index: 1 !important;
+  margin-top: 7%;
+  font-size: clamp(44px, 23%, 62px);
 }
 
 .stats .stat-card .stat-sub {
-  order: 3 !important;
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  margin: 18px 0 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  z-index: 1 !important;
+  margin-top: 4%;
 }
 
-.stats .stat-card .stat-top > span {
-  display: block !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  font-family: var(--font-jp) !important;
-  font-size: 20px !important;
-  line-height: 1.2 !important;
-  font-weight: 800 !important;
-  letter-spacing: .05em !important;
-  text-align: center !important;
-  color: #4b2b08 !important;
-  text-shadow:
-    0 1px 0 rgba(255,250,225,.96),
-    0 2px 5px rgba(94,55,8,.20) !important;
+.stats .stat-card .kpi-corner {
+  display: none;
 }
 
-.stats .stat-card .stat-value {
-  font-family: Georgia, "Times New Roman", "Shippori Mincho", serif !important;
-  font-size: 58px !important;
-  line-height: .95 !important;
-  font-weight: 800 !important;
-  font-variant-numeric: lining-nums tabular-nums !important;
-  font-feature-settings: "lnum" 1, "tnum" 1 !important;
-  letter-spacing: .01em !important;
-  color: #6d3d05 !important;
-  text-shadow:
-    0 2px 0 rgba(255,238,176,.95),
-    0 5px 12px rgba(67,35,0,.24) !important;
-}
 
-.stats .stat-card .stat-sub {
-  font-family: var(--font-jp) !important;
-  font-size: 13px !important;
-  line-height: 1.35 !important;
-  color: #7c6445 !important;
-  text-align: center !important;
-}
-
-/* 状態別カラー：HTML順に合わせて明示 */
-.stats .stat-card:nth-child(1) { border-top-color: #9b0018 !important; }
-.stats .stat-card:nth-child(1) .stat-top > span,
-.stats .stat-card:nth-child(1) .stat-value { color: #8f0017 !important; }
-
-.stats .stat-card:nth-child(2) { border-top-color: #b57408 !important; }
-.stats .stat-card:nth-child(2) .stat-top > span,
-.stats .stat-card:nth-child(2) .stat-value { color: #8a4407 !important; }
-
-.stats .stat-card:nth-child(3) { border-top-color: #00708a !important; }
-.stats .stat-card:nth-child(3) .stat-top > span,
-.stats .stat-card:nth-child(3) .stat-value { color: #006f8a !important; }
-
-.stats .stat-card:nth-child(4) { border-top-color: #8a2d7b !important; }
-.stats .stat-card:nth-child(4) .stat-top > span,
-.stats .stat-card:nth-child(4) .stat-value { color: #7e2b78 !important; }
-
-.stats .stat-card:nth-child(5) { border-top-color: #8b691a !important; }
-.stats .stat-card:nth-child(5) .stat-top > span,
-.stats .stat-card:nth-child(5) .stat-value { color: #71510a !important; }
-
-/* ---------------------------------------------------------
-   03. 総覧下段カード：本文背景画像を使わない
-   --------------------------------------------------------- */
+/* ================================================================
+   4枚カード
+   ================================================================ */
 
 .content-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 24px !important;
-  align-items: stretch !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
 }
 
 .content-grid > .card {
-  display: flex !important;
-  flex-direction: column !important;
-  height: 480px !important;
-  background: #fbf2dc !important;
-  border: 2px solid #c3913d !important;
-  border-radius: 10px !important;
-  overflow: hidden !important;
-  box-shadow: 0 8px 22px rgba(73,45,13,.18) !important;
+  display: flex;
+  flex-direction: column;
+  height: 480px;
+  background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
+  border: 2px solid #c3913d;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.content-grid > .card::before,
-.content-grid > .card::after,
-.content-grid > .card .card-body::before,
-.content-grid > .card .card-body::after,
-.card-alert::before,
-.card-alert::after,
-.card-promotion::before,
-.card-promotion::after,
-.alert-panel::before,
-.alert-panel::after,
-.promotion-panel::before,
-.promotion-panel::after {
-  display: none !important;
-  content: none !important;
-  background: none !important;
-  background-image: none !important;
+.content-grid > .card::before {
+  content: none;
 }
 
 .content-grid > .card .card-header {
-  flex: 0 0 88px !important;
-  min-height: 88px !important;
-  background: linear-gradient(180deg, #9b1020 0%, #850815 52%, #6f0610 100%) !important;
-  border-bottom: 3px solid #d0a044 !important;
+  flex: 0 0 88px;
+  min-height: 88px;
+  background: linear-gradient(180deg, #9b1020 0%, #850815 52%, #6f0610 100%);
+  border-bottom: 3px solid #d0a044;
 }
 
 .content-grid > .card .card-header.card-header-navy,
 .content-grid > .card:nth-child(2) .card-header,
 .content-grid > .card:nth-child(4) .card-header {
-  background: linear-gradient(180deg, #0b3a43 0%, #07303a 48%, #04252d 100%) !important;
+  background: linear-gradient(180deg, #0b3a43 0%, #07303a 48%, #04252d 100%);
 }
 
 .content-grid > .card .card-body {
-  position: relative !important;
-  flex: 1 1 auto !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  padding: 10px 12px !important;
-  background: #fbf2dc !important;
-  border-radius: 0 0 10px 10px !important;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 12px;
+  background-color: #fbf2dc;
+  border-radius: 0 0 10px 10px;
+  position: relative; /* ::after の基準 */
 }
+
+/* 背景画像をコンテンツと分離して ::after で敷く
+   pointer-events: none で文字選択・スクロールを妨げない */
+.content-grid > .card .card-body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  opacity: 0.55;        /* 薄くして文字と競合しにくくする */
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 0 0 10px 10px;
+}
+
+/* コンテンツを ::after より前面に */
+.content-grid > .card .card-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.content-grid > .card:nth-child(1) .card-body::after {
+  background-image: url("../img/imperial/card-alert-bg.webp");
+}
+
+.content-grid > .card:nth-child(2) .card-body::after {
+  background-image: url("../img/imperial/card-promotion-bg.webp");
+}
+
+.content-grid > .card:nth-child(3) .card-body::after {
+  background-image: url("../img/imperial/card-coverage-bg.webp");
+}
+
+.content-grid > .card:nth-child(4) .card-body::after {
+  background-image: url("../img/imperial/card-deadline-bg.webp");
+}
+
+
+/* =========================================================
+   更新警鐘リスト
+   ========================================================= */
 
 #alert-list {
   display: flex;
@@ -1020,9 +873,9 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  margin: 2px 2px;
   background: rgba(255,250,235,.85);
   border-bottom: 1px solid rgba(181,139,72,.3);
+  margin: 2px 2px;
   border-radius: 4px;
 }
 
@@ -1054,27 +907,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1180px) {
-  .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .content-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-@media (max-width: 760px) {
-  .stats {
-    grid-template-columns: 1fr !important;
-  }
-
-  .page-header.page-header-v2 .page-heading {
-    left: 34px !important;
-  }
-
-  .stats .stat-card {
-    height: 174px !important;
-    min-height: 174px !important;
-  }
-}
+/* =========================================================
+   共通ヘッダー/KPI定義は assets/css/ui-common.css に集約
+   2026-06-08: ページ別の試行錯誤ブロックを削除
+   ========================================================= */
