@@ -1392,21 +1392,76 @@
   text-shadow: 0 0 20px rgba(255,200,30,.9), 0 2px 6px rgba(0,0,0,.8) !important;
 }
 
+
 /* =========================================================
-   2026-06-08 KPIカード・ヘッダー最終補正
-   対象は .hero-banner と .stats のみ
+   2026-06-08 全体確認後の最終補正
+   対象：
+   - 全ページヘッダー：アイコン非表示、文字色を総覧系へ統一
+   - 総覧ヘッダー：外枠だけ削除
+   - KPIカード：画像なし、四辺を少し丸めたカードへ整理
    ========================================================= */
 
-/* ヘッダー：外枠だけ消す。画像・文字配置には触らない */
-.hero-banner {
+/* ---------------------------------------------------------
+   01. 全ページヘッダー共通
+   --------------------------------------------------------- */
+
+/* ヘッダーの丸アイコンは使わない */
+.page-header .page-icon,
+.page-header-v2 .page-icon,
+.page-heading .page-icon {
+  display: none !important;
+}
+
+/* アイコンを消した分、文字位置を自然に調整 */
+.page-header .page-heading,
+.page-header-v2 .page-heading {
+  gap: 0 !important;
+}
+
+/* ヘッダー文字を総覧の金文字系に統一 */
+.page-header .page-title,
+.page-header-v2 .page-title {
+  color: #f7e7a2 !important;
+  text-shadow:
+    0 2px 0 rgba(82, 38, 4, .95),
+    0 0 10px rgba(255, 226, 132, .40) !important;
+  letter-spacing: .06em !important;
+}
+
+.page-header .page-title-en,
+.page-header-v2 .page-title-en {
+  color: #f2d98b !important;
+  text-shadow: 0 1px 0 rgba(60, 28, 0, .90) !important;
+  letter-spacing: .16em !important;
+}
+
+/* 総覧含むページヘッダー：外枠・影を消す。画像サイズや中身は触らない */
+.page-header.page-header-v2 {
   border: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
+  background: transparent !important;
   border-radius: 14px !important;
   overflow: hidden !important;
 }
 
-/* KPIグリッド：横幅内で5枚を均等配置 */
+.page-header.page-header-v2::before,
+.page-header.page-header-v2::after {
+  content: none !important;
+  display: none !important;
+}
+
+.page-header.page-header-v2 .page-header-bg-img {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 14px !important;
+}
+
+/* ---------------------------------------------------------
+   02. KPIカード：画像なし・角丸カード化
+   --------------------------------------------------------- */
+
 .stats {
   display: grid !important;
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
@@ -1415,41 +1470,80 @@
   margin: 0 0 26px !important;
 }
 
-/* KPIカード：正方形指定を解除し、少し丸い四角カードへ */
 .stats .stat-card {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  width: auto !important;
   aspect-ratio: auto !important;
   height: 252px !important;
   min-height: 252px !important;
-  box-sizing: border-box !important;
   padding: 34px 18px 24px !important;
-  border-radius: 14px !important;
+  text-align: center !important;
   overflow: hidden !important;
-  border: 1px solid rgba(196,143,44,.62) !important;
+  border: 1px solid rgba(196, 143, 44, .62) !important;
+  border-radius: 14px !important;
   background:
     linear-gradient(180deg, rgba(255,250,230,.97), rgba(250,239,207,.90)) !important;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.55),
     0 8px 18px rgba(88,57,14,.10) !important;
+  transform: none !important;
 }
 
-/* KPI画像・丸アイコンは使わない */
+/* 古い画像・装飾・疑似背景を完全に無効化 */
 .stats .stat-card::before,
-.stats .stat-icon {
+.stats .stat-card::after,
+.stats .stat-icon,
+.stats .kpi-corner {
   display: none !important;
   content: none !important;
   background: none !important;
 }
 
-/* KPIタイトル */
+/* HTMLの順番どおりに戻す：タイトル→数字→説明 */
 .stats .stat-card .stat-top {
+  order: 1 !important;
+  position: static !important;
   display: block !important;
+  width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
 }
 
+.stats .stat-card .stat-value {
+  order: 2 !important;
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 44px 0 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+.stats .stat-card .stat-sub {
+  order: 3 !important;
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 30px 0 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+/* KPIタイトル */
 .stats .stat-card .stat-top > span {
   display: block !important;
   margin: 0 !important;
+  padding: 0 !important;
   font-size: 24px !important;
   line-height: 1.2 !important;
   font-weight: 800 !important;
@@ -1463,15 +1557,10 @@
 
 /* KPI数字 */
 .stats .stat-card .stat-value {
-  position: static !important;
-  transform: none !important;
-  display: block !important;
-  margin: 44px 0 0 !important;
-  text-align: center !important;
+  font-family: Georgia, "Times New Roman", "Shippori Mincho", serif !important;
   font-size: 72px !important;
   line-height: .95 !important;
   font-weight: 800 !important;
-  font-family: Georgia, "Times New Roman", serif !important;
   color: #6d3d05 !important;
   text-shadow:
     0 2px 0 rgba(255,238,176,.95),
@@ -1480,15 +1569,13 @@
 
 /* KPI説明 */
 .stats .stat-card .stat-sub {
-  display: block !important;
-  margin: 30px 0 0 !important;
-  text-align: center !important;
   font-size: 14px !important;
   line-height: 1.4 !important;
   color: #7c6445 !important;
+  text-align: center !important;
 }
 
-/* 状態別：上線と文字色 */
+/* KPI状態別の上線と文字色 */
 .stats .stat-card:nth-child(1) {
   border-top: 4px solid #9b0018 !important;
 }
@@ -1529,7 +1616,7 @@
   color: #71510a !important;
 }
 
-/* 更新警鐘・昇格評定：本文背景画像は使わない */
+/* 更新警鐘・昇格評定の本文背景画像を無効化 */
 .card-alert::before,
 .card-promotion::before,
 .alert-panel::before,
@@ -1539,6 +1626,7 @@
   background: none !important;
 }
 
+/* 横幅不足時のみ2列化 */
 @media (max-width: 1180px) {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
