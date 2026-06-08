@@ -788,7 +788,7 @@
   background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
   border: 2px solid #c3913d;
   border-radius: 10px;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .content-grid > .card::before {
@@ -814,25 +814,44 @@
   overflow-x: hidden;
   padding: 10px 12px;
   background-color: #fbf2dc;
-  background-position: center center;
-  background-size: 100% 100%;
+  border-radius: 0 0 10px 10px;
+  position: relative; /* ::after の基準 */
+}
+
+/* 背景画像をコンテンツと分離して ::after で敷く
+   pointer-events: none で文字選択・スクロールを妨げない */
+.content-grid > .card .card-body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center bottom;
   background-repeat: no-repeat;
+  opacity: 0.55;        /* 薄くして文字と競合しにくくする */
+  pointer-events: none;
+  z-index: 0;
   border-radius: 0 0 10px 10px;
 }
 
-.content-grid > .card:nth-child(1) .card-body {
+/* コンテンツを ::after より前面に */
+.content-grid > .card .card-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.content-grid > .card:nth-child(1) .card-body::after {
   background-image: url("../img/imperial/card-alert-bg.webp");
 }
 
-.content-grid > .card:nth-child(2) .card-body {
+.content-grid > .card:nth-child(2) .card-body::after {
   background-image: url("../img/imperial/card-promotion-bg.webp");
 }
 
-.content-grid > .card:nth-child(3) .card-body {
+.content-grid > .card:nth-child(3) .card-body::after {
   background-image: url("../img/imperial/card-coverage-bg.webp");
 }
 
-.content-grid > .card:nth-child(4) .card-body {
+.content-grid > .card:nth-child(4) .card-body::after {
   background-image: url("../img/imperial/card-deadline-bg.webp");
 }
 
@@ -1127,7 +1146,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-employees-bg.webp') center center / contain no-repeat;
-  opacity: 1;
+  opacity: 0.65;
   z-index: 0;
   pointer-events: none;
 }
@@ -1166,7 +1185,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-30days-bg.webp') center center / contain no-repeat;
-  opacity: 1;
+  opacity: 0.65;
   z-index: 0;
   pointer-events: none;
 }
@@ -1180,7 +1199,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-90days-bg.webp') center center / contain no-repeat;
-  opacity: 1;
+  opacity: 0.65;
   z-index: 0;
   pointer-events: none;
 }
@@ -1234,7 +1253,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-expired-bg.webp') center center / contain no-repeat;
-  opacity: 1;
+  opacity: 0.65;
   z-index: 0;
   pointer-events: none;
 }
@@ -1266,7 +1285,7 @@
   width: 96%;
   height: 82%;
   background: url('../img/imperial/icons/kpi-promotion-bg.webp') center center / contain no-repeat;
-  opacity: 1;
+  opacity: 0.65;
   z-index: 0;
   pointer-events: none;
 }
@@ -1371,28 +1390,4 @@
 .stats .stat-card:last-child .stat-value {
   color: #ffd84a !important;
   text-shadow: 0 0 20px rgba(255,200,30,.9), 0 2px 6px rgba(0,0,0,.8) !important;
-}
-
-
-/* =========================================================
-   KPIカード 画像濃度・期限切れタイトル色 調整
-   2026-06-08
-   - KPI背景画像は透過なし
-   - 期限切れタイトルのみ白文字から赤茶系へ変更
-   ========================================================= */
-
-.stats .stat-card:first-child::after,
-.stats .stat-card:nth-child(2)::after,
-.stats .stat-card:nth-child(3)::after,
-.stats .stat-card:nth-child(4)::after,
-.stats .stat-card:last-child::after {
-  opacity: 1;
-}
-
-.stats .stat-card:first-child .stat-top span {
-  color: #6f0018 !important;
-  text-shadow:
-    0 1px 0 rgba(255,248,220,.65),
-    0 0 8px rgba(255,230,160,.55),
-    0 2px 5px rgba(0,0,0,.35) !important;
 }
