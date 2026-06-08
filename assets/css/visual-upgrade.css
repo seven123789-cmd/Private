@@ -1118,3 +1118,134 @@
   background-color: #fbf2dc;
 }
 
+
+/* =========================================================
+   2026-06-08 KPIカード再調整
+   - 上段KPIは数字の視認性を優先し、KPIアイコン画像を非表示
+   - 状態はタイトル色・数値色・カード上部の細い色帯で表現
+   - 更新警鐘／昇格評定の本文背景画像は使わない
+   ========================================================= */
+
+.stats {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 26px;
+}
+
+.stats .stat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 272 / 260;
+  min-height: 214px;
+  padding: 28px 18px 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 229, .96), rgba(250, 238, 208, .92)),
+    url("../img/imperial/card-bg-ivory.png") center center / cover no-repeat,
+    #fbf2dc;
+  border: 1px solid rgba(195, 145, 61, .45);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .48),
+    0 8px 18px rgba(73, 45, 13, .08);
+}
+
+.stats .stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, transparent, rgba(180, 120, 35, .72), transparent);
+  opacity: .9;
+}
+
+.stats .stat-card.danger::before { background: linear-gradient(90deg, transparent, #8d1020, transparent); }
+.stats .stat-card.warning::before { background: linear-gradient(90deg, transparent, #b06a09, transparent); }
+.stats .stat-card.info::before { background: linear-gradient(90deg, transparent, #06708c, transparent); }
+.stats .stat-card.sakura::before { background: linear-gradient(90deg, transparent, #7b2b68, transparent); }
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura)::before { background: linear-gradient(90deg, transparent, #7b5a08, transparent); }
+
+.stats .stat-card .stat-icon {
+  display: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  background-image: none;
+}
+
+.stats .stat-card .stat-top,
+.stats .stat-card .stat-value,
+.stats .stat-card .stat-sub {
+  position: relative;
+  z-index: 2;
+}
+
+.stats .stat-card .stat-top > span {
+  display: block;
+  margin: 0;
+  font-family: var(--font-jp);
+  font-size: clamp(22px, 1.65vw, 30px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: .07em;
+  color: #4d2d12;
+  text-shadow:
+    0 1px 0 rgba(255, 250, 230, .95),
+    0 3px 8px rgba(100, 65, 20, .16);
+}
+
+.stats .stat-card.danger .stat-top > span { color: #8d1020; }
+.stats .stat-card.warning .stat-top > span { color: #8a5307; }
+.stats .stat-card.info .stat-top > span { color: #086a8a; }
+.stats .stat-card.sakura .stat-top > span { color: #7b2b68; }
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-top > span { color: #6d4b06; }
+
+.stats .stat-card .stat-value {
+  margin: 22px 0 0;
+  font-family: var(--font-en);
+  font-size: clamp(66px, 5.4vw, 94px);
+  line-height: .92;
+  font-weight: 800;
+  color: #6d4b06;
+  text-shadow:
+    0 2px 0 rgba(255, 248, 221, .90),
+    0 5px 12px rgba(86, 51, 10, .22);
+}
+
+.stats .stat-card.danger .stat-value { color: #8d1020; }
+.stats .stat-card.warning .stat-value { color: #7a2606; }
+.stats .stat-card.info .stat-value { color: #076886; }
+.stats .stat-card.sakura .stat-value { color: #7b2b68; }
+.stats .stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-value {
+  color: #6d4b06;
+  font-size: clamp(58px, 4.8vw, 82px);
+}
+
+.stats .stat-card .stat-sub {
+  margin-top: 18px;
+  font-size: clamp(12px, .9vw, 14px);
+  line-height: 1.35;
+  color: #7a5a38;
+  letter-spacing: .03em;
+}
+
+.content-grid > .card .card-body,
+.content-grid > .card:nth-child(1) .card-body,
+.content-grid > .card:nth-child(2) .card-body,
+.content-grid > .card:nth-child(3) .card-body,
+.content-grid > .card:nth-child(4) .card-body {
+  background-image: none;
+  background-color: #fbf2dc;
+}
+
+.card-alert::before,
+.card-promotion::before {
+  content: none;
+  display: none;
+  background: none;
+}
