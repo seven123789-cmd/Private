@@ -713,152 +713,299 @@
 
 
 /* =========================================================
-   KPIカード5枚
-   - 総覧ヘッダーには影響させない
-   - KPIカードだけ正方形に戻す
-   - 背景画像 kpi-card-bg.png をカード全面に直接敷く
+   総覧ヘッダー / KPI / 総覧カード整理版
+   2026-06-08
+   - 実HTML確認済み：index.html の .page-header-v2 / .stats .stat-card を対象
+   - KPIは画像アイコン・疑似背景を使わない
+   - 旧nth-child背景画像補正をここで整理統合
    ========================================================= */
 
+/* ---------------------------------------------------------
+   01. 全ページヘッダー：アイコン非表示・文字色統一
+   --------------------------------------------------------- */
+
+.page-header .page-icon,
+.page-header-v2 .page-icon,
+.page-heading .page-icon {
+  display: none !important;
+}
+
+.page-header .page-heading,
+.page-header-v2 .page-heading {
+  gap: 0 !important;
+}
+
+.page-header .page-title,
+.page-header-v2 .page-title {
+  color: #f7e7a2 !important;
+  letter-spacing: .06em !important;
+  text-shadow:
+    0 2px 0 rgba(82, 38, 4, .95),
+    0 0 10px rgba(255, 226, 132, .40) !important;
+}
+
+.page-header .page-title-en,
+.page-header-v2 .page-title-en {
+  color: #f2d98b !important;
+  letter-spacing: .16em !important;
+  text-shadow: 0 1px 0 rgba(60, 28, 0, .90) !important;
+}
+
+/* 総覧ヘッダー：画像・配置・文字は維持し、外枠だけ消す */
+.page-header.page-header-v2 {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: 1400 / 220 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+.page-header.page-header-v2::before,
+.page-header.page-header-v2::after {
+  content: none !important;
+  display: none !important;
+}
+
+.page-header.page-header-v2 .page-header-bg-img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill !important;
+  object-position: center center !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.page-header.page-header-v2 .page-heading {
+  position: absolute !important;
+  left: 56px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 2 !important;
+}
+
+/* ---------------------------------------------------------
+   02. KPIカード：5枚横並び・画像なし・角丸カード
+   --------------------------------------------------------- */
+
+.stats {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+  margin: 0 0 26px !important;
+}
+
 .stats .stat-card {
-  position: relative;
-  box-sizing: border-box;
-  aspect-ratio: 1 / 1;
-  min-height: 0;
-  height: auto;
-  padding: 26% 7% 7%;
-  overflow: hidden;
-  background:
-    url("../img/imperial/kpi-card-bg.webp") center center / 100% 100% no-repeat,
-    url('../img/imperial/card-bg.webp') center/cover no-repeat,
-    #fbf2dc;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
+  position: relative !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-width: 0 !important;
+  width: auto !important;
+  height: 188px !important;
+  min-height: 188px !important;
+  aspect-ratio: auto !important;
+  padding: 22px 18px 18px !important;
+  text-align: center !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(196, 143, 44, .62) !important;
+  border-top-width: 4px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(180deg, rgba(255,250,230,.97), rgba(250,239,207,.92)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.55),
+    0 8px 18px rgba(88,57,14,.10) !important;
+  transform: none !important;
 }
 
-.stats .stat-card::before {
-  content: none;
+.stats .stat-card:hover {
+  transform: none !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.55),
+    0 8px 18px rgba(88,57,14,.10) !important;
 }
 
-.stats .stat-card .stat-top,
-.stats .stat-card .stat-value,
-.stats .stat-card .stat-sub {
-  position: relative;
-  z-index: 1;
+/* 古い画像アイコン・疑似背景・L字装飾を完全停止 */
+.stats .stat-card::before,
+.stats .stat-card::after,
+.stats .stat-icon,
+.stats .kpi-corner {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
-.stats .stat-card .stat-icon {
-  position: relative;
-  top: auto;
-  left: auto;
-  transform: none;
-  z-index: 1;
-  width: clamp(48px, 22%, 64px);
-  height: clamp(48px, 22%, 64px);
-  margin: 8% auto 0;
+/* HTML順を固定：タイトル → 数字 → 説明 */
+.stats .stat-card .stat-top {
+  order: 1 !important;
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
 }
 
 .stats .stat-card .stat-value {
-  margin-top: 7%;
-  font-size: clamp(44px, 23%, 62px);
+  order: 2 !important;
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 22px 0 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
 }
 
 .stats .stat-card .stat-sub {
-  margin-top: 4%;
+  order: 3 !important;
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 18px 0 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
 }
 
-.stats .stat-card .kpi-corner {
-  display: none;
+.stats .stat-card .stat-top > span {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: var(--font-jp) !important;
+  font-size: 20px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+  letter-spacing: .05em !important;
+  text-align: center !important;
+  color: #4b2b08 !important;
+  text-shadow:
+    0 1px 0 rgba(255,250,225,.96),
+    0 2px 5px rgba(94,55,8,.20) !important;
 }
 
+.stats .stat-card .stat-value {
+  font-family: Georgia, "Times New Roman", "Shippori Mincho", serif !important;
+  font-size: 58px !important;
+  line-height: .95 !important;
+  font-weight: 800 !important;
+  font-variant-numeric: lining-nums tabular-nums !important;
+  font-feature-settings: "lnum" 1, "tnum" 1 !important;
+  letter-spacing: .01em !important;
+  color: #6d3d05 !important;
+  text-shadow:
+    0 2px 0 rgba(255,238,176,.95),
+    0 5px 12px rgba(67,35,0,.24) !important;
+}
 
-/* ================================================================
-   4枚カード
-   ================================================================ */
+.stats .stat-card .stat-sub {
+  font-family: var(--font-jp) !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  color: #7c6445 !important;
+  text-align: center !important;
+}
+
+/* 状態別カラー：HTML順に合わせて明示 */
+.stats .stat-card:nth-child(1) { border-top-color: #9b0018 !important; }
+.stats .stat-card:nth-child(1) .stat-top > span,
+.stats .stat-card:nth-child(1) .stat-value { color: #8f0017 !important; }
+
+.stats .stat-card:nth-child(2) { border-top-color: #b57408 !important; }
+.stats .stat-card:nth-child(2) .stat-top > span,
+.stats .stat-card:nth-child(2) .stat-value { color: #8a4407 !important; }
+
+.stats .stat-card:nth-child(3) { border-top-color: #00708a !important; }
+.stats .stat-card:nth-child(3) .stat-top > span,
+.stats .stat-card:nth-child(3) .stat-value { color: #006f8a !important; }
+
+.stats .stat-card:nth-child(4) { border-top-color: #8a2d7b !important; }
+.stats .stat-card:nth-child(4) .stat-top > span,
+.stats .stat-card:nth-child(4) .stat-value { color: #7e2b78 !important; }
+
+.stats .stat-card:nth-child(5) { border-top-color: #8b691a !important; }
+.stats .stat-card:nth-child(5) .stat-top > span,
+.stats .stat-card:nth-child(5) .stat-value { color: #71510a !important; }
+
+/* ---------------------------------------------------------
+   03. 総覧下段カード：本文背景画像を使わない
+   --------------------------------------------------------- */
 
 .content-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: stretch;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+  align-items: stretch !important;
 }
 
 .content-grid > .card {
-  display: flex;
-  flex-direction: column;
-  height: 480px;
-  background: url('../img/imperial/card-bg.webp') center/cover no-repeat, #fbf2dc;
-  border: 2px solid #c3913d;
-  border-radius: 10px;
-  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 480px !important;
+  background: #fbf2dc !important;
+  border: 2px solid #c3913d !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 22px rgba(73,45,13,.18) !important;
 }
 
-.content-grid > .card::before {
-  content: none;
+.content-grid > .card::before,
+.content-grid > .card::after,
+.content-grid > .card .card-body::before,
+.content-grid > .card .card-body::after,
+.card-alert::before,
+.card-alert::after,
+.card-promotion::before,
+.card-promotion::after,
+.alert-panel::before,
+.alert-panel::after,
+.promotion-panel::before,
+.promotion-panel::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  background-image: none !important;
 }
 
 .content-grid > .card .card-header {
-  flex: 0 0 88px;
-  min-height: 88px;
-  background: linear-gradient(180deg, #9b1020 0%, #850815 52%, #6f0610 100%);
-  border-bottom: 3px solid #d0a044;
+  flex: 0 0 88px !important;
+  min-height: 88px !important;
+  background: linear-gradient(180deg, #9b1020 0%, #850815 52%, #6f0610 100%) !important;
+  border-bottom: 3px solid #d0a044 !important;
 }
 
 .content-grid > .card .card-header.card-header-navy,
 .content-grid > .card:nth-child(2) .card-header,
 .content-grid > .card:nth-child(4) .card-header {
-  background: linear-gradient(180deg, #0b3a43 0%, #07303a 48%, #04252d 100%);
+  background: linear-gradient(180deg, #0b3a43 0%, #07303a 48%, #04252d 100%) !important;
 }
 
 .content-grid > .card .card-body {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 10px 12px;
-  background-color: #fbf2dc;
-  border-radius: 0 0 10px 10px;
-  position: relative; /* ::after の基準 */
+  position: relative !important;
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 10px 12px !important;
+  background: #fbf2dc !important;
+  border-radius: 0 0 10px 10px !important;
 }
-
-/* 背景画像をコンテンツと分離して ::after で敷く
-   pointer-events: none で文字選択・スクロールを妨げない */
-.content-grid > .card .card-body::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  opacity: 0.55;        /* 薄くして文字と競合しにくくする */
-  pointer-events: none;
-  z-index: 0;
-  border-radius: 0 0 10px 10px;
-}
-
-/* コンテンツを ::after より前面に */
-.content-grid > .card .card-body > * {
-  position: relative;
-  z-index: 1;
-}
-
-.content-grid > .card:nth-child(1) .card-body::after {
-  background-image: url("../img/imperial/card-alert-bg.webp");
-}
-
-.content-grid > .card:nth-child(2) .card-body::after {
-  background-image: url("../img/imperial/card-promotion-bg.webp");
-}
-
-.content-grid > .card:nth-child(3) .card-body::after {
-  background-image: url("../img/imperial/card-coverage-bg.webp");
-}
-
-.content-grid > .card:nth-child(4) .card-body::after {
-  background-image: url("../img/imperial/card-deadline-bg.webp");
-}
-
-
-/* =========================================================
-   更新警鐘リスト
-   ========================================================= */
 
 #alert-list {
   display: flex;
@@ -873,9 +1020,9 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
+  margin: 2px 2px;
   background: rgba(255,250,235,.85);
   border-bottom: 1px solid rgba(181,139,72,.3);
-  margin: 2px 2px;
   border-radius: 4px;
 }
 
@@ -907,728 +1054,27 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   2026-06-03 総覧ヘッダー/KPIカード崩れ修正
-   - ヘッダー画像は拡大縮小しても切り抜かない
-   - KPIカードは5枚横並び時の比率・中身位置を固定
-   ========================================================= */
-
-.page-header.page-header-v2 {
-  height: auto;
-  min-height: 0;
-  max-height: none;
-  aspect-ratio: 1400 / 220;
-  overflow: hidden;
-}
-
-.page-header.page-header-v2 .page-header-bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: fill;
-  object-position: center center;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 18px;
-  align-items: stretch;
-  margin-bottom: 26px;
-}
-
-.stats .stat-card {
-  position: relative;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1 / 1;
-  min-height: 0;
-  padding: clamp(32px, 14%, 42px) 7% clamp(16px, 6%, 22px);
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  text-align: center;
-  overflow: hidden;
-  background: url("../img/imperial/kpi-card-bg.webp") center center / 100% 100% no-repeat, #fbf2dc;
-  transform: none;
-}
-
-.stats .stat-card:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.stats .stat-card::before {
-  content: none;
-}
-
-.stats .stat-card .stat-top,
-.stats .stat-card .stat-icon,
-.stats .stat-card .stat-value,
-.stats .stat-card .stat-sub {
-  position: relative;
-  z-index: 1;
-}
-
-.stats .stat-card .kpi-corner {
-  display: none;
-}
-
-.stats .stat-card .stat-top > span {
-  display: block;
-  margin: 0;
-  font-size: clamp(18px, 1.55vw, 24px);
-  line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: .04em;
-  color: #2a160c;
-  text-transform: none;
-}
-
-.stats .stat-icon {
-  position: relative;
-  top: auto;
-  left: auto;
-  transform: none;
-  width: clamp(46px, 4.2vw, 64px);
-  height: clamp(46px, 4.2vw, 64px);
-  margin: 16px auto 10px;
-  border: 0;
-  border-radius: 0;
-  background-color: transparent;
-  background-size: contain;
-  background-position: center center;
-  background-repeat: no-repeat;
-  box-shadow: none;
-  overflow: visible;
-}
-
-.stats .stat-value {
-  margin: 0;
-  font-size: clamp(48px, 4.8vw, 72px);
-  line-height: .98;
-}
-
-.stats .stat-sub {
-  margin-top: 10px;
-  font-size: clamp(11px, .9vw, 13px);
-  line-height: 1.35;
-  color: #7a5a38;
-}
-
-@media (max-width: 1320px) {
-  .stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 900px) {
-  .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .page-header.page-header-v2 .page-heading {
-    left: 34px;
-  }
-}
-
-@media (max-width: 560px) {
-  .stats {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* 2026-06-03 KPI再調整
-   - KPIカードのみ対象
-   - 枠は正方形固定
-   - 背景画像は100% 100%で維持
-   - 総覧ヘッダー系セレクタには触れない
-*/
-.stats .stat-card {
-  aspect-ratio: 1 / 1;
-  height: auto;
-  min-height: 0;
-  padding: clamp(32px, 14%, 42px) 7% clamp(16px, 6%, 22px);
-  justify-content: flex-start;
-}
-
-.stats .stat-card .stat-top > span {
-  font-size: clamp(18px, 1.45vw, 23px);
-  line-height: 1.12;
-}
-
-.stats .stat-card .stat-icon {
-  width: clamp(56px, 25%, 68px);
-  height: clamp(56px, 25%, 68px);
-  margin: clamp(10px, 4%, 14px) auto 0;
-}
-
-.stats .stat-card .stat-value {
-  font-size: clamp(46px, 4.35vw, 64px);
-  line-height: .95;
-  margin-top: clamp(6px, 3%, 10px);
-}
-
-.stats .stat-card:last-child .stat-value {
-  font-size: clamp(42px, 4.1vw, 58px);
-}
-
-.stats .stat-card .stat-sub {
-  margin-top: clamp(3px, 2%, 6px);
-  font-size: clamp(10px, .82vw, 12px);
-  line-height: 1.25;
-}
-
-/* =========================================================
-   KPIカード 期限切れ・社員数 大アイコン
-   ========================================================= */
-
-/* 期限切れ（1枚目）・社員数（5枚目）共通：縦レイアウト調整 */
-.stats .stat-card:first-child,
-.stats .stat-card:last-child {
-  justify-content: flex-start;
-  padding-top: clamp(14px, 6%, 20px);
-}
-
-/* タイトル（stat-top）を上に固定 */
-.stats .stat-card:first-child .stat-top,
-.stats .stat-card:last-child .stat-top {
-  order: 1;
-  margin-bottom: 4px;
-}
-
-/* 大アイコン */
-.stats .stat-card:first-child .stat-icon,
-.stats .stat-card:last-child .stat-icon {
-  order: 2;
-  width: clamp(72px, 6.5vw, 100px);
-  height: clamp(72px, 6.5vw, 100px);
-  margin: 6px auto 6px;
-  background-size: contain;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-/* 数字 */
-.stats .stat-card:first-child .stat-value,
-.stats .stat-card:last-child .stat-value {
-  order: 3;
-  margin-top: 4px;
-}
-
-/* サブテキスト */
-.stats .stat-card:first-child .stat-sub,
-.stats .stat-card:last-child .stat-sub {
-  order: 4;
-  margin-top: 6px;
-}
-
-/* アイコン画像 差し替え */
-.stats .stat-card:first-child .stat-icon {
-  background-image: url('../img/imperial/icons/kpi-expired.webp') !important;
-}
-
-/* 社員数：小アイコン非表示、背景に大きく表示 */
-.stats .stat-card:last-child .stat-icon {
-  display: none !important;
-}
-.stats .stat-card:last-child::after {
-  content: '';
-  position: absolute;
-  top: 14%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 96%;
-  height: 82%;
-  background: url('../img/imperial/icons/kpi-employees-bg.webp') center center / contain no-repeat;
-  opacity: 0.65;
-  z-index: 0;
-  pointer-events: none;
-}
-.stats .stat-card:last-child .stat-top,
-.stats .stat-card:last-child .stat-value,
-.stats .stat-card:last-child .stat-sub {
-  position: relative;
-  z-index: 1;
-}
-.stats .stat-card:last-child .stat-value {
-  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
-}
-.stats .stat-card:last-child {
-  justify-content: space-between;
-  padding-top: 6px;
-  padding-bottom: 8px;
-}
-
-/* =========================================================
-   KPIカード 30日・90日 背景アイコン
-   ========================================================= */
-
-/* 小アイコン非表示 */
-.stats .stat-card:nth-child(2) .stat-icon,
-.stats .stat-card:nth-child(3) .stat-icon {
-  display: none !important;
-}
-
-/* 背景に大きく表示 */
-.stats .stat-card:nth-child(2)::after {
-  content: '';
-  position: absolute;
-  top: 14%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 96%;
-  height: 82%;
-  background: url('../img/imperial/icons/kpi-30days-bg.webp') center center / contain no-repeat;
-  opacity: 0.65;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.stats .stat-card:nth-child(3)::after {
-  content: '';
-  position: absolute;
-  top: 14%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 96%;
-  height: 82%;
-  background: url('../img/imperial/icons/kpi-90days-bg.webp') center center / contain no-repeat;
-  opacity: 0.65;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* テキストをアイコンの上に */
-.stats .stat-card:nth-child(2) .stat-top,
-.stats .stat-card:nth-child(2) .stat-value,
-.stats .stat-card:nth-child(2) .stat-sub,
-.stats .stat-card:nth-child(3) .stat-top,
-.stats .stat-card:nth-child(3) .stat-value,
-.stats .stat-card:nth-child(3) .stat-sub {
-  position: relative;
-  z-index: 1;
-}
-
-/* 数字に白光彩 */
-.stats .stat-card:nth-child(2) .stat-value,
-.stats .stat-card:nth-child(3) .stat-value {
-  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
-}
-
-/* 上ぎりぎり・数字下 */
-.stats .stat-card:nth-child(2),
-.stats .stat-card:nth-child(3) {
-  justify-content: space-between;
-  padding-top: 6px;
-  padding-bottom: 8px;
-}
-
-/* タイトル上・数字下のorder設定 */
-.stats .stat-card:nth-child(2) .stat-top,
-.stats .stat-card:nth-child(3) .stat-top {
-  order: 1;
-}
-.stats .stat-card:nth-child(2) .stat-value,
-.stats .stat-card:nth-child(3) .stat-value {
-  order: 2;
-}
-
-/* =========================================================
-   KPIカード 期限切れ・昇格候補 背景アイコン更新
-   ========================================================= */
-
-/* 期限切れ背景 */
-.stats .stat-card:first-child::after {
-  content: '';
-  position: absolute;
-  top: 14%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 96%;
-  height: 82%;
-  background: url('../img/imperial/icons/kpi-expired-bg.webp') center center / contain no-repeat;
-  opacity: 0.65;
-  z-index: 0;
-  pointer-events: none;
-}
-.stats .stat-card:first-child .stat-top,
-.stats .stat-card:first-child .stat-value,
-.stats .stat-card:first-child .stat-sub {
-  position: relative;
-  z-index: 1;
-}
-.stats .stat-card:first-child .stat-value {
-  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
-}
-.stats .stat-card:first-child {
-  justify-content: space-between;
-  padding-top: 6px;
-  padding-bottom: 8px;
-}
-.stats .stat-card:first-child .stat-icon {
-  display: none !important;
-}
-
-/* 昇格候補（4枚目）背景 */
-.stats .stat-card:nth-child(4)::after {
-  content: '';
-  position: absolute;
-  top: 14%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 96%;
-  height: 82%;
-  background: url('../img/imperial/icons/kpi-promotion-bg.webp') center center / contain no-repeat;
-  opacity: 0.65;
-  z-index: 0;
-  pointer-events: none;
-}
-.stats .stat-card:nth-child(4) .stat-top,
-.stats .stat-card:nth-child(4) .stat-value,
-.stats .stat-card:nth-child(4) .stat-sub {
-  position: relative;
-  z-index: 1;
-}
-.stats .stat-card:nth-child(4) .stat-value {
-  text-shadow: 0 2px 8px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
-}
-.stats .stat-card:nth-child(4) {
-  justify-content: space-between;
-  padding-top: 6px;
-  padding-bottom: 8px;
-}
-.stats .stat-card:nth-child(4) .stat-icon {
-  display: none !important;
-}
-
-/* =========================================================
-   KPIカード 全5枚 数字下寄せ・文字色最適化
-   ========================================================= */
-
-/* 期限切れ（暗い赤金系）*/
-.stats .stat-card:first-child .stat-top span { color: #f5e6c8; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
-.stats .stat-card:first-child .stat-value { color: #e8c4a0; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(230,160,80,.6); }
-
-/* 30日以内（金・暖色系）*/
-.stats .stat-card:nth-child(2) .stat-top span { color: #fff8e0; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
-.stats .stat-card:nth-child(2) .stat-value { color: #fff0b0; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(255,200,50,.5); }
-
-/* 90日以内（青白・清楚系）*/
-.stats .stat-card:nth-child(3) .stat-top span { color: #e8f4ff; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
-.stats .stat-card:nth-child(3) .stat-value { color: #cce8ff; text-shadow: 0 2px 12px rgba(0,0,0,.8), 0 0 20px rgba(100,180,255,.5); }
-
-/* 昇格候補（青銀・清楚系）*/
-.stats .stat-card:nth-child(4) .stat-top span { color: #e8f0ff; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
-.stats .stat-card:nth-child(4) .stat-value { color: #d0e8ff; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(120,160,255,.5); }
-
-/* 社員数（深緑金系）*/
-.stats .stat-card:last-child .stat-top span { color: #fff8d0; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
-.stats .stat-card:last-child .stat-value { color: #f5d060; text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 20px rgba(200,160,20,.5); }
-
-/* =========================================================
-   KPIカード 文字視認性最終調整
-   ========================================================= */
-
-/* タイトル全カード統一（金色・黒縁） */
-.stats .stat-card .stat-top span {
-  color: #fff8e0 !important;
-  text-shadow: 0 1px 0 #000, 1px 0 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 0 2px 6px rgba(0,0,0,.8) !important;
-}
-
-/* 数字：各カードの画像色に合わせつつ黒縁で視認性確保 */
-.stats .stat-card:first-child .stat-value {
-  color: #f0c8a0 !important;
-  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
-}
-.stats .stat-card:nth-child(2) .stat-value {
-  color: #ffe878 !important;
-  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
-}
-.stats .stat-card:nth-child(3) .stat-value {
-  color: #b8e8ff !important;
-  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
-}
-.stats .stat-card:nth-child(4) .stat-value {
-  color: #c8d8ff !important;
-  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
-}
-.stats .stat-card:last-child .stat-value {
-  color: #ffd84a !important;
-  text-shadow: 0 0 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 3px 8px rgba(0,0,0,.9) !important;
-}
-
-/* =========================================================
-   KPIカード 文字 雰囲気優先に再調整（黒縁廃止・光彩のみ）
-   ========================================================= */
-
-.stats .stat-card .stat-top span {
-  color: #fff8e0 !important;
-  text-shadow: 0 0 8px rgba(0,0,0,.9), 0 1px 3px rgba(0,0,0,.9) !important;
-}
-.stats .stat-card:first-child .stat-value {
-  color: #f5d8b0 !important;
-  text-shadow: 0 0 16px rgba(255,220,160,.9), 0 2px 6px rgba(0,0,0,.8) !important;
-}
-.stats .stat-card:nth-child(2) .stat-value {
-  color: #ffe878 !important;
-  text-shadow: 0 0 20px rgba(255,230,80,.9), 0 2px 6px rgba(0,0,0,.8) !important;
-}
-.stats .stat-card:nth-child(3) .stat-value {
-  color: #c8eeff !important;
-  text-shadow: 0 0 20px rgba(140,210,255,.9), 0 2px 6px rgba(0,0,0,.8) !important;
-}
-.stats .stat-card:nth-child(4) .stat-value {
-  color: #d8e8ff !important;
-  text-shadow: 0 0 20px rgba(160,190,255,.9), 0 2px 6px rgba(0,0,0,.8) !important;
-}
-.stats .stat-card:last-child .stat-value {
-  color: #ffd84a !important;
-  text-shadow: 0 0 20px rgba(255,200,30,.9), 0 2px 6px rgba(0,0,0,.8) !important;
-}
-
-
-/* =========================================================
-   2026-06-08 全体確認後の最終補正
-   対象：
-   - 全ページヘッダー：アイコン非表示、文字色を総覧系へ統一
-   - 総覧ヘッダー：外枠だけ削除
-   - KPIカード：画像なし、四辺を少し丸めたカードへ整理
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   01. 全ページヘッダー共通
-   --------------------------------------------------------- */
-
-/* ヘッダーの丸アイコンは使わない */
-.page-header .page-icon,
-.page-header-v2 .page-icon,
-.page-heading .page-icon {
-  display: none !important;
-}
-
-/* アイコンを消した分、文字位置を自然に調整 */
-.page-header .page-heading,
-.page-header-v2 .page-heading {
-  gap: 0 !important;
-}
-
-/* ヘッダー文字を総覧の金文字系に統一 */
-.page-header .page-title,
-.page-header-v2 .page-title {
-  color: #f7e7a2 !important;
-  text-shadow:
-    0 2px 0 rgba(82, 38, 4, .95),
-    0 0 10px rgba(255, 226, 132, .40) !important;
-  letter-spacing: .06em !important;
-}
-
-.page-header .page-title-en,
-.page-header-v2 .page-title-en {
-  color: #f2d98b !important;
-  text-shadow: 0 1px 0 rgba(60, 28, 0, .90) !important;
-  letter-spacing: .16em !important;
-}
-
-/* 総覧含むページヘッダー：外枠・影を消す。画像サイズや中身は触らない */
-.page-header.page-header-v2 {
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  border-radius: 14px !important;
-  overflow: hidden !important;
-}
-
-.page-header.page-header-v2::before,
-.page-header.page-header-v2::after {
-  content: none !important;
-  display: none !important;
-}
-
-.page-header.page-header-v2 .page-header-bg-img {
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  border-radius: 14px !important;
-}
-
-/* ---------------------------------------------------------
-   02. KPIカード：画像なし・角丸カード化
-   --------------------------------------------------------- */
-
-.stats {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  gap: 18px !important;
-  align-items: stretch !important;
-  margin: 0 0 26px !important;
-}
-
-.stats .stat-card {
-  position: relative !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  box-sizing: border-box !important;
-  min-width: 0 !important;
-  width: auto !important;
-  aspect-ratio: auto !important;
-  height: 252px !important;
-  min-height: 252px !important;
-  padding: 34px 18px 24px !important;
-  text-align: center !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(196, 143, 44, .62) !important;
-  border-radius: 14px !important;
-  background:
-    linear-gradient(180deg, rgba(255,250,230,.97), rgba(250,239,207,.90)) !important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.55),
-    0 8px 18px rgba(88,57,14,.10) !important;
-  transform: none !important;
-}
-
-/* 古い画像・装飾・疑似背景を完全に無効化 */
-.stats .stat-card::before,
-.stats .stat-card::after,
-.stats .stat-icon,
-.stats .kpi-corner {
-  display: none !important;
-  content: none !important;
-  background: none !important;
-}
-
-/* HTMLの順番どおりに戻す：タイトル→数字→説明 */
-.stats .stat-card .stat-top {
-  order: 1 !important;
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  z-index: 1 !important;
-}
-
-.stats .stat-card .stat-value {
-  order: 2 !important;
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  margin: 44px 0 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  z-index: 1 !important;
-}
-
-.stats .stat-card .stat-sub {
-  order: 3 !important;
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  margin: 30px 0 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  z-index: 1 !important;
-}
-
-/* KPIタイトル */
-.stats .stat-card .stat-top > span {
-  display: block !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  font-size: 24px !important;
-  line-height: 1.2 !important;
-  font-weight: 800 !important;
-  letter-spacing: .05em !important;
-  text-align: center !important;
-  color: #4b2b08 !important;
-  text-shadow:
-    0 1px 0 rgba(255,250,225,.96),
-    0 2px 5px rgba(94,55,8,.20) !important;
-}
-
-/* KPI数字 */
-.stats .stat-card .stat-value {
-  font-family: Georgia, "Times New Roman", "Shippori Mincho", serif !important;
-  font-size: 72px !important;
-  line-height: .95 !important;
-  font-weight: 800 !important;
-  color: #6d3d05 !important;
-  text-shadow:
-    0 2px 0 rgba(255,238,176,.95),
-    0 5px 12px rgba(67,35,0,.24) !important;
-}
-
-/* KPI説明 */
-.stats .stat-card .stat-sub {
-  font-size: 14px !important;
-  line-height: 1.4 !important;
-  color: #7c6445 !important;
-  text-align: center !important;
-}
-
-/* KPI状態別の上線と文字色 */
-.stats .stat-card:nth-child(1) {
-  border-top: 4px solid #9b0018 !important;
-}
-.stats .stat-card:nth-child(1) .stat-top > span,
-.stats .stat-card:nth-child(1) .stat-value {
-  color: #8f0017 !important;
-}
-
-.stats .stat-card:nth-child(2) {
-  border-top: 4px solid #b57408 !important;
-}
-.stats .stat-card:nth-child(2) .stat-top > span,
-.stats .stat-card:nth-child(2) .stat-value {
-  color: #8a4407 !important;
-}
-
-.stats .stat-card:nth-child(3) {
-  border-top: 4px solid #00708a !important;
-}
-.stats .stat-card:nth-child(3) .stat-top > span,
-.stats .stat-card:nth-child(3) .stat-value {
-  color: #006f8a !important;
-}
-
-.stats .stat-card:nth-child(4) {
-  border-top: 4px solid #8a2d7b !important;
-}
-.stats .stat-card:nth-child(4) .stat-top > span,
-.stats .stat-card:nth-child(4) .stat-value {
-  color: #7e2b78 !important;
-}
-
-.stats .stat-card:nth-child(5) {
-  border-top: 4px solid #8b691a !important;
-}
-.stats .stat-card:nth-child(5) .stat-top > span,
-.stats .stat-card:nth-child(5) .stat-value {
-  color: #71510a !important;
-}
-
-/* 更新警鐘・昇格評定の本文背景画像を無効化 */
-.card-alert::before,
-.card-promotion::before,
-.alert-panel::before,
-.promotion-panel::before {
-  display: none !important;
-  content: none !important;
-  background: none !important;
-}
-
-/* 横幅不足時のみ2列化 */
 @media (max-width: 1180px) {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-header.page-header-v2 .page-heading {
+    left: 34px !important;
+  }
+
+  .stats .stat-card {
+    height: 174px !important;
+    min-height: 174px !important;
   }
 }
