@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body>
+<body class="license-workspace">
 <div class="app-shell">
 <aside class="sidebar" id="sidebar"></aside>
 <div class="page-content">
@@ -17,58 +17,81 @@
       <div class="page-title-block">
         <div class="page-title">資格・免許管理</div>
         <div class="page-title-en">LICENSE MANAGEMENT</div>
+        <div class="page-description">社員の保有資格・有効期限を一元管理し、更新対象を早期に把握します。</div>
       </div>
     </div>
-  </div>
-  <div class="stats">
-    <div class="stat-card"><div class="stat-top"><span>登録資格数</span><div class="stat-icon"></div></div><div class="stat-value tabular" id="lic-total">—</div><div class="stat-sub">社員別登録数</div></div>
-    <div class="stat-card danger"><div class="stat-top"><span>期限切れ</span><div class="stat-icon"></div></div><div class="stat-value tabular" id="lic-expired">—</div><div class="stat-sub">要対応</div></div>
-    <div class="stat-card warning"><div class="stat-top"><span>三十日以内</span><div class="stat-icon"></div></div><div class="stat-value tabular" id="lic-30">—</div><div class="stat-sub">更新準備</div></div>
-    <div class="stat-card info"><div class="stat-top"><span>九十日以内</span><div class="stat-icon"></div></div><div class="stat-value tabular" id="lic-90">—</div><div class="stat-sub">計画対応</div></div>
-  </div>
-  <div class="content-grid">
-    <div class="card">
-      <div class="card-header"><div><div class="card-title">社員別資格登録</div><div class="card-sub">employee_licenses へ登録</div></div></div>
-      <div class="card-body">
-        <form id="license-form" class="form-grid">
-          <div class="form-group"><label class="form-label">社員</label><select id="license-employee" class="form-control" required></select></div>
-          <div class="form-group"><label class="form-label">資格</label><select id="license-master" class="form-control" required></select></div>
-          <div class="form-group"><label class="form-label">取得日</label><input id="license-acquired" type="date" class="form-control"></div>
-          <div class="form-group"><label class="form-label">更新日</label><input id="license-renewal" type="date" class="form-control"></div>
-          <div class="form-group"><label class="form-label">期限日</label><input id="license-expiration" type="date" class="form-control"></div>
-          <div class="form-group"><label class="form-label">メモ</label><input id="license-memo" class="form-control" placeholder="免許番号・補足など"></div>
-          <div class="form-full mt-3"><button class="btn btn-primary w-full" type="submit">資格を登録する</button></div>
-        </form>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div><div class="card-title">登録上の注意</div></div></div>
-      <div class="card-body">
-        <div class="section-stack">
-          <div class="quick-card"><div class="quick-ico" style="font-size:14px;font-family:var(--font-serif)">一</div><div><div class="row-title">社員・資格はマスタから選択</div><div class="row-meta">表記ゆれを防止するため</div></div></div>
-          <div class="quick-card"><div class="quick-ico" style="font-size:14px;font-family:var(--font-serif)">二</div><div><div class="row-title">期限日は必要な資格のみ入力</div><div class="row-meta">未入力は期限なしとして扱う</div></div></div>
-          <div class="quick-card"><div class="quick-ico" style="font-size:14px;font-family:var(--font-serif)">三</div><div><div class="row-title">日本時間基準で管理</div><div class="row-meta">Asia/Tokyo</div></div></div>
-        </div>
-      </div>
+    <div class="page-header-actions">
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-export-license">CSV出力</button>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-open-license-form">＋ 資格を登録</button>
     </div>
   </div>
+
+  <div class="stats license-stats">
+    <button type="button" class="stat-card stat-filter active" data-status="">
+      <div class="stat-top"><span>登録資格数</span></div><div class="stat-value tabular" id="lic-total">—</div><div class="stat-sub">社員別登録数</div>
+    </button>
+    <button type="button" class="stat-card stat-filter danger" data-status="期限切れ">
+      <div class="stat-top"><span>期限切れ</span></div><div class="stat-value tabular" id="lic-expired">—</div><div class="stat-sub">優先対応</div>
+    </button>
+    <button type="button" class="stat-card stat-filter warning" data-status="30日以内">
+      <div class="stat-top"><span>30日以内</span></div><div class="stat-value tabular" id="lic-30">—</div><div class="stat-sub">更新手続き</div>
+    </button>
+    <button type="button" class="stat-card stat-filter info" data-status="90日以内">
+      <div class="stat-top"><span>90日以内</span></div><div class="stat-value tabular" id="lic-90">—</div><div class="stat-sub">更新準備</div>
+    </button>
+  </div>
+
   <div class="filter-panel">
-    <div class="filter-grid compact">
-      <div class="form-group"><label class="form-label">検索</label><input id="filter-keyword" class="form-control" placeholder="社員名・資格名"></div>
-      <div class="form-group"><label class="form-label">センター</label><select id="filter-center" class="form-control"></select></div>
+    <div class="filter-panel-head">
+      <div><strong>検索・絞り込み</strong><div class="text-muted text-sm">社員・所属・資格・期限状態から対象を絞り込みます。</div></div>
+      <button id="btn-clear-filter" class="btn btn-secondary btn-sm" type="button">条件をクリア</button>
+    </div>
+    <div class="filter-grid license-filter-grid">
+      <div class="form-group"><label class="form-label">社員・資格名</label><input id="filter-keyword" class="form-control" placeholder="社員名・社員コード・資格名"></div>
+      <div class="form-group"><label class="form-label">所属センター</label><select id="filter-center" class="form-control"></select></div>
       <div class="form-group"><label class="form-label">資格</label><select id="filter-license" class="form-control"></select></div>
-      <div class="form-group"><label class="form-label">状態</label><select id="filter-status" class="form-control"><option value="">すべて</option><option>期限切れ</option><option>30日以内</option><option>90日以内</option><option>正常</option><option>期限なし</option></select></div>
-      <button id="btn-clear-filter" class="btn btn-secondary" style="margin-top:auto">リセット</button>
+      <div class="form-group"><label class="form-label">期限状態</label><select id="filter-status" class="form-control"><option value="">すべて</option><option>期限切れ</option><option>30日以内</option><option>90日以内</option><option>正常</option><option>期限なし</option></select></div>
     </div>
   </div>
+
   <div class="table-card">
-    <div class="table-tools"><div class="table-count">計 <strong id="license-count">—</strong> 件</div><div class="text-muted text-sm">v_license_screen 参照</div></div>
-    <div class="table-wrap"><table><thead><tr><th>社員</th><th>センター</th><th>資格</th><th>取得日</th><th>更新日</th><th>期限日</th><th>状態</th><th>残日数</th><th>メモ</th></tr></thead><tbody id="license-tbody"></tbody></table></div>
+    <div class="table-tools">
+      <div><div class="table-count">該当 <strong id="license-count">—</strong> 件</div><div class="text-muted text-sm">期限の近い資格を優先して確認できます。</div></div>
+      <a href="alerts.html" class="btn btn-secondary btn-sm">期限アラートを開く</a>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>社員</th><th>資格・免許</th><th>取得日</th><th>最終更新日</th><th>有効期限</th><th>状態</th><th>残日数</th><th>メモ</th></tr></thead><tbody id="license-tbody"></tbody></table></div>
     <div class="pagination" id="license-pagination"></div>
   </div>
 </main>
 </div>
 </div>
+
+<div class="modal-backdrop hidden" id="license-register-modal" role="dialog" aria-modal="true" aria-labelledby="license-register-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="card-title" id="license-register-title">資格・免許を登録</div><div class="card-sub">社員と資格マスタを選択して登録します。</div></div>
+      <button type="button" class="modal-close" id="btn-close-license-form" aria-label="閉じる">×</button>
+    </div>
+    <form id="license-form">
+      <div class="modal-body">
+        <div class="alert-box gold">社員・資格はマスタから選択します。期限がない資格は有効期限を空欄のまま登録できます。</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">社員 <span class="required-mark">必須</span></label><select id="license-employee" class="form-control" required></select></div>
+          <div class="form-group"><label class="form-label">資格・免許 <span class="required-mark">必須</span></label><select id="license-master" class="form-control" required></select></div>
+          <div class="form-group"><label class="form-label">取得日</label><input id="license-acquired" type="date" class="form-control"></div>
+          <div class="form-group"><label class="form-label">最終更新日</label><input id="license-renewal" type="date" class="form-control"></div>
+          <div class="form-group"><label class="form-label">有効期限</label><input id="license-expiration" type="date" class="form-control"></div>
+          <div class="form-group"><label class="form-label">メモ</label><input id="license-memo" class="form-control" placeholder="免許番号・補足など"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-license-form">キャンセル</button>
+        <button class="btn btn-primary" type="submit">登録する</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
