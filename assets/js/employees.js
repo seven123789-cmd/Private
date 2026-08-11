@@ -24,7 +24,7 @@ function fillSelect(id, values, first) {
   el.innerHTML = `<option value="">${first}</option>` + values.map(v => `<option value="${APP.escape(v)}">${APP.escape(v)}</option>`).join('');
 }
 function bindEmployeeFilters() {
-  ['filter-keyword','filter-center','filter-position','filter-employment','filter-promo'].forEach(id => { const el = document.getElementById(id); if (el) el.oninput = () => { empPage = 1; renderEmployees(); }; });
+  ['filter-keyword','filter-center','filter-position','filter-employment','filter-promo','filter-employment-status'].forEach(id => { const el = document.getElementById(id); if (el) el.oninput = () => { empPage = 1; renderEmployees(); }; });
   const clear = document.getElementById('btn-clear-filter');
   if (clear) clear.onclick = () => { document.querySelectorAll('.filter-panel input,.filter-panel select').forEach(e => e.value = ''); empPage = 1; renderEmployees(); };
 }
@@ -34,7 +34,11 @@ function renderEmployees() {
   const position = document.getElementById('filter-position')?.value || '';
   const employment = document.getElementById('filter-employment')?.value || '';
   const promo = document.getElementById('filter-promo')?.value || '';
-  EMP_FILTERED = EMP_ROWS.filter(e => (!kw || [e.employee_code, e.name, e.kana, e.center, e.position].join(' ').includes(kw)) && (!center || e.center === center) && (!position || e.position === position) && (!employment || e.employment_type === employment) && (!promo || (e.promotion_target_flag === true || e.promotion_target_flag === 'true')));
+  const employmentStatus=document.getElementById('filter-employment-status')?.value||'active';
+  EMP_FILTERED = EMP_ROWS.filter(e => (!kw || [e.employee_code, e.name, e.kana, e.center, e.position].join(' ').includes(kw)) && (!center || e.center === center) && (!position || e.position === position) && (!employment || e.employment_type === employment) && (!promo || (e.promotion_target_flag === true || e.promotion_target_flag === 'true'))
+      && (employmentStatus==='all' || (employmentStatus==='retired'
+        ? (e.is_active===false || e.status==='retired' || !!e.retirement_date)
+        : !(e.is_active===false || e.status==='retired' || !!e.retirement_date))));
   const cnt = document.getElementById('emp-count'); if (cnt) cnt.textContent = EMP_FILTERED.length;
   const tbody = document.getElementById('emp-tbody'); if (!tbody) return;
   const start = (empPage - 1) * empPerPage;
@@ -54,7 +58,9 @@ function exportEmployeeCSV() {
     {label:'所属センター',value:'center'},{label:'部門',value:'division'},{label:'職種',value:'position'},
     {label:'雇用形態',value:'employment_type'},{label:'現在等級',value:'current_grade'},
     {label:'昇格候補',value:e=>(e.promotion_target_flag===true||e.promotion_target_flag==='true')?'対象':'対象外'},
-    {label:'最終昇格日',value:'last_promotion_date'}
+    {label:'最終昇格日',value:'last_promotion_date'},
+    {label:'在籍状況',value:e=>(e.is_active===false||e.status==='retired'||e.retirement_date)?'退職':'在籍'},
+    {label:'退職日',value:'retirement_date'}
   ], EMP_FILTERED);
 }
 window.initEmployees = initEmployees; window.renderEmployees = renderEmployees; window.openEmployeeDetail = openEmployeeDetail; window.exportEmployeeCSV = exportEmployeeCSV;

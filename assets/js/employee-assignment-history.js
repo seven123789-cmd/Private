@@ -267,5 +267,87 @@ window.EmployeeAssignmentHistory = (() => {
     });
   }
 
-  return {load,render,mount,setupChangeUI};
+
+  function isRetired(employee) {
+    return employee?.is_active === false || employee?.status === 'retired' || !!employee?.retirement_date;
+  }
+
+  function renderRetirementState(employee) {
+    const holder=document.getElementById('emp-retirement-status');
+    const changeBtn=document.getElementById('btn-open-assignment-change');
+    const retireBtn=document.getElementById('btn-open-retirement');
+    if(isRetired(employee)){
+      const date=APP.fmtDate(employee.retirement_date);
+      if(holder) holder.innerHTML=`<span class="retirement-badge">退職済</span><span class="retirement-date">退職日：${esc(date||'—')}</span>`;
+      if(changeBtn){changeBtn.disabled=true;changeBtn.title='退職済社員は人事異動を登録できません';}
+      if(retireBtn) retireBtn.hidden=true;
+    }else{
+      if(holder) holder.innerHTML='';
+      if(changeBtn){changeBtn.disabled=false;changeBtn.title='';}
+      if(retireBtn) retireBtn.hidden=false;
+    }
+  }
+
+  function closeRetirementModal(){
+    document.getElementById('retirement-modal')?.classList.add('hidden');
+  }
+
+  function openRetirementModal(){
+    if(!currentEmployee) return;
+    if(isRetired(currentEmployee)){
+      APP.toast('この社員は既に退職処理されています','warning');
+      return;
+    }
+    document.getElementById('retirement-person-name').textContent=currentEmployee.name||'—';
+    document.getElementById('retirement-person-code').textContent=`社員コード ${currentEmployee.employee_code||'—'}`;
+    const dateEl=document.getElementById('retirement-date');
+    const today=todayJst();
+    dateEl.max=today;
+    if(currentEmployee.join_date) dateEl.min=currentEmployee.join_date;
+    dateEl.value=today;
+    document.getElementById('retirement-modal').classList.remove('hidden');
+    dateEl.focus();
+  }
+
+  async function submitRetirement(ev){
+    ev.preventDefault();
+    if(!currentEmployee || isRetired(currentEmployee)) return;
+    const date=document.getElementById('retirement-date')?.value||'';
+    if(!date){APP.toast('退職日を入力してください','warning');return;}
+    if(currentEmployee.join_date && date < currentEmployee.join_date){
+      APP.toast('退職日を入社日より前には設定できません','warning');return;
+    }
+    if(date > todayJst()){
+      APP.toast('未来日の退職処理は現在未対応です','warning');return;
+    }
+    const ok=confirm(`${currentEmployee.name||'対象社員'}さんを退職として登録します。\n\n退職日：${date}\n\n社員情報・資格・人事履歴は削除されません。\n\n登録しますか？`);
+    if(!ok) return;
+    const btn=document.getElementById('btn-submit-retirement');
+    btn.disabled=true;btn.textContent='登録中…';
+    const sb=APP.client();
+    const r=await sb.rpc('retire_employee',{p_employee_id:currentEmployee.id,p_retirement_date:date});
+    if(r.error){
+      console.error('retire_employee failed',r.error);
+      APP.toast(`退職処理に失敗しました：${r.error.message}`,'error');
+      btn.disabled=false;btn.textContent='退職を登録';
+      return;
+    }
+    APP.toast('退職処理を登録しました');
+    closeRetirementModal();
+    setTimeout(()=>location.reload(),450);
+  }
+
+  async function setupRetirementUI(employee){
+    currentEmployee=employee;
+    renderRetirementState(employee);
+    document.getElementById('btn-open-retirement')?.addEventListener('click',openRetirementModal);
+    document.getElementById('btn-close-retirement')?.addEventListener('click',closeRetirementModal);
+    document.getElementById('btn-cancel-retirement')?.addEventListener('click',closeRetirementModal);
+    document.getElementById('retirement-modal')?.addEventListener('click',e=>{
+      if(e.target.id==='retirement-modal') closeRetirementModal();
+    });
+    document.getElementById('retirement-form')?.addEventListener('submit',submitRetirement);
+  }
+
+  return {load,render,mount,setupChangeUI,setupRetirementUI};
 })();

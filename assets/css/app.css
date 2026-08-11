@@ -157,3 +157,18 @@
   .assignment-diff-row>i{display:none}
   .assignment-diff-row>strong:last-child:before{content:"→ ";color:#ad7d2b}
 }
+
+/* Phase16-F — retirement management */
+.employee-action-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn-danger-subtle{border:1px solid #c9a2a0;background:#fff8f7;color:#7d3733}
+.btn-danger-subtle:hover{background:#f9ecea;border-color:#b98380}
+.btn-danger{border-color:#8f3f39;background:#8f3f39;color:#fff}
+.btn-danger:hover{background:#79332e}
+.retirement-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eee3df;color:#74403b;font-size:10px;font-weight:800}
+.retirement-date{margin-left:7px;color:var(--muted);font-size:10px}
+.retirement-modal{width:min(560px,100%)}
+.retirement-person{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin-bottom:14px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fcfaf6}
+.retirement-person>span{grid-row:1/3;color:var(--faint);font-size:10px;align-self:center}
+.retirement-person>strong{font-size:14px}
+.retirement-person>small{color:var(--muted)}
+.employee-retired-inline{display:inline-block;margin-left:7px;padding:2px 6px;border-radius:999px;background:#eee3df;color:#74403b;font-size:9px;font-weight:800;vertical-align:middle}
