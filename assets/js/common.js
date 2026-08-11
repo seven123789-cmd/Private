@@ -444,6 +444,10 @@ const APP = (() => {
       const sb = client();
       if (!sb?.auth) return;
       const {error} = await sb.auth.signOut();
+        if (window.AUTH_REQUIRED) {
+          location.replace('login.html');
+          return;
+        }
       if (error) { toast(error.message || 'ログアウトできませんでした','error'); return; }
       if (this.isRequired()) location.replace(window.AUTH_LOGIN_URL || 'login.html');
       else location.replace('index.html');
