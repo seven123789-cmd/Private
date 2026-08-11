@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>社員取込 — 人事統合管理システム</title>
+<title>社員データ取込 — 統合管理システム</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -19,7 +19,7 @@
       <div class="page-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
-      <div><div class="page-title">社員取込</div><div class="page-title-en">Employee Master Import</div></div>
+      <div><div class="page-title">社員データ取込</div><div class="page-title-en">Employee Master Import</div></div>
     </div>
   </div>
 
@@ -37,11 +37,11 @@
 
   <!-- ステップ1: ファイル選択 -->
   <div class="import-card">
-    <h3><span class="step-badge">1</span> 社員名簿ファイルを選択</h3>
+    <h3><span class="step-badge">1</span> 社員管理ファイルを選択</h3>
     <div class="drop-zone" id="drop-zone">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
       <div class="drop-label">XLS / XLSX ファイルをドロップ、またはクリックして選択</div>
-      <div class="drop-sub">社員名簿.xls 形式（ヘッダー3行目：頭文字・社員コード・所属…）</div>
+      <div class="drop-sub">社員管理.xls 形式（ヘッダー3行目：頭文字・社員コード・所属…）</div>
     </div>
     <input type="file" id="file-input" accept=".xls,.xlsx" style="display:none">
 
@@ -134,7 +134,7 @@ function parseXLS(data) {
       headerRow = i; break;
     }
   }
-  if (headerRow < 0) { alert('ヘッダー行が見つかりません。社員名簿フォーマットを確認してください。'); return []; }
+  if (headerRow < 0) { alert('ヘッダー行が見つかりません。社員管理フォーマットを確認してください。'); return []; }
 
   const headers = rows[headerRow].map(h => h ? String(h).trim() : '');
   const idx = name => headers.indexOf(name);
@@ -226,8 +226,8 @@ function doImport() {
   btn.disabled = true; btn.textContent = '処理中...';
 
   const output = {
-    source_file: '社員名簿.xls',
-    sheet: '社員名簿',
+    source_file: '社員管理.xls',
+    sheet: '社員管理',
     imported_at: new Date().toISOString().slice(0,10),
     summary: {
       total: parsedEmployees.length,

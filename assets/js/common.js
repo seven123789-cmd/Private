@@ -159,15 +159,15 @@ const APP = (() => {
 
   /* ナビ定義：人事業務の情報設計に合わせて整理 */
   const NAV = [
-    { id:'index',          group:'overview', label:'総覧',         sub:'状況と要対応の確認', href:'index.html',             badge:false },
-    { id:'employees',      group:'people',   label:'社員名簿',     sub:'社員一覧・検索',     href:'employees.html',         badge:false },
-    { id:'promotion',      group:'people',   label:'昇格評定',     sub:'昇格・人事評価',     href:'promotion.html',         badge:false },
-    { id:'licenses',       group:'license',  label:'資格台帳',     sub:'資格・免許管理',     href:'licenses.html',          badge:false },
-    { id:'facility',       group:'license',  label:'事業所資格',   sub:'事業所別管理',       href:'facility_licenses.html', badge:false },
-    { id:'alerts',         group:'license',  label:'期限アラート', sub:'期限管理',           href:'alerts.html',            badge:true },
-    { id:'masters',        group:'system',   label:'マスタ設定',   sub:'マスタ管理',         href:'masters.html',           badge:false },
-    { id:'master_import',  group:'system',   label:'社員取込',     sub:'社員マスタ初期取込', href:'master_import.html',     badge:false },
-    { id:'external_links', group:'system',   label:'外部リンク',   sub:'リンク集・登録',     href:'external_links.html',    badge:false }
+    { id:'index',          group:'overview', label:'ダッシュボード',         sub:'状況と要対応の確認', href:'index.html',             badge:false },
+    { id:'employees',      group:'people',   label:'社員管理',     sub:'社員一覧・検索',     href:'employees.html',         badge:false },
+    { id:'promotion',      group:'people',   label:'人事評価・昇格',     sub:'昇格・人事評価',     href:'promotion.html',         badge:false },
+    { id:'licenses',       group:'license',  label:'資格・免許管理',     sub:'資格・免許管理',     href:'licenses.html',          badge:false },
+    { id:'facility',       group:'license',  label:'事業所資格管理',   sub:'事業所別管理',       href:'facility_licenses.html', badge:false },
+    { id:'alerts',         group:'license',  label:'資格期限アラート', sub:'期限管理',           href:'alerts.html',            badge:true },
+    { id:'masters',        group:'system',   label:'各種マスタ設定',   sub:'マスタ管理',         href:'masters.html',           badge:false },
+    { id:'master_import',  group:'system',   label:'社員データ取込',     sub:'社員マスタ初期取込', href:'master_import.html',     badge:false },
+    { id:'external_links', group:'system',   label:'関連リンク',   sub:'リンク集・登録',     href:'external_links.html',    badge:false }
   ];
 
   const SYSTEM_LINKS = [
@@ -175,7 +175,7 @@ const APP = (() => {
     { id:'center', label:'センター管理', href:'https://seven123kick-art.github.io/center-dashboard/' }
   ];
 
-  // ── カスタム外部リンク管理（LocalStorageで永続化） ──────
+  // ── カスタム関連リンク管理（LocalStorageで永続化） ──────
   const EXT_LS_KEY = 'sidebar_ext_links_v1';
 
   function loadExtLinks() {
@@ -237,8 +237,8 @@ const APP = (() => {
     sb.innerHTML = `
       <div class="imperial-brand-card imperial-brand-card-textonly">
         <div class="imperial-brand-copy">
-          <div class="imperial-brand-title">人事統合管理システム</div>
-          <div class="imperial-brand-sub">HR Management Suite</div>
+          <div class="imperial-brand-title">統合管理システム</div>
+          <div class="imperial-brand-sub">Integrated Management System</div>
         </div>
       </div>
       ${group('overview','概要')}
@@ -264,7 +264,7 @@ const APP = (() => {
       const links = loadExtLinks();
       if (countEl) countEl.textContent = `${links.length}件`;
       if (!links.length) {
-        listEl.innerHTML = '<div class="external-link-empty">まだ外部リンクは登録されていません。よく使うForms・共有フォルダ・外部システムを登録してください。</div>';
+        listEl.innerHTML = '<div class="external-link-empty">まだ関連リンクは登録されていません。よく使うForms・共有フォルダ・外部システムを登録してください。</div>';
         return;
       }
       listEl.innerHTML = links.map((n, i) => `
@@ -287,7 +287,7 @@ const APP = (() => {
           const id = e.currentTarget.dataset.extId;
           removeExtLink(id);
           render();
-          APP.toast('外部リンクを削除しました');
+          APP.toast('関連リンクを削除しました');
         });
       });
       listEl.querySelectorAll('.ext-move-up').forEach(btn => {
