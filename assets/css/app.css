@@ -102,3 +102,9 @@
 .promotion-data-note{margin-bottom:18px}.promotion-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.promotion-filter-grid{grid-template-columns:minmax(220px,1.5fr) repeat(3,minmax(150px,1fr))}.promo-row{cursor:pointer}.promo-row:hover{background:#fbf7ef}.data-missing{display:inline-flex;padding:3px 7px;border-radius:999px;background:#fff2e2;color:#985515;font-size:10px;font-weight:800}.promotion-future-card{margin-top:18px;background:#fcfaf5}.promotion-future-card .future-list{gap:8px}.promotion-future-card .future-list span{border-style:solid;background:#fffdf9}
 @media(max-width:980px){.promotion-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.promotion-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.promotion-stats,.promotion-filter-grid{grid-template-columns:1fr}}
+
+/* Phase 6-8 — Data operations */
+.master-ops-note{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:11px 14px;border:1px solid #e2d7bf;border-radius:10px;background:#fffaf0;color:var(--muted);font-size:11px}.master-ops-note strong{color:#7c571a;white-space:nowrap}
+.import-flow{display:flex;align-items:center;max-width:620px;margin:0 0 14px}.flow-step{display:flex;align-items:center;gap:7px;color:var(--faint);font-size:10px;font-weight:700;white-space:nowrap}.flow-step strong{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#e8e2d7;color:#6e655b}.flow-step.active{color:var(--wine)}.flow-step.active strong{background:var(--wine);color:#fff}.flow-line{height:1px;flex:1;margin:0 9px;background:#d9d1c4}.import-safety-note{margin-bottom:16px}
+.alert-box.danger{background:#fff2f1;border-color:#e5b5af;color:#7f2d25}.alert-box.success{background:#f1f8f3;border-color:#b8d8c1;color:#2f6c45}.alert-box .btn{margin-left:10px}
+@media(max-width:620px){.master-ops-note{align-items:flex-start;flex-direction:column}.import-flow{max-width:100%}.flow-step span{display:none}}

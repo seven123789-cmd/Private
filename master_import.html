@@ -19,9 +19,17 @@
       <div class="page-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
-      <div><div class="page-title">社員データ取込</div><div class="page-title-en">Employee Master Import</div></div>
+      <div><div class="page-title">社員データ取込</div><div class="page-title-en">EMPLOYEE DATA IMPORT</div>
+      <div class="page-description">XLS/XLSXを解析・検証し、社員マスタ更新用データを作成します。</div></div>
     </div>
   </div>
+
+  <div class="import-flow">
+    <div class="flow-step active"><strong>1</strong><span>ファイル選択</span></div><div class="flow-line"></div>
+    <div class="flow-step"><strong>2</strong><span>解析・検証</span></div><div class="flow-line"></div>
+    <div class="flow-step"><strong>3</strong><span>更新データ確定</span></div>
+  </div>
+  <div class="alert-box info import-safety-note"><strong>安全設計：</strong>現段階では一括取込からDBへ直接書き込みません。既存DBの一意制約・RLS・更新履歴を確認後に、安全な一括反映機能を追加します。</div>
 
   <!-- 現在のデータ状況 -->
   <div class="import-card" id="current-status-card">
@@ -32,7 +40,7 @@
       <div class="result-stat"><div class="rs-val" id="cs-centers">—</div><div class="rs-label">所属センター数</div></div>
       <div class="result-stat"><div class="rs-val" id="cs-source">—</div><div class="rs-label">データソース</div></div>
     </div>
-    <div class="alert-box info">現在のデータは <strong>assets/data/employee_master_2026_04.json</strong> から読み込まれています。新しいXLSファイルを取り込むと、このファイルが更新されます。</div>
+    <div class="alert-box info">社員一覧はSupabase接続時はDBを優先し、未接続時はJSONを参照します。この画面からGitHub上のJSONファイルを直接更新することはできません。</div>
   </div>
 
   <!-- ステップ1: ファイル選択 -->
@@ -78,7 +86,7 @@
   <!-- ステップ3: プレビュー -->
   <div class="import-card" id="preview-card" style="display:none">
     <h3><span class="step-badge">3</span> 取込プレビュー（最初の20件）</h3>
-    <div class="result-stats" id="preview-stats"></div>
+    <div id="validation-result"></div><div class="result-stats" id="preview-stats"></div>
     <div class="preview-wrap">
       <table>
         <thead><tr><th>社員コード</th><th>氏名</th><th>カナ</th><th>所属</th><th>職種</th><th>雇用形態</th><th>等級</th><th>性別</th><th>生年月日</th><th>入社年月日</th><th>年齢</th><th>勤続</th></tr></thead>
@@ -86,8 +94,8 @@
       </table>
     </div>
     <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-      <button class="btn-primary" id="btn-import" onclick="doImport()">このデータでインポート実行</button>
-      <button class="btn-dl" id="btn-dl" onclick="downloadJson()" style="display:none">JSONをダウンロード</button>
+      <button class="btn-primary" id="btn-import" onclick="doImport()">検証済みデータを確定</button>
+      <button class="btn-dl" id="btn-dl" onclick="downloadJson()" style="display:none">更新用JSONをダウンロード</button>
       <span id="import-result-msg" style="font-size:.84rem;font-weight:600;color:var(--accent,#8b6a3e)"></span>
     </div>
   </div>
@@ -189,8 +197,23 @@ function parseXLS(data) {
   return employees;
 }
 
+function validateEmployees(employees) {
+  const errors = [], seen = new Set();
+  employees.forEach((e, idx) => {
+    const row = idx + 4;
+    const code = String(e.employee_code || '').trim();
+    if (!code) errors.push({row, msg:'社員コードがありません'});
+    if (!String(e.name || '').trim()) errors.push({row, msg:'氏名がありません'});
+    if (!String(e.center || '').trim()) errors.push({row, msg:'所属がありません'});
+    if (code && seen.has(code)) errors.push({row, msg:`社員コード「${code}」がファイル内で重複しています`});
+    if (code) seen.add(code);
+  });
+  return errors;
+}
 function showPreview(employees) {
-  parsedEmployees = employees;
+  const errors = validateEmployees(employees);
+  window.__IMPORT_ERRORS__ = errors;
+  parsedEmployees = errors.length ? [] : employees;
   const centers   = new Set(employees.map(e => e.center));
   const positions = {};
   const empTypes  = {};
@@ -198,6 +221,11 @@ function showPreview(employees) {
     positions[e.position] = (positions[e.position]||0)+1;
     empTypes[e.employment_type] = (empTypes[e.employment_type]||0)+1;
   });
+
+  const validation = document.getElementById('validation-result');
+  if (validation) validation.innerHTML = errors.length
+    ? `<div class="alert-box danger"><strong>${errors.length}件のエラーがあります。</strong> 修正後に再度ファイルを選択してください。<button class="btn btn-secondary btn-sm" type="button" onclick="exportImportErrorsCSV()">エラーCSV出力</button></div>`
+    : `<div class="alert-box success"><strong>基本検証OK</strong> 必須項目とファイル内の社員コード重複に問題はありません。</div>`;
 
   document.getElementById('preview-stats').innerHTML = [
     ['rs-total', employees.length, '取込対象'],
@@ -216,6 +244,8 @@ function showPreview(employees) {
     <td>${e.age??'—'}</td><td>${e.years_of_service??'—'}</td></tr>`
   ).join('') + (employees.length > 20 ? `<tr><td colspan="12" style="color:var(--text-muted);padding:10px;text-align:center">他 ${employees.length-20} 件...</td></tr>` : '');
 
+  const importBtn=document.getElementById('btn-import');
+  if(importBtn){importBtn.disabled=errors.length>0;importBtn.textContent=errors.length?'エラーを修正してください':'検証済みデータを確定';}
   document.getElementById('mapping-card').style.display = 'block';
   document.getElementById('preview-card').style.display = 'block';
 }
@@ -243,7 +273,7 @@ function doImport() {
     localStorage.setItem('imported_employees_v1', JSON.stringify(output));
   } catch(e) { console.warn('LocalStorage保存失敗:', e); }
 
-  document.getElementById('import-result-msg').textContent = `✓ ${parsedEmployees.length.toLocaleString()}件を取り込みました。JSONをダウンロードしてデータを保存してください。`;
+  document.getElementById('import-result-msg').textContent = `✓ ${parsedEmployees.length.toLocaleString()}件を取り込みました。更新用JSONをダウンロードしてデータを保存してください。`;
   document.getElementById('btn-dl').style.display = 'inline-block';
   btn.textContent = '✓ 完了';
   window._importedOutput = output;
@@ -257,6 +287,16 @@ function downloadJson() {
   a.download = 'employee_master_2026_04.json';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+
+function exportImportErrorsCSV(){
+  const errors=window.__IMPORT_ERRORS__||[];
+  if(!errors.length){ APP.toast('出力するエラーはありません','warning'); return; }
+  const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+  const lines=[['行','エラー内容'].map(q).join(','),...errors.map(e=>[e.row,e.msg].map(q).join(','))];
+  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='社員データ取込エラー.csv';a.click();URL.revokeObjectURL(a.href);
 }
 
 // ファイル処理
@@ -308,7 +348,7 @@ dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag
     document.getElementById('cs-total').textContent    = emps.length.toLocaleString();
     document.getElementById('cs-seishain').textContent = seishain.toLocaleString();
     document.getElementById('cs-centers').textContent  = centers;
-    document.getElementById('cs-source').textContent   = 'JSON';
+    document.getElementById('cs-source').textContent   = APP.isSupabaseReady() ? 'Supabase' : 'JSON';
   } catch(e) { console.warn(e); }
 })();
 </script>
