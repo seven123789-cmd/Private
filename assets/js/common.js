@@ -309,11 +309,6 @@ const APP = (() => {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
 
-    const shell = sb.closest('.app-shell');
-    if (shell) shell.classList.remove('sidebar-collapsed');
-    sb.classList.remove('is-collapsed');
-    localStorage.removeItem('license_sidebar_collapsed_v1');
-
     // 既存NAVメニュー（文字主体：画像アイコン・折りたたみは使わない）
     const rows = NAV.map(n => `
       <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}">
