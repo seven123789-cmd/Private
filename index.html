@@ -7,112 +7,66 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body>
-<div class="app-shell">
-<aside class="sidebar" id="sidebar"></aside>
-<div class="page-content">
-<main class="page-main">
-
-  <!-- ヘッダーエリア -->
+<body class="dashboard-workspace">
+<div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
   <div class="page-header page-header-v2">
     <img class="page-header-bg-img" src="assets/img/imperial/header-dashboard-bg.png" alt="" aria-hidden="true">
-    <div class="page-heading">
-      <div class="page-title-block">
-        <div class="page-title">ダッシュボード</div>
-        <div class="page-title-en">HR & CREDENTIALS OVERVIEW</div>
-      </div>
-    </div>
+    <div class="page-heading"><div class="page-title-block">
+      <div class="page-title">ダッシュボード</div>
+      <div class="page-title-en">HR MANAGEMENT OVERVIEW</div>
+      <div class="dashboard-hero-copy">社員・資格・人事評価の状況と、優先して対応すべき項目を確認します。</div>
+    </div></div>
+    <div class="dashboard-refresh"><span id="dashboard-updated">—</span><button class="btn btn-secondary btn-sm" type="button" id="btn-dashboard-refresh">再読込</button></div>
   </div>
 
-  <section class="stats" aria-label="主要指標">
-    <div class="stat-card danger">
-      <div class="kpi-corner tl"></div><div class="kpi-corner tr"></div><div class="kpi-corner bl"></div><div class="kpi-corner br"></div>
-      <div class="stat-top"><span>期限切れ</span></div>
-      <div class="stat-icon" aria-hidden="true"></div>
-      <div class="stat-value" id="stat-expired">0</div>
-      <div class="stat-sub">更新期限を超過</div>
-    </div>
-    <div class="stat-card warning">
-      <div class="kpi-corner tl"></div><div class="kpi-corner tr"></div><div class="kpi-corner bl"></div><div class="kpi-corner br"></div>
-      <div class="stat-top"><span>30日以内</span></div>
-      <div class="stat-icon" aria-hidden="true"></div>
-      <div class="stat-value" id="stat-critical">0</div>
-      <div class="stat-sub">至急確認が必要</div>
-    </div>
-    <div class="stat-card info">
-      <div class="kpi-corner tl"></div><div class="kpi-corner tr"></div><div class="kpi-corner bl"></div><div class="kpi-corner br"></div>
-      <div class="stat-top"><span>90日以内</span></div>
-      <div class="stat-icon" aria-hidden="true"></div>
-      <div class="stat-value" id="stat-warning">0</div>
-      <div class="stat-sub">更新予定の確認</div>
-    </div>
-    <div class="stat-card sakura">
-      <div class="kpi-corner tl"></div><div class="kpi-corner tr"></div><div class="kpi-corner bl"></div><div class="kpi-corner br"></div>
-      <div class="stat-top"><span>昇格候補</span></div>
-      <div class="stat-icon" aria-hidden="true"></div>
-      <div class="stat-value" id="stat-promo">0</div>
-      <div class="stat-sub">評定対象者</div>
-    </div>
-    <div class="stat-card">
-      <div class="kpi-corner tl"></div><div class="kpi-corner tr"></div><div class="kpi-corner bl"></div><div class="kpi-corner br"></div>
-      <div class="stat-top"><span>社員数</span></div>
-      <div class="stat-icon" aria-hidden="true"></div>
-      <div class="stat-value" id="stat-employees">0</div>
-      <div class="stat-sub">登録社員数</div>
+  <section class="dashboard-section">
+    <div class="section-heading-row"><div><h2>要対応</h2><p>期限・人事評価に関する優先確認項目です。</p></div><a href="alerts.html" class="text-link">資格期限アラート →</a></div>
+    <div class="stats dashboard-action-stats">
+      <a class="stat-card danger" href="alerts.html?status=期限切れ"><div class="stat-top"><span>期限切れ</span></div><div class="stat-value" id="stat-expired">0</div><div class="stat-sub">最優先で確認</div></a>
+      <a class="stat-card warning" href="alerts.html?status=30日以内"><div class="stat-top"><span>30日以内</span></div><div class="stat-value" id="stat-critical">0</div><div class="stat-sub">更新手続きを確認</div></a>
+      <a class="stat-card info" href="alerts.html?status=90日以内"><div class="stat-top"><span>90日以内</span></div><div class="stat-value" id="stat-warning">0</div><div class="stat-sub">更新準備を開始</div></a>
+      <a class="stat-card sakura" href="promotion.html"><div class="stat-top"><span>昇格候補</span></div><div class="stat-value" id="stat-promo">0</div><div class="stat-sub">評定対象者</div></a>
+      <a class="stat-card" href="employees.html"><div class="stat-top"><span>登録社員</span></div><div class="stat-value" id="stat-employees">0</div><div class="stat-sub">社員管理を開く</div></a>
     </div>
   </section>
 
-  <section class="content-grid">
-    <div class="card dashboard-card card-alert">
-      <div class="card-header">
-        <div>
-          <div class="card-title">更新警鐘</div>
-          <div class="card-sub">期限切れ・30日以内・90日以内の資格</div>
-        </div>
-        <a class="btn btn-secondary btn-sm" href="alerts.html">一覧へ →</a>
+  <section class="dashboard-section">
+    <div class="section-heading-row"><div><h2>優先タスク</h2><p>現在のデータから、対応優先度の高いものを表示します。</p></div></div>
+    <div class="dashboard-priority-layout">
+      <div class="card priority-card">
+        <div class="card-header"><div><div class="card-title">資格更新の要対応</div><div class="card-sub">期限が近い順に最大8件</div></div><a class="btn btn-secondary btn-sm" href="alerts.html">すべて表示</a></div>
+        <div class="card-body" id="alert-list"><div class="empty">読込中…</div></div>
       </div>
-      <div class="card-body" id="alert-list"><div class="empty">読込中</div></div>
-    </div>
-
-    <div class="card dashboard-card card-promotion">
-      <div class="card-header card-header-navy">
-        <div>
-          <div class="card-title">人事評価・昇格</div>
-          <div class="card-sub">昇格候補者の確認</div>
-        </div>
-        <a class="btn btn-secondary btn-sm" href="promotion.html">確認へ →</a>
+      <div class="card priority-card">
+        <div class="card-header"><div><div class="card-title">人事評価・昇格</div><div class="card-sub">現在の昇格候補者</div></div><a class="btn btn-secondary btn-sm" href="promotion.html">対象者を確認</a></div>
+        <div class="card-body" id="promo-list"><div class="empty">読込中…</div></div>
       </div>
-      <div class="card-body" id="promo-list"><div class="empty">読込中</div></div>
-    </div>
-
-    <div class="card dashboard-card card-coverage">
-      <div class="card-header">
-        <div>
-          <div class="card-title">事業所別 保有率</div>
-          <div class="card-sub">事業所別の資格保有状況を確認</div>
-        </div>
-        <a class="btn btn-secondary btn-sm" href="facility_licenses.html">確認へ →</a>
-      </div>
-      <div class="card-body" id="coverage-list"><div class="empty">読込中</div></div>
-    </div>
-
-    <div class="card dashboard-card card-deadline">
-      <div class="card-header card-header-navy">
-        <div>
-          <div class="card-title">期限到来予定</div>
-          <div class="card-sub">期限到来予定の資格一覧</div>
-        </div>
-        <a class="btn btn-secondary btn-sm" href="licenses.html">確認へ →</a>
-      </div>
-      <div class="card-body" id="monthly-bars"><div class="empty">読込中</div></div>
     </div>
   </section>
-</main>
-</div>
-</div>
-<script src="assets/js/supabase.js"></script>
-<script src="assets/js/common.js"></script>
-<script src="assets/js/dashboard.js"></script>
+
+  <section class="dashboard-section">
+    <div class="section-heading-row"><div><h2>人員・資格状況</h2><p>登録データの全体像を確認します。</p></div></div>
+    <div class="dashboard-overview-grid">
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">所属別人員</div><div class="card-sub">社員マスタの所属センター別人数</div></div><a class="btn btn-secondary btn-sm" href="employees.html">社員管理</a></div>
+        <div class="card-body" id="workforce-list"><div class="empty">読込中…</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">資格保有状況</div><div class="card-sub">所属別の資格登録者数 / 社員数</div></div><a class="btn btn-secondary btn-sm" href="facility_licenses.html">事業所資格管理</a></div>
+        <div class="card-body" id="coverage-list"><div class="empty">読込中…</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">期限到来予定</div><div class="card-sub">今後の資格期限件数</div></div><a class="btn btn-secondary btn-sm" href="licenses.html">資格・免許管理</a></div>
+        <div class="card-body" id="monthly-bars"><div class="empty">読込中…</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">データ運用状況</div><div class="card-sub">現在参照しているデータの状態</div></div></div>
+        <div class="card-body" id="data-health"><div class="empty">読込中…</div></div>
+      </div>
+    </div>
+  </section>
+</main></div></div>
+<div id="toast-container"></div>
+<script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script><script src="assets/js/dashboard.js"></script>
 <script>(async()=>{await Auth.requireAuth();renderSidebar('index');Modal.setup();APP.initHeader();await initDashboard();})();</script>
-</body>
-</html>
+</body></html>

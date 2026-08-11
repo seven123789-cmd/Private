@@ -5,9 +5,17 @@ async function initAlerts() {
   ALERT_ROWS = await APP.loadAlertRows();
   fillAlertFilters();
   bindAlertFilters();
+  applyAlertQuery();
   renderAlertStats();
   renderAlerts();
 }
+
+function applyAlertQuery() {
+  const status = new URLSearchParams(location.search).get('status');
+  const el = document.getElementById('filter-status');
+  if (el && ['期限切れ','30日以内','90日以内','正常','期限なし'].includes(status)) el.value = status;
+}
+
 function fillAlertFilters() {
   const centers = [...new Set(ALERT_ROWS.map(r => r.center).filter(Boolean))].sort();
   const licenses = [...new Set(ALERT_ROWS.map(r => r.license_name).filter(Boolean))].sort();
