@@ -7,50 +7,68 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body>
+<body class="promotion-workspace">
 <div class="app-shell">
 <aside class="sidebar" id="sidebar"></aside>
-<div class="page-content">
-<main class="page-main">
+<div class="page-content"><main class="page-main">
 
   <div class="page-header">
-    <div class="page-heading">
-      <div class="page-title-block">
-        <div class="page-title">人事評価・昇格</div>
-        <div class="page-title-en">PROMOTION REVIEW</div>
-      </div>
+    <div class="page-heading"><div class="page-title-block">
+      <div class="page-title">人事評価・昇格</div>
+      <div class="page-title-en">PERFORMANCE &amp; PROMOTION</div>
+      <div class="page-description">現在の昇格候補者を確認し、社員詳細・将来の年度別評価管理へつなげます。</div>
+    </div></div>
+    <div class="page-header-actions">
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-export-promotion">CSV出力</button>
+      <a href="employees.html" class="btn btn-secondary btn-sm">社員管理</a>
+    </div>
+  </div>
+
+  <div class="alert-box gold promotion-data-note">
+    現在の候補判定は社員マスタの「昇格候補フラグ」を使用しています。年度別評価・評価者・確定履歴はDB整備後に追加します。
+  </div>
+
+  <div class="stats promotion-stats">
+    <div class="stat-card sakura"><div class="stat-top"><span>昇格候補</span></div><div class="stat-value" id="promo-count">—</div><div class="stat-sub">現在の候補フラグ</div></div>
+    <div class="stat-card"><div class="stat-top"><span>登録社員</span></div><div class="stat-value" id="promo-employee-count">—</div><div class="stat-sub">社員マスタ</div></div>
+    <div class="stat-card info"><div class="stat-top"><span>等級未設定</span></div><div class="stat-value" id="promo-grade-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
+    <div class="stat-card warning"><div class="stat-top"><span>昇格日未設定</span></div><div class="stat-value" id="promo-date-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
+  </div>
+
+  <div class="filter-panel">
+    <div class="filter-panel-head">
+      <div><strong>候補者検索</strong><div class="text-muted text-sm">氏名・社員コード・所属・職種・等級から絞り込みます。</div></div>
+      <button class="btn btn-secondary btn-sm" id="btn-clear-promo-filter" type="button">条件をクリア</button>
+    </div>
+    <div class="filter-grid promotion-filter-grid">
+      <div class="form-group"><label class="form-label">社員</label><input class="form-control" id="promo-keyword" placeholder="氏名・社員コード"></div>
+      <div class="form-group"><label class="form-label">所属センター</label><select class="form-control" id="promo-center"></select></div>
+      <div class="form-group"><label class="form-label">職種</label><select class="form-control" id="promo-position"></select></div>
+      <div class="form-group"><label class="form-label">等級</label><select class="form-control" id="promo-grade"></select></div>
     </div>
   </div>
 
   <div class="table-card">
     <div class="table-tools">
-      <div class="table-count">昇格候補 計 <strong id="promo-count">—</strong> 名</div>
+      <div><div class="table-count">該当 <strong id="promo-filtered-count">—</strong> 名</div><div class="text-muted text-sm">候補者フラグが有効な社員のみ表示</div></div>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>氏名</th>
-            <th>センター</th>
-            <th>職種</th>
-            <th>等級</th>
-            <th>状態</th>
-            <th>資格要件</th>
-          </tr>
-        </thead>
-        <tbody id="promo-tbody"></tbody>
-      </table>
-    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>雇用形態</th><th>現在等級</th><th>最終昇格日</th><th>状態</th><th></th></tr></thead>
+      <tbody id="promo-tbody"></tbody>
+    </table></div>
   </div>
 
-</main>
-</div>
-</div>
+  <section class="card promotion-future-card">
+    <div class="card-header"><div><div class="card-title">長期運用に向けた評価・昇格履歴</div><div class="card-sub">DB整備後にこの画面へ統合する項目</div></div></div>
+    <div class="card-body">
+      <div class="future-list"><span>評価年度・期間</span><span>一次評価</span><span>最終評価</span><span>評価者</span><span>昇格決定日</span><span>昇格前後等級</span><span>承認者</span><span>変更履歴</span></div>
+      <p class="text-muted text-sm future-note">既存の社員マスタ値を上書きして履歴を失う方式にはせず、年度別評価と昇格履歴を別レコードで蓄積する設計とします。</p>
+    </div>
+  </section>
+
+</main></div></div>
 <div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/js/supabase.js"></script>
-<script src="assets/js/common.js"></script>
-<script src="assets/js/promotion.js"></script>
+<script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script><script src="assets/js/promotion.js"></script>
 <script>(async()=>{await Auth.requireAuth();renderSidebar('promotion');Modal.setup();APP.initHeader();await initPromotion();})();</script>
-</body>
-</html>
+</body></html>
