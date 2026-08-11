@@ -116,3 +116,14 @@
 /* Phase10 — safe employee DB import */
 #diff-card .result-stats{margin-bottom:12px}
 #btn-db-apply:disabled{opacity:.48;cursor:not-allowed}
+
+/* Phase11 — Authentication foundation */
+.sidebar-account{margin:18px 8px 0;padding:12px 10px;border-top:1px solid rgba(211,166,74,.22);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sidebar-account-copy{min-width:0;display:grid;gap:3px}.sidebar-account-label{font-size:9px;color:rgba(255,244,211,.54);letter-spacing:.08em}.sidebar-account-copy strong{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff1c6;font-size:10px}
+.sidebar-account-action{border:0;background:transparent;color:#dcb95f;font:inherit;font-size:9px;font-weight:700;cursor:pointer;padding:5px}.sidebar-account-action:hover{color:#fff0b2}
+.login-workspace{min-height:100vh;background:radial-gradient(circle at 18% 15%,rgba(56,70,122,.5),transparent 34%),radial-gradient(circle at 83% 78%,rgba(96,44,83,.38),transparent 32%),linear-gradient(135deg,#070b14,#161126 58%,#09090c);display:grid;place-items:center;padding:28px}
+.login-shell{width:min(960px,100%);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(360px,.7fr);overflow:hidden;border:1px solid rgba(214,173,84,.4);border-radius:20px;box-shadow:0 28px 70px rgba(0,0,0,.38)}
+.login-brand{min-height:500px;padding:54px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(180deg,rgba(9,18,38,.48),rgba(8,8,13,.8)),url('../img/imperial/header-dashboard-bg.png') center/cover;color:#fff0c0}
+.login-brand-kicker{font-size:10px;font-weight:700;letter-spacing:.18em;color:#ddb75b}.login-brand h1{margin:10px 0 8px;font-family:var(--font-serif);font-size:34px}.login-brand p{max-width:480px;margin:0;color:rgba(255,247,222,.76);font-size:12px;line-height:1.8}
+.login-card{background:#fbf8f1;padding:48px 42px}.login-card-head{margin-bottom:28px}.login-card-head h2{margin:4px 0 8px;font-family:var(--font-serif);font-size:28px}.login-card-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.7}.login-submit{width:100%;margin-top:8px}.login-error{margin:10px 0;padding:10px 12px;border:1px solid #e4aaa4;border-radius:8px;background:#fff0ef;color:#8b312a;font-size:11px}.login-mode-note{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);color:var(--faint);font-size:10px;line-height:1.6}
+@media(max-width:780px){.login-shell{grid-template-columns:1fr}.login-brand{min-height:220px;padding:30px}.login-card{padding:30px 24px}}

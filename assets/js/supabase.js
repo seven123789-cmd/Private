@@ -15,3 +15,11 @@ window.getSupabaseClient = function getSupabaseClient() {
   }
   return window.__licenseSupabaseClient;
 };
+
+
+/* 認証移行設定
+   Phase11では既存運用を止めないため optional で開始します。
+   初回管理者アカウントのログイン確認後に true へ変更します。
+*/
+window.AUTH_REQUIRED = false;
+window.AUTH_LOGIN_URL = 'login.html';

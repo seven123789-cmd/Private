@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ログイン — 統合管理システム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body class="login-workspace">
+<main class="login-shell">
+  <section class="login-brand">
+    <div class="login-brand-kicker">INTEGRATED MANAGEMENT SYSTEM</div>
+    <h1>統合管理システム</h1>
+    <p>社員・資格・人事評価を安全に管理するための業務システムです。</p>
+  </section>
+
+  <section class="login-card">
+    <div class="login-card-head">
+      <div class="page-title-en">SECURE SIGN IN</div>
+      <h2>ログイン</h2>
+      <p>Supabase Authに登録されたアカウントでログインしてください。</p>
+    </div>
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label" for="login-email">メールアドレス</label>
+        <input class="form-control" id="login-email" type="email" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="login-password">パスワード</label>
+        <input class="form-control" id="login-password" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="login-error hidden" id="login-error"></div>
+      <button class="btn btn-primary login-submit" id="login-submit" type="submit">ログイン</button>
+    </form>
+    <div class="login-mode-note" id="login-mode-note"></div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+(async()=>{
+  const session=await Auth.session();
+  const params=new URLSearchParams(location.search);
+  const next=params.get('next')||'index.html';
+  if(session){ location.replace(next); return; }
+
+  const note=document.getElementById('login-mode-note');
+  note.textContent=Auth.isRequired()
+    ? 'このシステムはログイン必須です。'
+    : '現在は認証移行期間です。ログイン確認後に全画面をログイン必須へ切り替えます。';
+
+  document.getElementById('login-form').addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const btn=document.getElementById('login-submit');
+    const err=document.getElementById('login-error');
+    btn.disabled=true; btn.textContent='確認中…'; err.classList.add('hidden'); err.textContent='';
+    const email=document.getElementById('login-email').value.trim();
+    const password=document.getElementById('login-password').value;
+    const {data,error}=await Auth.signIn(email,password);
+    if(error){
+      err.textContent=error.message||'ログインできませんでした';
+      err.classList.remove('hidden');
+      btn.disabled=false; btn.textContent='ログイン';
+      return;
+    }
+    if(data?.session) location.replace(next);
+  });
+})();
+</script>
+</body></html>

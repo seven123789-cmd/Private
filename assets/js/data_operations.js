@@ -1,8 +1,9 @@
 async function initDataOperations(){
   const btn=document.getElementById('btn-health-refresh');if(btn){btn.disabled=true;btn.textContent='確認中…';}
   try{
-    const [source,employees,licenses,alerts]=await Promise.all([APP.dataSourceStatus(),APP.loadEmployees(),APP.loadLicenseRows(),APP.loadAlertRows()]);
+    const [source,employees,licenses,alerts,user]=await Promise.all([APP.dataSourceStatus(),APP.loadEmployees(),APP.loadLicenseRows(),APP.loadAlertRows(),Auth.currentUser()]);
     document.getElementById('health-source').textContent=source.label;
+    document.getElementById('health-auth').textContent=user ? 'ログイン済み' : (Auth.isRequired() ? '未ログイン' : '任意ログイン');
     document.getElementById('health-employees').textContent=employees.length;
     document.getElementById('health-licenses').textContent=licenses.length;
     document.getElementById('health-alerts').textContent=alerts.filter(x=>x.expiration_date).length;

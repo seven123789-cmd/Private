@@ -285,7 +285,15 @@ const APP = (() => {
         <div class="sidebar-section-label">関連システム</div>
         <div class="sidebar-system-section">${sysRows}</div>
       </section>
+      <div class="sidebar-account" id="sidebar-account">
+        <div class="sidebar-account-copy">
+          <span class="sidebar-account-label">アカウント</span>
+          <strong id="sidebar-account-name">確認中…</strong>
+        </div>
+        <button type="button" class="sidebar-account-action" id="sidebar-account-action">—</button>
+      </div>
       <div class="imperial-sidebar-future-space" aria-hidden="true"></div>`;
+    setupSidebarAccount();
   }
 
   function initExternalLinksPage() {
@@ -359,6 +367,25 @@ const APP = (() => {
     render();
   }
 
+  async function setupSidebarAccount() {
+    const nameEl = document.getElementById('sidebar-account-name');
+    const btn = document.getElementById('sidebar-account-action');
+    if (!nameEl || !btn) return;
+    const user = await Auth.currentUser();
+    if (user) {
+      nameEl.textContent = Auth.displayName(user);
+      btn.textContent = 'ログアウト';
+      btn.onclick = () => Auth.logout();
+    } else {
+      nameEl.textContent = Auth.isRequired() ? '未ログイン' : '任意ログイン';
+      btn.textContent = 'ログイン';
+      btn.onclick = () => {
+        const here = location.pathname.split('/').pop() || 'index.html';
+        location.href = `login.html?next=${encodeURIComponent(here + location.search + location.hash)}`;
+      };
+    }
+  }
+
   function initHeader() {
     const d = document.getElementById('today-date');
     if (d) d.textContent = new Intl.DateTimeFormat('ja-JP', {
@@ -371,10 +398,50 @@ const APP = (() => {
   }
 
   const Auth = {
-    async requireAuth() { return true; },
-    async currentUser() { return { email: 'admin@example.com' }; },
-    displayName() { return '管理者'; },
-    logout() { toast('ログアウト処理はSupabase Auth接続後に有効化します', 'warning'); }
+    isRequired() { return window.AUTH_REQUIRED === true; },
+    async session() {
+      const sb = client();
+      if (!sb?.auth) return null;
+      const {data,error} = await sb.auth.getSession();
+      if (error) { console.warn('Auth session error:', error); return null; }
+      return data?.session || null;
+    },
+    async requireAuth() {
+      const session = await this.session();
+      if (session) return session;
+      if (!this.isRequired()) return null;
+
+      const here = location.pathname.split('/').pop() || 'index.html';
+      if (here !== 'login.html') {
+        const next = encodeURIComponent(here + location.search + location.hash);
+        location.replace(`${window.AUTH_LOGIN_URL || 'login.html'}?next=${next}`);
+      }
+      return null;
+    },
+    async currentUser() {
+      const session = await this.session();
+      return session?.user || null;
+    },
+    displayName(user) {
+      if (!user) return '未ログイン';
+      return user.user_metadata?.display_name
+        || user.user_metadata?.name
+        || user.email
+        || 'ログイン中';
+    },
+    async signIn(email, password) {
+      const sb = client();
+      if (!sb?.auth) return {data:null,error:new Error('Supabase Authを利用できません')};
+      return await sb.auth.signInWithPassword({email, password});
+    },
+    async logout() {
+      const sb = client();
+      if (!sb?.auth) return;
+      const {error} = await sb.auth.signOut();
+      if (error) { toast(error.message || 'ログアウトできませんでした','error'); return; }
+      if (this.isRequired()) location.replace(window.AUTH_LOGIN_URL || 'login.html');
+      else location.replace('index.html');
+    }
   };
 
   return {
