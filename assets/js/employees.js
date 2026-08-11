@@ -34,7 +34,7 @@ function renderEmployees() {
   const position = document.getElementById('filter-position')?.value || '';
   const employment = document.getElementById('filter-employment')?.value || '';
   const promo = document.getElementById('filter-promo')?.value || '';
-  EMP_FILTERED = EMP_ROWS.filter(e => (!kw || [e.employee_code, e.name, e.kana, e.center, e.position].join(' ').includes(kw)) && (!center || e.center === center) && (!position || e.position === position) && (!employment || e.employment_type === employment) && (!promo || e.promotion_target_flag === true || e.promotion_target_flag === 'true'));
+  EMP_FILTERED = EMP_ROWS.filter(e => (!kw || [e.employee_code, e.name, e.kana, e.center, e.position].join(' ').includes(kw)) && (!center || e.center === center) && (!position || e.position === position) && (!employment || e.employment_type === employment) && (!promo || (e.promotion_target_flag === true || e.promotion_target_flag === 'true')));
   const cnt = document.getElementById('emp-count'); if (cnt) cnt.textContent = EMP_FILTERED.length;
   const tbody = document.getElementById('emp-tbody'); if (!tbody) return;
   const start = (empPage - 1) * empPerPage;
@@ -48,5 +48,13 @@ function renderEmpPager() {
   p.innerHTML = `<div class="row-meta">${EMP_FILTERED.length}件中 ${EMP_FILTERED.length ? ((empPage - 1) * empPerPage + 1) : 0}〜${Math.min(empPage * empPerPage, EMP_FILTERED.length)}件表示</div><div style="display:flex;gap:6px"><button class="page-btn" ${empPage <= 1 ? 'disabled' : ''} onclick="empPage--;renderEmployees()">‹</button>${Array.from({length: pages}, (_, i) => `<button class="page-btn ${i + 1 === empPage ? 'active' : ''}" onclick="empPage=${i + 1};renderEmployees()">${i + 1}</button>`).join('')}<button class="page-btn" ${empPage >= pages ? 'disabled' : ''} onclick="empPage++;renderEmployees()">›</button></div>`;
 }
 function openEmployeeDetail(id) { const e = EMP_ROWS.find(x => String(x.id) === String(id)); if (!e) return; window.location.href = "employee_detail.html?id=" + encodeURIComponent(e.id); }
-function exportEmployeeCSV() { const header = ['employee_code','name','center','position','employment_type','current_grade','promotion_target_flag']; const csv = header.join(',') + '\n' + EMP_FILTERED.map(e => header.map(k => `"${String(e[k] ?? '').replace(/"/g, '""')}"`).join(',')).join('\n'); const blob = new Blob(['\ufeff' + csv], { type:'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'employees_export.csv'; a.click(); URL.revokeObjectURL(a.href); }
+function exportEmployeeCSV() {
+  APP.downloadCSV(`社員一覧_${APP.exportStamp()}.csv`, [
+    {label:'社員コード',value:'employee_code'},{label:'氏名',value:'name'},{label:'フリガナ',value:'kana'},
+    {label:'所属センター',value:'center'},{label:'部門',value:'division'},{label:'職種',value:'position'},
+    {label:'雇用形態',value:'employment_type'},{label:'現在等級',value:'current_grade'},
+    {label:'昇格候補',value:e=>(e.promotion_target_flag===true||e.promotion_target_flag==='true')?'対象':'対象外'},
+    {label:'最終昇格日',value:'last_promotion_date'}
+  ], EMP_FILTERED);
+}
 window.initEmployees = initEmployees; window.renderEmployees = renderEmployees; window.openEmployeeDetail = openEmployeeDetail; window.exportEmployeeCSV = exportEmployeeCSV;

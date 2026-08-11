@@ -108,3 +108,7 @@
 .import-flow{display:flex;align-items:center;max-width:620px;margin:0 0 14px}.flow-step{display:flex;align-items:center;gap:7px;color:var(--faint);font-size:10px;font-weight:700;white-space:nowrap}.flow-step strong{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#e8e2d7;color:#6e655b}.flow-step.active{color:var(--wine)}.flow-step.active strong{background:var(--wine);color:#fff}.flow-line{height:1px;flex:1;margin:0 9px;background:#d9d1c4}.import-safety-note{margin-bottom:16px}
 .alert-box.danger{background:#fff2f1;border-color:#e5b5af;color:#7f2d25}.alert-box.success{background:#f1f8f3;border-color:#b8d8c1;color:#2f6c45}.alert-box .btn{margin-left:10px}
 @media(max-width:620px){.master-ops-note{align-items:flex-start;flex-direction:column}.import-flow{max-width:100%}.flow-step span{display:none}}
+
+/* Phase 9 — Data foundation */
+.data-source-card{margin-bottom:16px}.stat-value-text{font-size:20px!important;line-height:1.25!important}.data-ops-warning{margin-top:16px}
+.ops-check-list{display:grid}.ops-check-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #eee9e0;font-size:12px}.ops-check-row:first-child{padding-top:0}.ops-check-row:last-child{border-bottom:0}.ops-check-row strong{display:flex;align-items:center;gap:8px}

@@ -31,6 +31,16 @@
   </div>
   <div class="alert-box info import-safety-note"><strong>安全設計：</strong>現段階では一括取込からDBへ直接書き込みません。既存DBの一意制約・RLS・更新履歴を確認後に、安全な一括反映機能を追加します。</div>
 
+  <div class="card data-source-card">
+    <div class="card-header"><div><div class="card-title">データ接続・反映方式</div><div class="card-sub">一括更新を実行する前提条件を確認します。</div></div></div>
+    <div class="card-body"><div class="data-health-list">
+      <div class="data-health-row"><span>現在の参照先</span><strong id="import-source-mode">確認中…</strong></div>
+      <div class="data-health-row"><span>DB直接一括反映</span><strong>未実装（安全確認待ち）</strong></div>
+      <div class="data-health-row"><span>照合キー</span><strong>社員コード</strong></div>
+      <div class="data-health-row"><span>更新用出力</span><strong>JSON</strong></div>
+    </div></div>
+  </div>
+
   <!-- 現在のデータ状況 -->
   <div class="import-card" id="current-status-card">
     <h3><span class="step-badge">i</span> 現在の社員データ状況</h3>

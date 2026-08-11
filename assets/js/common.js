@@ -138,6 +138,26 @@ const APP = (() => {
       licenses: lics
     };
   }
+
+  const csvQuote = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const downloadCSV = (filename, headers, rows) => {
+    const lines = [headers.map(h => csvQuote(h.label)).join(',')];
+    rows.forEach(row => lines.push(headers.map(h => csvQuote(typeof h.value === 'function' ? h.value(row) : row[h.value])).join(',')));
+    const blob = new Blob(['\ufeff' + lines.join('\r\n')], {type:'text/csv;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+    URL.revokeObjectURL(a.href);
+  };
+  const exportStamp = () => new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}).replaceAll('-','');
+  async function dataSourceStatus() {
+    const sb = client();
+    if (!sb) return {mode:'fallback', label:'JSON / ローカル', writable:false};
+    const r = await sb.from('employees').select('id',{count:'exact',head:true});
+    return r.error
+      ? {mode:'error', label:'Supabase接続エラー', writable:false, error:r.error}
+      : {mode:'supabase', label:'Supabase', writable:true, count:r.count ?? null};
+  }
+
   async function saveEmployeeLicense(payload) {
     const sb = client();
     if (sb) return await insert('employee_licenses', payload);
@@ -167,6 +187,7 @@ const APP = (() => {
     { id:'alerts',         group:'license',  label:'資格期限アラート', sub:'期限管理',           href:'alerts.html',            badge:true },
     { id:'masters',        group:'system',   label:'各種マスタ設定',   sub:'マスタ管理',         href:'masters.html',           badge:false },
     { id:'master_import',  group:'system',   label:'社員データ取込',     sub:'社員マスタ初期取込', href:'master_import.html',     badge:false },
+    { id:'data_operations', group:'system', label:'データ運用確認', sub:'接続・品質確認', href:'data_operations.html', badge:false },
     { id:'external_links', group:'system',   label:'関連リンク',   sub:'リンク集・登録',     href:'external_links.html',    badge:false }
   ];
 
@@ -346,6 +367,7 @@ const APP = (() => {
     escape, badge, alertBadge, toast, client, isSupabaseReady,
     query, insert, loadEmployees, loadLicenseRows, loadAlertRows,
     loadLicenseMaster, loadMasters, saveEmployeeLicense,
+    downloadCSV, exportStamp, dataSourceStatus,
     renderSidebar, initHeader, initExternalLinksPage, Auth, NAV,
     loadExtLinks, addExtLink, removeExtLink
   };
