@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body class="dashboard-workspace">
+<body class="dashboard-workspace"><div class="auth-gate-screen" id="auth-gate-screen">認証状態を確認しています…</div>
 <div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
   <div class="page-header page-header-v2">
     <img class="page-header-bg-img" src="assets/img/imperial/header-dashboard-bg.png" alt="" aria-hidden="true">
@@ -67,6 +67,15 @@
   </section>
 </main></div></div>
 <div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script><script src="assets/js/dashboard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script>
+<script>
+(async()=>{
+  const ok=await APP.enforcePageAuth();
+  if(ok){
+    const gate=document.getElementById('auth-gate-screen');
+    if(gate) gate.hidden=true;
+  }
+})();
+</script><script src="assets/js/dashboard.js"></script>
 <script>(async()=>{await Auth.requireAuth();renderSidebar('index');Modal.setup();APP.initHeader();await initDashboard();})();</script>
 </body></html>

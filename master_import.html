@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body>
+<body><div class="auth-gate-screen" id="auth-gate-screen">認証状態を確認しています…</div>
 <div class="app-shell">
 <aside class="sidebar" id="sidebar"></aside>
 <div class="page-content">
@@ -124,6 +124,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/common.js"></script>
+<script>
+(async()=>{
+  const ok=await APP.enforcePageAuth();
+  if(ok){
+    const gate=document.getElementById('auth-gate-screen');
+    if(gate) gate.hidden=true;
+  }
+})();
+</script>
 <script>
 let parsedEmployees = [];
 let importDiff = {newRows:[],changedRows:[],unchangedRows:[]};

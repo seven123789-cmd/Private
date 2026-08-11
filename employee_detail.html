@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css"></head>
-<body class="employee-profile"><div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
+<body class="employee-profile"><div class="auth-gate-screen" id="auth-gate-screen">認証状態を確認しています…</div><div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
 <div class="page-header"><div class="page-heading"><div class="page-title-block"><div class="page-title">社員詳細</div><div class="page-title-en">EMPLOYEE RECORD</div><div class="page-description">社員を起点に、所属・雇用・資格・昇格情報を確認します。</div></div></div><div class="page-header-actions"><a href="employees.html" class="btn btn-secondary btn-sm">← 社員管理へ</a></div></div>
 <section class="employee-summary"><div class="employee-summary__identity"><div class="employee-avatar" id="emp-avatar-initial">?</div><div><div class="employee-summary__name-row"><h1 class="employee-summary__name" id="emp-name">—</h1><div id="emp-badges"></div></div><div class="employee-summary__kana" id="emp-kana">—</div><div class="employee-summary__meta"><span>社員コード <strong id="emp-code">—</strong></span><span id="emp-center">—</span><span id="emp-position">—</span><span id="emp-employment">—</span></div></div></div></section>
 <div class="profile-grid"><div class="profile-stack">
@@ -24,6 +24,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/common.js"></script>
+<script>
+(async()=>{
+  const ok=await APP.enforcePageAuth();
+  if(ok){
+    const gate=document.getElementById('auth-gate-screen');
+    if(gate) gate.hidden=true;
+  }
+})();
+</script>
 <script>
 async function initDetail() {
   APP.initHeader();

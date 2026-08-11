@@ -21,5 +21,5 @@ window.getSupabaseClient = function getSupabaseClient() {
    Phase11では既存運用を止めないため optional で開始します。
    初回管理者アカウントのログイン確認後に true へ変更します。
 */
-window.AUTH_REQUIRED = false;
+window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';

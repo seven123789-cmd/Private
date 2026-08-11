@@ -3,7 +3,7 @@
 <title>データ運用確認 — 統合管理システム</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css"></head>
-<body class="data-ops-workspace"><div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
+<body class="data-ops-workspace"><div class="auth-gate-screen" id="auth-gate-screen">認証状態を確認しています…</div><div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
 <div class="page-header"><div class="page-heading"><div class="page-title-block"><div class="page-title">データ運用確認</div><div class="page-title-en">DATA OPERATIONS</div><div class="page-description">DB接続と主要データの読込状態を確認します。推測値ではなく実際の読込結果を表示します。</div></div></div><div class="page-header-actions"><button id="btn-health-refresh" class="btn btn-secondary btn-sm">再確認</button></div></div>
 <div class="stats">
 <div class="stat-card"><div class="stat-top"><span>接続先</span></div><div class="stat-value stat-value-text" id="health-source">—</div><div class="stat-sub">現在のデータソース</div></div><div class="stat-card"><div class="stat-top"><span>認証状態</span></div><div class="stat-value stat-value-text" id="health-auth">—</div><div class="stat-sub">Supabase Auth</div></div>
@@ -14,5 +14,14 @@
 <div class="card"><div class="card-header"><div><div class="card-title">運用チェック</div><div class="card-sub">ブラウザから確認可能な範囲</div></div></div><div class="card-body" id="health-checks"><div class="empty">確認中…</div></div></div>
 <div class="alert-box gold data-ops-warning"><strong>DB制約・RLS・バックアップ状態はこの画面だけでは確認できません。</strong> Supabase側のスキーマ確認後にDB移行SQLを確定します。</div>
 </main></div></div><div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script><script src="assets/js/data_operations.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script>
+<script>
+(async()=>{
+  const ok=await APP.enforcePageAuth();
+  if(ok){
+    const gate=document.getElementById('auth-gate-screen');
+    if(gate) gate.hidden=true;
+  }
+})();
+</script><script src="assets/js/data_operations.js"></script>
 <script>(async()=>{await Auth.requireAuth();renderSidebar('data_operations');Modal.setup();APP.initHeader();await initDataOperations();})();</script></body></html>

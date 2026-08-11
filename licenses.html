@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body class="license-workspace">
+<body class="license-workspace"><div class="auth-gate-screen" id="auth-gate-screen">認証状態を確認しています…</div>
 <div class="app-shell">
 <aside class="sidebar" id="sidebar"></aside>
 <div class="page-content">
@@ -96,6 +96,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/common.js"></script>
+<script>
+(async()=>{
+  const ok=await APP.enforcePageAuth();
+  if(ok){
+    const gate=document.getElementById('auth-gate-screen');
+    if(gate) gate.hidden=true;
+  }
+})();
+</script>
 <script src="assets/js/licenses.js"></script>
 <script>(async()=>{await Auth.requireAuth();renderSidebar("licenses");Modal.setup();APP.initHeader();await initLicenses();})();</script>
 </body></html>

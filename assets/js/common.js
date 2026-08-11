@@ -386,6 +386,12 @@ const APP = (() => {
     }
   }
 
+  async function enforcePageAuth() {
+    if ((location.pathname.split('/').pop() || 'index.html') === 'login.html') return true;
+    const session = await Auth.requireAuth();
+    return !!session;
+  }
+
   function initHeader() {
     const d = document.getElementById('today-date');
     if (d) d.textContent = new Intl.DateTimeFormat('ja-JP', {
@@ -450,7 +456,7 @@ const APP = (() => {
     query, insert, currentSession, upsertEmployees, loadEmployees, loadLicenseRows, loadAlertRows,
     loadLicenseMaster, loadMasters, saveEmployeeLicense,
     downloadCSV, exportStamp, dataSourceStatus,
-    renderSidebar, initHeader, initExternalLinksPage, Auth, NAV,
+    renderSidebar, initHeader, initExternalLinksPage, Auth, enforcePageAuth, NAV,
     loadExtLinks, addExtLink, removeExtLink
   };
 })();

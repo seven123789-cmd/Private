@@ -127,3 +127,7 @@
 .login-brand-kicker{font-size:10px;font-weight:700;letter-spacing:.18em;color:#ddb75b}.login-brand h1{margin:10px 0 8px;font-family:var(--font-serif);font-size:34px}.login-brand p{max-width:480px;margin:0;color:rgba(255,247,222,.76);font-size:12px;line-height:1.8}
 .login-card{background:#fbf8f1;padding:48px 42px}.login-card-head{margin-bottom:28px}.login-card-head h2{margin:4px 0 8px;font-family:var(--font-serif);font-size:28px}.login-card-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.7}.login-submit{width:100%;margin-top:8px}.login-error{margin:10px 0;padding:10px 12px;border:1px solid #e4aaa4;border-radius:8px;background:#fff0ef;color:#8b312a;font-size:11px}.login-mode-note{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);color:var(--faint);font-size:10px;line-height:1.6}
 @media(max-width:780px){.login-shell{grid-template-columns:1fr}.login-brand{min-height:220px;padding:30px}.login-card{padding:30px 24px}}
+
+/* Phase12 — mandatory authentication gate */
+.auth-gate-screen{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#0b0d14;color:#f3dfaa;font-family:var(--font-sans);font-size:12px;letter-spacing:.05em}
+.auth-gate-screen[hidden]{display:none}
