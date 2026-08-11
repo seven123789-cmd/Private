@@ -19,11 +19,13 @@
 <section class="card"><div class="card-header card-header-navy"><div><div class="card-title">資格・免許</div><div class="card-sub">この社員に登録されている保有資格</div></div><a class="btn btn-secondary btn-sm" href="licenses.html">資格・免許管理へ</a></div><div class="card-body" id="emp-licenses-body"><div class="empty">読込中…</div></div></section>
 </div><aside class="profile-stack">
 <section class="card"><div class="card-header"><div><div class="card-title">人事サマリー</div><div class="card-sub">現在の登録情報</div></div></div><div class="card-body"><div class="summary-list"><div class="summary-row"><span>等級</span><strong id="emp-grade-summary">—</strong></div><div class="summary-row"><span>最終昇格日</span><strong id="emp-last-promo-summary">—</strong></div><div class="summary-row"><span>昇格対象</span><strong id="emp-promo-summary">対象外</strong></div></div></div></section>
-<section class="card future-card"><div class="card-header"><div><div class="card-title">拡張予定</div><div class="card-sub">データ項目追加後に実装</div></div></div><div class="card-body"><div class="future-list"><span>異動・所属履歴</span><span>評価履歴</span><span>添付書類</span><span>変更履歴</span></div><p class="text-muted text-sm future-note">未実装データは仮表示せず、DB設計後に順次追加します。</p></div></section>
+<section class="card"><div class="card-header"><div><div class="card-title">人事異動履歴</div><div class="card-sub">所属・部門・役職・等級の履歴</div></div></div><div class="card-body" id="emp-assignment-history"><div class="empty">読込中…</div></div></section>
+<section class="card future-card"><div class="card-header"><div><div class="card-title">拡張予定</div><div class="card-sub">データ項目追加後に実装</div></div></div><div class="card-body"><div class="future-list"><span>評価履歴</span><span>添付書類</span><span>変更履歴</span></div><p class="text-muted text-sm future-note">未実装データは仮表示せず、DB設計後に順次追加します。</p></div></section>
 </aside></div></main></div></div><div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/common.js"></script>
+<script src="assets/js/employee-assignment-history.js"></script>
 <script>
 (async()=>{
   const ok=await APP.enforcePageAuth();
@@ -55,6 +57,9 @@ async function initDetail() {
   document.getElementById('emp-employment').textContent = e.employment_type || '—';
   document.getElementById('emp-grade').textContent = e.current_grade || '—';
   document.getElementById('emp-last-promo').textContent = APP.fmtDate(e.last_promotion_date);
+
+  // Phase16-D: DBの所属・役職・等級履歴を表示
+  await EmployeeAssignmentHistory.mount(id);
 
   const badgesEl = document.getElementById('emp-badges');
   if (e.promotion_target_flag === true || e.promotion_target_flag === 'true') {
