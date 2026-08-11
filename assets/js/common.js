@@ -157,113 +157,22 @@ const APP = (() => {
     return {data:[payload], error:null, demo:true};
   }
 
-  /* ================================================================
-     ブランドマーク — 帝国劇場の紋章
-     薔薇 × 桜 × 五芒星 × 剣 の大正ロマン紋章（完全オリジナル）
-     ================================================================ */
-  const BRAND_EMBLEM = `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="imperial-brand-svg">
-    <defs>
-      <radialGradient id="ibg" cx="48%" cy="34%" r="68%">
-        <stop offset="0%" stop-color="#FFF1B8"/>
-        <stop offset="48%" stop-color="#D4A830"/>
-        <stop offset="100%" stop-color="#8A5D14"/>
-      </radialGradient>
-      <linearGradient id="ibb" x1="10" y1="8" x2="54" y2="56">
-        <stop stop-color="#8D1722"/>
-        <stop offset="1" stop-color="#10263A"/>
-      </linearGradient>
-    </defs>
-    <circle cx="32" cy="32" r="29" fill="url(#ibb)" stroke="url(#ibg)" stroke-width="3"/>
-    <circle cx="32" cy="32" r="23" fill="none" stroke="#F7E0A2" stroke-width="1.5" stroke-dasharray="3 3"/>
-    <path d="M32 7v8M32 49v8M7 32h8M49 32h8M14 14l6 6M44 44l6 6M50 14l-6 6M20 44l-6 6" stroke="#D4A830" stroke-width="2" stroke-linecap="round"/>
-    <path d="M32 14l4.4 12.3 13.1.3-10.4 7.9 3.8 12.5L32 39.6 21.1 47l3.8-12.5-10.4-7.9 13.1-.3L32 14z"
-          fill="#10263A" stroke="#F6DF9A" stroke-width="2" stroke-linejoin="round"/>
-    <circle cx="32" cy="32" r="6" fill="#F2C4CF" stroke="#D4A830" stroke-width="2"/>
-  </svg>`;
-
-  /* ================================================================
-     サイドバー — 宝石色アイコン（大正浪漫劇場版）
-     ================================================================ */
-
-  /* 薔薇の花（桜花） */
-  const ico = {
-    /* ダッシュボード — 金の羅針盤 */
-    dashboard: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="12" y1="2" x2="12" y2="6"/>
-      <line x1="12" y1="18" x2="12" y2="22"/>
-      <line x1="2" y1="12" x2="6" y2="12"/>
-      <line x1="18" y1="12" x2="22" y2="12"/>
-      <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".4"/>
-      <line x1="12" y1="12" x2="16" y2="9" stroke-width="2"/>
-    </svg>`,
-    /* 社員 — 瑠璃の紋章盾 */
-    employees: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2L3 7v5c0 5 4 9 9 10 5-1 9-5 9-10V7L12 2z"/>
-      <circle cx="12" cy="10" r="3"/>
-      <path d="M7 20c0-2.5 2.2-4 5-4s5 1.5 5 4"/>
-    </svg>`,
-    /* 資格登録 — 桜紅の証書巻物 */
-    licenses: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <path d="M9 13h6M9 17h4"/>
-      <circle cx="9" cy="9" r="1" fill="currentColor"/>
-    </svg>`,
-    /* 事業所 — 翡翠の帝国屋敷 */
-    facility: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
-      <line x1="12" y1="3" x2="12" y2="9"/>
-    </svg>`,
-    /* アラート — 朱の警鐘 */
-    alerts: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-      <circle cx="12" cy="8" r="1.5" fill="currentColor"/>
-    </svg>`,
-    /* 昇格 — 紫の翼章 */
-    promotion: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2l2.5 7.5H22l-6.5 4.7 2.5 7.8L12 17.5 6 22l2.5-7.8L2 9.5h7.5L12 2z"/>
-    </svg>`,
-    /* マスタ — 銀の歯車 */
-    masters: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
-    </svg>`,
-  };
-
-  /* ナビ定義 */
+  /* ナビ定義：人事業務の情報設計に合わせて整理 */
   const NAV = [
-    { id:'index',          label:'総覧',       sub:'ダッシュボード',       href:'index.html',             short:'総', badge:false },
-    { id:'employees',      label:'社員名簿',   sub:'社員一覧・検索',       href:'employees.html',         short:'社', badge:false },
-    { id:'licenses',       label:'資格台帳',   sub:'資格・免許管理',       href:'licenses.html',          short:'資', badge:false },
-    { id:'facility',       label:'事業所資格', sub:'事業所別管理',         href:'facility_licenses.html', short:'所', badge:false },
-    { id:'alerts',         label:'警鐘',       sub:'アラート一覧',         href:'alerts.html',            short:'警', badge:true },
-    { id:'promotion',      label:'昇格評定',   sub:'昇格・人事評価',       href:'promotion.html',         short:'昇', badge:false },
-    { id:'masters',        label:'原簿設定',   sub:'マスタ管理',           href:'masters.html',           short:'原', badge:false },
-    { id:'master_import',  label:'社員取込',   sub:'社員マスタ初期取込',   href:'master_import.html',     short:'取', badge:false },
-    { id:'external_links', label:'外部リンク', sub:'リンク集・登録',       href:'external_links.html',    short:'外', badge:false }
+    { id:'index',          group:'overview', label:'総覧',         sub:'状況と要対応の確認', href:'index.html',             badge:false },
+    { id:'employees',      group:'people',   label:'社員名簿',     sub:'社員一覧・検索',     href:'employees.html',         badge:false },
+    { id:'promotion',      group:'people',   label:'昇格評定',     sub:'昇格・人事評価',     href:'promotion.html',         badge:false },
+    { id:'licenses',       group:'license',  label:'資格台帳',     sub:'資格・免許管理',     href:'licenses.html',          badge:false },
+    { id:'facility',       group:'license',  label:'事業所資格',   sub:'事業所別管理',       href:'facility_licenses.html', badge:false },
+    { id:'alerts',         group:'license',  label:'期限アラート', sub:'期限管理',           href:'alerts.html',            badge:true },
+    { id:'masters',        group:'system',   label:'マスタ設定',   sub:'マスタ管理',         href:'masters.html',           badge:false },
+    { id:'master_import',  group:'system',   label:'社員取込',     sub:'社員マスタ初期取込', href:'master_import.html',     badge:false },
+    { id:'external_links', group:'system',   label:'外部リンク',   sub:'リンク集・登録',     href:'external_links.html',    badge:false }
   ];
 
-
-
-  // ── 固定システムリンク ──────────────────────────────────
   const SYSTEM_LINKS = [
-    {
-      id: 'recruit',
-      label: '採用管理',
-      sub: '採用・応募者管理',
-      href: 'https://seven123789-cmd.github.io/recruit-app-clean/',
-      short: '採'
-    },
-    {
-      id: 'center',
-      label: 'センター管理',
-      sub: 'センターダッシュボード',
-      href: 'https://seven123kick-art.github.io/center-dashboard/',
-      short: 'セ'
-    }
+    { id:'recruit', label:'採用管理', href:'https://seven123789-cmd.github.io/recruit-app-clean/' },
+    { id:'center', label:'センター管理', href:'https://seven123kick-art.github.io/center-dashboard/' }
   ];
 
   // ── カスタム外部リンク管理（LocalStorageで永続化） ──────
@@ -309,47 +218,37 @@ const APP = (() => {
     const sb = document.getElementById('sidebar');
     if (!sb) return;
 
-    // 既存NAVメニュー（文字主体：画像アイコン・折りたたみは使わない）
-    const rows = NAV.map(n => `
-      <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}">
-        <span class="imperial-menu-copy">
-          <span class="imperial-menu-title">${n.label}</span>
-          <span class="imperial-menu-sub">${n.sub || ''}</span>
-        </span>
+    const row = n => `
+      <a class="imperial-menu-card${n.id === active ? ' active' : ''}" href="${n.href}" data-menu="${n.id}"${n.id === active ? ' aria-current="page"' : ''}>
+        <span class="imperial-menu-copy"><span class="imperial-menu-title">${n.label}</span></span>
         ${n.badge ? '<span class="nav-badge imperial-alert-dot" id="nav-alert-badge" style="display:none">!</span>' : ''}
-      </a>`).join('');
+      </a>`;
 
-    // 固定システムリンク（通常メニューと同じ文字主体デザイン）
+    const group = (key, label) => {
+      const rows = NAV.filter(n => n.group === key).map(row).join('');
+      return `<section class="sidebar-nav-section"><div class="sidebar-section-label">${label}</div><nav class="imperial-nav">${rows}</nav></section>`;
+    };
+
     const sysRows = SYSTEM_LINKS.map(n => `
       <a class="imperial-menu-card imperial-system-menu-card" href="${n.href}" target="_blank" rel="noopener">
-        <span class="imperial-menu-copy">
-          <span class="imperial-menu-title">${n.label}</span>
-          <span class="imperial-menu-sub">${n.sub}</span>
-        </span>
+        <span class="imperial-menu-copy"><span class="imperial-menu-title">${n.label}</span></span>
       </a>`).join('');
 
     sb.innerHTML = `
       <div class="imperial-brand-card imperial-brand-card-textonly">
         <div class="imperial-brand-copy">
-          <div class="imperial-brand-title">統合管理システム</div>
-          <div class="imperial-brand-sub">Integrated Management System</div>
+          <div class="imperial-brand-title">人事統合管理システム</div>
+          <div class="imperial-brand-sub">HR Management Suite</div>
         </div>
       </div>
-
-      <nav class="imperial-nav">${rows}</nav>
-
-      <div class="imperial-sidebar-separator"><span>関連システム</span></div>
-      <div class="sidebar-system-section">${sysRows}</div>
-
-      <div class="imperial-sidebar-separator"><span>管理メニュー</span></div>
-
-      <div class="imperial-menu-card imperial-admin-menu-card">
-        <span class="imperial-menu-copy">
-          <span class="imperial-menu-title">管理者</span>
-          <span class="imperial-menu-sub">システム設定</span>
-        </span>
-      </div>
-
+      ${group('overview','概要')}
+      ${group('people','社員・人事')}
+      ${group('license','資格・免許')}
+      ${group('system','システム設定')}
+      <section class="sidebar-nav-section">
+        <div class="sidebar-section-label">関連システム</div>
+        <div class="sidebar-system-section">${sysRows}</div>
+      </section>
       <div class="imperial-sidebar-future-space" aria-hidden="true"></div>`;
   }
 
