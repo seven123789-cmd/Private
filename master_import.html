@@ -29,13 +29,13 @@
     <div class="flow-step"><strong>2</strong><span>解析・検証</span></div><div class="flow-line"></div>
     <div class="flow-step"><strong>3</strong><span>更新データ確定</span></div>
   </div>
-  <div class="alert-box info import-safety-note"><strong>安全設計：</strong>現段階では一括取込からDBへ直接書き込みません。既存DBの一意制約・RLS・更新履歴を確認後に、安全な一括反映機能を追加します。</div>
+  <div class="alert-box info import-safety-note"><strong>安全設計：</strong>社員コードの一意制約とRLSを確認済みです。DB反映は「認証済みセッション」「差分確認」「明示実行」の3条件を満たす場合だけ有効になります。ファイルに存在しない社員は削除・退職化しません。</div>
 
   <div class="card data-source-card">
     <div class="card-header"><div><div class="card-title">データ接続・反映方式</div><div class="card-sub">一括更新を実行する前提条件を確認します。</div></div></div>
     <div class="card-body"><div class="data-health-list">
       <div class="data-health-row"><span>現在の参照先</span><strong id="import-source-mode">確認中…</strong></div>
-      <div class="data-health-row"><span>DB直接一括反映</span><strong>未実装（安全確認待ち）</strong></div>
+      <div class="data-health-row"><span>DB直接一括反映</span><strong id="import-write-mode">認証状態を確認中…</strong></div>
       <div class="data-health-row"><span>照合キー</span><strong>社員コード</strong></div>
       <div class="data-health-row"><span>更新用出力</span><strong>JSON</strong></div>
     </div></div>
@@ -93,9 +93,15 @@
     </table>
   </div>
 
+  <div class="import-card" id="diff-card" style="display:none">
+    <h3><span class="step-badge">3</span> DB差分確認</h3>
+    <div class="result-stats" id="diff-stats"></div>
+    <div class="alert-box info">既存社員は社員コードで照合します。<strong>新規追加・変更あり・変更なし</strong>を判定し、ファイルに存在しない既存社員には何もしません。</div>
+  </div>
+
   <!-- ステップ3: プレビュー -->
   <div class="import-card" id="preview-card" style="display:none">
-    <h3><span class="step-badge">3</span> 取込プレビュー（最初の20件）</h3>
+    <h3><span class="step-badge">4</span> 取込プレビュー（最初の20件）</h3>
     <div id="validation-result"></div><div class="result-stats" id="preview-stats"></div>
     <div class="preview-wrap">
       <table>
@@ -106,6 +112,7 @@
     <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
       <button class="btn-primary" id="btn-import" onclick="doImport()">検証済みデータを確定</button>
       <button class="btn-dl" id="btn-dl" onclick="downloadJson()" style="display:none">更新用JSONをダウンロード</button>
+      <button class="btn-primary" id="btn-db-apply" onclick="applyToDatabase()" style="display:none" disabled>DBへ反映</button>
       <span id="import-result-msg" style="font-size:.84rem;font-weight:600;color:var(--accent,#8b6a3e)"></span>
     </div>
   </div>
@@ -114,10 +121,13 @@
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/common.js"></script>
 <script>
 let parsedEmployees = [];
+let importDiff = {newRows:[],changedRows:[],unchangedRows:[]};
+let importSession = null;
 
 // コードマッピング
 const SHOKUHU_MAP = {11:'職員',16:'職員',21:'内務員',31:'内務員',41:'内務員',45:'外商員',51:'外商員',71:'外商員',0:'職員'};
@@ -207,6 +217,29 @@ function parseXLS(data) {
   return employees;
 }
 
+
+const IMPORT_COMPARE_FIELDS = ['name','kana','center','division','position','employment_type','current_grade','birth_date'];
+function normImportValue(v){ return v == null ? '' : String(v).trim(); }
+async function buildImportDiff(employees){
+  const existing = await APP.loadEmployees();
+  const byCode = new Map(existing.map(e=>[String(e.employee_code||'').trim(),e]));
+  const next={newRows:[],changedRows:[],unchangedRows:[]};
+  employees.forEach(row=>{
+    const old=byCode.get(String(row.employee_code||'').trim());
+    if(!old){ next.newRows.push(row); return; }
+    const changes=IMPORT_COMPARE_FIELDS.filter(k=>normImportValue(old[k])!==normImportValue(row[k]));
+    if(changes.length) next.changedRows.push({...row,__changes:changes});
+    else next.unchangedRows.push(row);
+  });
+  importDiff=next;
+  document.getElementById('diff-card').style.display='block';
+  document.getElementById('diff-stats').innerHTML=[
+    [next.newRows.length,'新規追加'],[next.changedRows.length,'変更あり'],
+    [next.unchangedRows.length,'変更なし'],[existing.length,'現在DB/参照件数']
+  ].map(([v,l])=>`<div class="result-stat"><div class="rs-val">${v.toLocaleString()}</div><div class="rs-label">${l}</div></div>`).join('');
+  return next;
+}
+
 function validateEmployees(employees) {
   const errors = [], seen = new Set();
   employees.forEach((e, idx) => {
@@ -220,8 +253,9 @@ function validateEmployees(employees) {
   });
   return errors;
 }
-function showPreview(employees) {
+async function showPreview(employees) {
   const errors = validateEmployees(employees);
+  if (!errors.length) await buildImportDiff(employees);
   window.__IMPORT_ERRORS__ = errors;
   parsedEmployees = errors.length ? [] : employees;
   const centers   = new Set(employees.map(e => e.center));
@@ -283,10 +317,45 @@ function doImport() {
     localStorage.setItem('imported_employees_v1', JSON.stringify(output));
   } catch(e) { console.warn('LocalStorage保存失敗:', e); }
 
-  document.getElementById('import-result-msg').textContent = `✓ ${parsedEmployees.length.toLocaleString()}件を取り込みました。更新用JSONをダウンロードしてデータを保存してください。`;
+  document.getElementById('import-result-msg').textContent = `✓ ${parsedEmployees.length.toLocaleString()}件を検証・確定しました。必要に応じてJSON出力またはDB反映を実行してください。`;
   document.getElementById('btn-dl').style.display = 'inline-block';
   btn.textContent = '✓ 完了';
   window._importedOutput = output;
+}
+
+
+function toDbEmployee(row){
+  // 実DBで確認済みの既存列だけを送る。年齢・勤続等の派生/未確認列は送信しない。
+  return {
+    employee_code:String(row.employee_code||'').trim(),
+    name:row.name,
+    kana:row.kana || null,
+    center:row.center,
+    division:row.division || null,
+    position:row.position || null,
+    employment_type:row.employment_type || null,
+    birth_date:row.birth_date || null,
+    current_grade:row.current_grade || null,
+    promotion_target_flag:row.promotion_target_flag === true,
+    source_file:'社員管理.xls',
+    updated_at:new Date().toISOString()
+  };
+}
+async function applyToDatabase(){
+  if(!parsedEmployees.length) return;
+  const btn=document.getElementById('btn-db-apply');
+  const rows=[...importDiff.newRows,...importDiff.changedRows].map(toDbEmployee);
+  if(!rows.length){ APP.toast('DBへ反映する差分はありません','warning'); return; }
+  importSession=await APP.currentSession();
+  if(!importSession){ APP.toast('DB更新にはSupabaseへのログインが必要です','error'); return; }
+  const ok=confirm(`DBへ ${rows.length}件を反映します。\n新規 ${importDiff.newRows.length}件 / 更新 ${importDiff.changedRows.length}件\n\nファイルに存在しない社員は変更しません。実行しますか？`);
+  if(!ok) return;
+  btn.disabled=true; btn.textContent='DB反映中…';
+  const {data,error}=await APP.upsertEmployees(rows);
+  if(error){ console.error(error); APP.toast('DB反映に失敗しました: '+error.message,'error'); btn.disabled=false; btn.textContent='DBへ反映'; return; }
+  APP.toast(`${data?.length||rows.length}件をDBへ反映しました`);
+  btn.textContent='✓ DB反映完了';
+  document.getElementById('import-result-msg').textContent=`✓ DB反映完了：新規 ${importDiff.newRows.length}件 / 更新 ${importDiff.changedRows.length}件`;
 }
 
 function downloadJson() {
@@ -318,7 +387,7 @@ function handleFile(file) {
   document.getElementById('progress-pct').textContent = '30%';
 
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     document.getElementById('progress-fill').style.width = '70%';
     document.getElementById('progress-pct').textContent = '70%';
     try {
@@ -327,7 +396,7 @@ function handleFile(file) {
       document.getElementById('progress-fill').style.width = '100%';
       document.getElementById('progress-pct').textContent = '100%';
       document.getElementById('progress-label').textContent = `${employees.length.toLocaleString()}件を解析完了`;
-      if (employees.length > 0) showPreview(employees);
+      if (employees.length > 0) await showPreview(employees);
     } catch(err) {
       console.error(err);
       alert('ファイルの解析に失敗しました: ' + err.message);
@@ -351,6 +420,11 @@ dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag
   await Auth.requireAuth();
   renderSidebar('master_import');
   APP.initHeader();
+  importSession = await APP.currentSession();
+  const wm=document.getElementById('import-write-mode');
+  if(wm) wm.textContent=importSession ? '利用可能（認証済み）' : '利用不可（未認証）';
+  const dbBtn=document.getElementById('btn-db-apply');
+  if(dbBtn){dbBtn.style.display='inline-block';dbBtn.disabled=!importSession;}
   try {
     const emps = await APP.loadEmployees();
     const seishain = emps.filter(e=>e.employment_type==='正社員').length;

@@ -112,3 +112,7 @@
 /* Phase 9 — Data foundation */
 .data-source-card{margin-bottom:16px}.stat-value-text{font-size:20px!important;line-height:1.25!important}.data-ops-warning{margin-top:16px}
 .ops-check-list{display:grid}.ops-check-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #eee9e0;font-size:12px}.ops-check-row:first-child{padding-top:0}.ops-check-row:last-child{border-bottom:0}.ops-check-row strong{display:flex;align-items:center;gap:8px}
+
+/* Phase10 — safe employee DB import */
+#diff-card .result-stats{margin-bottom:12px}
+#btn-db-apply:disabled{opacity:.48;cursor:not-allowed}
