@@ -1,105 +1,26 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
+<!DOCTYPE html><html lang="ja"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>社員詳細 — 統合管理システム</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/app.css">
-</head>
-<body>
-<div class="app-shell">
-<aside class="sidebar" id="sidebar"></aside>
-<div class="page-content">
-<main class="page-main">
-
-  <div class="page-header">
-    <div class="page-heading">
-      <div class="page-title-block">
-        <div class="page-title">社員詳細</div>
-        <div class="page-title-en">EMPLOYEE DETAIL</div>
-      </div>
-    </div>
-    <div class="page-header-actions">
-      <a href="employees.html" class="btn btn-secondary btn-sm">← 一覧へ戻る</a>
-    </div>
-  </div>
-
-  <!-- 社員プロフィール -->
-  <div class="content-grid" style="grid-template-columns: 340px 1fr;">
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">プロフィール</div>
-          <div class="card-sub">基本情報</div>
-        </div>
-      </div>
-      <div class="card-body" style="text-align:center; padding: 28px 20px;">
-        <!-- プロフィール画像: src を差し替えるだけで変更可能 -->
-        <div style="width:80px;height:80px;border-radius:50%;margin:0 auto 16px;background:linear-gradient(135deg,#082838,#0a3848);border:2px solid rgba(200,148,40,.65);display:grid;place-items:center;font-family:'Shippori Mincho',serif;font-size:28px;font-weight:900;color:#e8c060;" id="emp-avatar-initial">?</div>
-        <!-- または: <img src="assets/img/employees/[employee_id].jpg" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;border:2px solid rgba(200,148,40,.65);"> -->
-
-        <div style="font-family:'Shippori Mincho',serif;font-size:22px;font-weight:800;" id="emp-name">—</div>
-        <div style="font-size:13px;color:var(--s-muted);margin-top:4px;" id="emp-kana">—</div>
-        <div style="margin-top:14px;" id="emp-badges"></div>
-
-        <div style="margin-top:20px;text-align:left;border-top:1px solid rgba(180,130,30,.18);padding-top:18px;display:grid;gap:12px;">
-          <div class="dl-item">
-            <span class="dl-label">社員コード</span>
-            <span class="dl-value" id="emp-code">—</span>
-          </div>
-          <div class="dl-item">
-            <span class="dl-label">センター</span>
-            <span class="dl-value" id="emp-center">—</span>
-          </div>
-          <div class="dl-item">
-            <span class="dl-label">部門</span>
-            <span class="dl-value" id="emp-division">—</span>
-          </div>
-          <div class="dl-item">
-            <span class="dl-label">職種</span>
-            <span class="dl-value" id="emp-position">—</span>
-          </div>
-          <div class="dl-item">
-            <span class="dl-label">雇用形態</span>
-            <span class="dl-value" id="emp-employment">—</span>
-          </div>
-          <div class="dl-item">
-            <span class="dl-label">等級</span>
-            <span class="dl-value" id="emp-grade">—</span>
-          </div>
-          <div class="dl-item">
-            <span class="dl-label">最終昇格日</span>
-            <span class="dl-value" id="emp-last-promo">—</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:grid;gap:20px;align-content:start;">
-      <div class="card">
-        <div class="card-header card-header-navy">
-          <div>
-            <div class="card-title">保有資格・免許</div>
-            <div class="card-sub">employee_licenses テーブル参照</div>
-          </div>
-        </div>
-        <div class="card-body" id="emp-licenses-body">
-          <div class="empty">読込中…</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</main>
-</div>
-</div>
-<div id="toast-container"></div>
-<style>
-.dl-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.dl-label { font-size: 12px; color: var(--s-muted); font-family: 'Shippori Mincho', serif; white-space: nowrap; }
-.dl-value { font-size: 13.5px; font-weight: 600; color: var(--s-ink); text-align: right; }
-</style>
+<link rel="stylesheet" href="assets/css/app.css"></head>
+<body class="employee-profile"><div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
+<div class="page-header"><div class="page-heading"><div class="page-title-block"><div class="page-title">社員詳細</div><div class="page-title-en">EMPLOYEE RECORD</div><div class="page-description">社員を起点に、所属・雇用・資格・昇格情報を確認します。</div></div></div><div class="page-header-actions"><a href="employees.html" class="btn btn-secondary btn-sm">← 社員管理へ</a></div></div>
+<section class="employee-summary"><div class="employee-summary__identity"><div class="employee-avatar" id="emp-avatar-initial">?</div><div><div class="employee-summary__name-row"><h1 class="employee-summary__name" id="emp-name">—</h1><div id="emp-badges"></div></div><div class="employee-summary__kana" id="emp-kana">—</div><div class="employee-summary__meta"><span>社員コード <strong id="emp-code">—</strong></span><span id="emp-center">—</span><span id="emp-position">—</span><span id="emp-employment">—</span></div></div></div></section>
+<div class="profile-grid"><div class="profile-stack">
+<section class="card"><div class="card-header"><div><div class="card-title">所属・人事情報</div><div class="card-sub">現在登録されている社員マスタ情報</div></div></div><div class="card-body"><div class="info-grid">
+<div class="info-item"><span class="info-item__label">所属センター</span><span class="info-item__value" id="emp-center-detail">—</span></div>
+<div class="info-item"><span class="info-item__label">部門</span><span class="info-item__value" id="emp-division">—</span></div>
+<div class="info-item"><span class="info-item__label">職種</span><span class="info-item__value" id="emp-position-detail">—</span></div>
+<div class="info-item"><span class="info-item__label">雇用形態</span><span class="info-item__value" id="emp-employment-detail">—</span></div>
+<div class="info-item"><span class="info-item__label">現在等級</span><span class="info-item__value" id="emp-grade">—</span></div>
+<div class="info-item"><span class="info-item__label">最終昇格日</span><span class="info-item__value" id="emp-last-promo">—</span></div>
+</div></div></section>
+<section class="card"><div class="card-header card-header-navy"><div><div class="card-title">資格・免許</div><div class="card-sub">この社員に登録されている保有資格</div></div><a class="btn btn-secondary btn-sm" href="licenses.html">資格・免許管理へ</a></div><div class="card-body" id="emp-licenses-body"><div class="empty">読込中…</div></div></section>
+</div><aside class="profile-stack">
+<section class="card"><div class="card-header"><div><div class="card-title">人事サマリー</div><div class="card-sub">現在の登録情報</div></div></div><div class="card-body"><div class="summary-list"><div class="summary-row"><span>等級</span><strong id="emp-grade-summary">—</strong></div><div class="summary-row"><span>最終昇格日</span><strong id="emp-last-promo-summary">—</strong></div><div class="summary-row"><span>昇格対象</span><strong id="emp-promo-summary">対象外</strong></div></div></div></section>
+<section class="card future-card"><div class="card-header"><div><div class="card-title">拡張予定</div><div class="card-sub">データ項目追加後に実装</div></div></div><div class="card-body"><div class="future-list"><span>異動・所属履歴</span><span>評価履歴</span><span>添付書類</span><span>変更履歴</span></div><p class="text-muted text-sm future-note">未実装データは仮表示せず、DB設計後に順次追加します。</p></div></section>
+</aside></div></main></div></div><div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/common.js"></script>
@@ -161,5 +82,7 @@ async function initDetail() {
 }
 (async()=>{ await Auth.requireAuth(); renderSidebar('employees'); Modal.setup(); await initDetail(); })();
 </script>
-</body>
-</html>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{const pairs=[['emp-center','emp-center-detail'],['emp-position','emp-position-detail'],['emp-employment','emp-employment-detail'],['emp-grade','emp-grade-summary'],['emp-last-promo','emp-last-promo-summary']];const sync=()=>pairs.forEach(([a,b])=>{const x=document.getElementById(a),y=document.getElementById(b);if(x&&y)y.textContent=x.textContent;});const obs=new MutationObserver(sync);pairs.forEach(([a])=>{const x=document.getElementById(a);if(x)obs.observe(x,{childList:true,subtree:true,characterData:true});});const badges=document.getElementById('emp-badges'),promo=document.getElementById('emp-promo-summary');if(badges&&promo){const o=new MutationObserver(()=>promo.textContent=badges.textContent.trim()?'昇格候補':'対象外');o.observe(badges,{childList:true,subtree:true});}sync();});
+</script></body></html>

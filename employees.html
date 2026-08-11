@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body>
+<body class="employee-workspace">
 <div class="app-shell">
 <aside class="sidebar" id="sidebar"></aside>
 <div class="page-content">
@@ -14,10 +14,12 @@
   <div class="page-header">
     <div class="page-heading">
       <div class="page-title-block">
-        <div class="page-title">社員一覧</div>
-        <div class="page-title-en">EMPLOYEE DIRECTORY</div>
+        <div class="page-title">社員管理</div>
+        <div class="page-title-en">EMPLOYEE MANAGEMENT</div>
       </div>
+      <div class="page-description">社員を検索し、所属・雇用・等級・資格情報へアクセスします。</div>
     </div>
+    <div class="page-header-actions"><button type="button" class="btn btn-secondary btn-sm" onclick="exportEmployeeCSV()">CSV出力</button></div>
   </div>
   <div class="filter-panel">
     <div class="filter-grid compact">
@@ -31,7 +33,7 @@
   </div>
   <div class="table-card">
     <div class="table-tools">
-      <div class="table-count">計 <strong id="emp-count">—</strong> 名</div>
+      <div><div class="table-count">登録社員 <strong id="emp-count">—</strong> 名</div><div class="text-muted text-sm">検索条件に一致する社員を表示</div></div>
       <span class="text-muted text-sm">行クリックで詳細へ</span>
     </div>
     <div class="table-wrap">
