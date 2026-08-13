@@ -279,11 +279,13 @@ window.EmployeeAssignmentHistory = (() => {
     if(isRetired(employee)){
       const date=APP.fmtDate(employee.retirement_date);
       if(holder) holder.innerHTML=`<span class="retirement-badge">退職済</span><span class="retirement-date">退職日：${esc(date||'—')}</span>`;
-      if(changeBtn){changeBtn.disabled=true;changeBtn.title='退職済社員は人事異動を登録できません';}
+      // 退職済社員は在職中の人事操作を行えないため、操作ボタン自体を表示しない。
+      // 履歴・社員情報・資格情報は参照用としてそのまま保持する。
+      if(changeBtn){changeBtn.hidden=true;changeBtn.disabled=true;changeBtn.title='';}
       if(retireBtn) retireBtn.hidden=true;
     }else{
       if(holder) holder.innerHTML='';
-      if(changeBtn){changeBtn.disabled=false;changeBtn.title='';}
+      if(changeBtn){changeBtn.hidden=false;changeBtn.disabled=false;changeBtn.title='';}
       if(retireBtn) retireBtn.hidden=false;
     }
   }
