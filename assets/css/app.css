@@ -162,7 +162,6 @@
 .employee-action-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .btn-danger-subtle{border:1px solid #c9a2a0;background:#fff8f7;color:#7d3733}
 .btn-danger-subtle:hover{background:#f9ecea;border-color:#b98380}
-#btn-open-retirement[hidden]{display:none!important}
 .btn-danger{border-color:#8f3f39;background:#8f3f39;color:#fff}
 .btn-danger:hover{background:#79332e}
 .retirement-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eee3df;color:#74403b;font-size:10px;font-weight:800}

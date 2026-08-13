@@ -252,6 +252,7 @@ window.EmployeeAssignmentHistory = (() => {
 
   async function setupChangeUI(employee) {
     currentEmployee=employee;
+    renderEmployeeStateAndActions(employee);
     document.getElementById('btn-open-assignment-change')?.addEventListener('click',openModal);
     document.getElementById('btn-close-assignment-change')?.addEventListener('click',closeModal);
     document.getElementById('btn-cancel-assignment-change')?.addEventListener('click',closeModal);
@@ -272,21 +273,18 @@ window.EmployeeAssignmentHistory = (() => {
     return employee?.is_active === false || employee?.status === 'retired' || !!employee?.retirement_date;
   }
 
-  function renderRetirementState(employee) {
+  function renderEmployeeStateAndActions(employee) {
     const holder=document.getElementById('emp-retirement-status');
-    const changeBtn=document.getElementById('btn-open-assignment-change');
-    const retireBtn=document.getElementById('btn-open-retirement');
+    const actions=document.getElementById('employee-action-group');
     if(isRetired(employee)){
       const date=APP.fmtDate(employee.retirement_date);
       if(holder) holder.innerHTML=`<span class="retirement-badge">退職済</span><span class="retirement-date">退職日：${esc(date||'—')}</span>`;
-      // 退職済社員は在職中の人事操作を行えないため、操作ボタン自体を表示しない。
-      // 履歴・社員情報・資格情報は参照用としてそのまま保持する。
-      if(changeBtn){changeBtn.hidden=true;changeBtn.disabled=true;changeBtn.title='';}
-      if(retireBtn) retireBtn.hidden=true;
-    }else{
-      if(holder) holder.innerHTML='';
-      if(changeBtn){changeBtn.hidden=false;changeBtn.disabled=false;changeBtn.title='';}
-      if(retireBtn) retireBtn.hidden=false;
+      if(actions) actions.replaceChildren();
+      return;
+    }
+    if(holder) holder.replaceChildren();
+    if(actions){
+      actions.innerHTML='<button type="button" class="btn btn-secondary btn-sm" id="btn-open-assignment-change">異動・人事情報を変更</button><button type="button" class="btn btn-danger-subtle btn-sm" id="btn-open-retirement">退職処理</button>';
     }
   }
 
@@ -341,7 +339,6 @@ window.EmployeeAssignmentHistory = (() => {
 
   async function setupRetirementUI(employee){
     currentEmployee=employee;
-    renderRetirementState(employee);
     document.getElementById('btn-open-retirement')?.addEventListener('click',openRetirementModal);
     document.getElementById('btn-close-retirement')?.addEventListener('click',closeRetirementModal);
     document.getElementById('btn-cancel-retirement')?.addEventListener('click',closeRetirementModal);
