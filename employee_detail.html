@@ -14,12 +14,16 @@
 <div class="info-item"><span class="info-item__label">職種</span><span class="info-item__value" id="emp-position-detail">—</span></div>
 <div class="info-item"><span class="info-item__label">雇用形態</span><span class="info-item__value" id="emp-employment-detail">—</span></div>
 <div class="info-item"><span class="info-item__label">現在等級</span><span class="info-item__value" id="emp-grade">—</span></div>
+<div class="info-item"><span class="info-item__label">現在役職</span><span class="info-item__value" id="emp-job-title">—</span></div>
+<div class="info-item"><span class="info-item__label">生年月日</span><span class="info-item__value" id="emp-birth-date">—</span></div>
+<div class="info-item"><span class="info-item__label">入社年月日</span><span class="info-item__value" id="emp-join-date">—</span></div>
 <div class="info-item"><span class="info-item__label">最終昇格日</span><span class="info-item__value" id="emp-last-promo">—</span></div>
 </div></div></section>
 <section class="card"><div class="card-header card-header-navy"><div><div class="card-title">資格・免許</div><div class="card-sub">この社員に登録されている保有資格</div></div><a class="btn btn-secondary btn-sm" href="licenses.html">資格・免許管理へ</a></div><div class="card-body" id="emp-licenses-body"><div class="empty">読込中…</div></div></section>
 </div><aside class="profile-stack">
-<section class="card"><div class="card-header"><div><div class="card-title">人事サマリー</div><div class="card-sub">現在の登録情報</div></div></div><div class="card-body"><div class="summary-list"><div class="summary-row"><span>等級</span><strong id="emp-grade-summary">—</strong></div><div class="summary-row"><span>最終昇格日</span><strong id="emp-last-promo-summary">—</strong></div><div class="summary-row"><span>昇格対象</span><strong id="emp-promo-summary">対象外</strong></div></div></div></section>
-<section class="card"><div class="card-header"><div><div class="card-title">人事異動履歴</div><div class="card-sub">所属・部門・役職・等級の履歴</div></div><div class="employee-action-group" id="employee-action-group"></div></div><div class="card-body" id="emp-assignment-history"><div class="empty">読込中…</div></div></section>
+<section class="card"><div class="card-header"><div><div class="card-title">人事サマリー</div><div class="card-sub">現在の登録情報</div></div></div><div class="card-body"><div class="summary-list"><div class="summary-row"><span>等級</span><strong id="emp-grade-summary">—</strong></div><div class="summary-row"><span>役職</span><strong id="emp-job-title-summary">—</strong></div><div class="summary-row"><span>入社日</span><strong id="emp-join-date-summary">—</strong></div><div class="summary-row"><span>最終昇格日</span><strong id="emp-last-promo-summary">—</strong></div><div class="summary-row"><span>昇格対象</span><strong id="emp-promo-summary">対象外</strong></div></div></div></section>
+<section class="card"><div class="card-header"><div><div class="card-title">人事異動履歴</div><div class="card-sub">所属・部門・職種・等級の履歴</div></div><div class="employee-action-group" id="employee-action-group"></div></div><div class="card-body" id="emp-assignment-history"><div class="empty">読込中…</div></div></section>
+<section class="card"><div class="card-header"><div><div class="card-title">役職履歴</div><div class="card-sub">副長・課長・センター長などの役職履歴</div></div></div><div class="card-body" id="emp-job-title-history"><div class="empty">読込中…</div></div></section>
 <section class="card future-card"><div class="card-header"><div><div class="card-title">拡張予定</div><div class="card-sub">データ項目追加後に実装</div></div></div><div class="card-body"><div class="future-list"><span>評価履歴</span><span>添付書類</span><span>変更履歴</span></div><p class="text-muted text-sm future-note">未実装データは仮表示せず、DB設計後に順次追加します。</p></div></section>
 </aside></div></main></div></div>
 <div class="modal-backdrop hidden" id="assignment-change-modal" role="dialog" aria-modal="true" aria-labelledby="assignment-change-title">
@@ -52,12 +56,17 @@
             <select id="assignment-division" class="form-control" required></select>
           </div>
           <div class="form-group">
-            <label class="form-label">役職・職種 <span class="required-mark">必須</span></label>
+            <label class="form-label">職種 <span class="required-mark">必須</span></label>
             <select id="assignment-position" class="form-control" required></select>
           </div>
           <div class="form-group">
             <label class="form-label">等級</label>
             <select id="assignment-grade" class="form-control"></select>
+          </div>
+          <div class="form-group assignment-job-title-group">
+            <label class="form-label">役職</label>
+            <div id="assignment-job-titles" class="job-title-choice-list"></div>
+            <div class="form-help">複数役職の場合は複数選択できます。★を代表役職にします。</div>
           </div>
           <div class="form-group assignment-memo-group">
             <label class="form-label">変更メモ</label>
@@ -146,10 +155,13 @@ async function initDetail() {
   document.getElementById('emp-position').textContent = e.position || '—';
   document.getElementById('emp-employment').textContent = e.employment_type || '—';
   document.getElementById('emp-grade').textContent = e.current_grade || '—';
+  document.getElementById('emp-birth-date').textContent = APP.fmtDate(e.birth_date);
+  document.getElementById('emp-join-date').textContent = APP.fmtDate(e.join_date);
   document.getElementById('emp-last-promo').textContent = APP.fmtDate(e.last_promotion_date);
 
   // Phase16-D: DBの所属・役職・等級履歴を表示
   await EmployeeAssignmentHistory.mount(id);
+  await EmployeeAssignmentHistory.mountJobTitles(id);
   await EmployeeAssignmentHistory.setupChangeUI(e);
   await EmployeeAssignmentHistory.setupRetirementUI(e);
 
@@ -190,5 +202,5 @@ async function initDetail() {
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded',()=>{const pairs=[['emp-center','emp-center-detail'],['emp-position','emp-position-detail'],['emp-employment','emp-employment-detail'],['emp-grade','emp-grade-summary'],['emp-last-promo','emp-last-promo-summary']];const sync=()=>pairs.forEach(([a,b])=>{const x=document.getElementById(a),y=document.getElementById(b);if(x&&y)y.textContent=x.textContent;});const obs=new MutationObserver(sync);pairs.forEach(([a])=>{const x=document.getElementById(a);if(x)obs.observe(x,{childList:true,subtree:true,characterData:true});});const badges=document.getElementById('emp-badges'),promo=document.getElementById('emp-promo-summary');if(badges&&promo){const o=new MutationObserver(()=>promo.textContent=badges.textContent.trim()?'昇格候補':'対象外');o.observe(badges,{childList:true,subtree:true});}sync();});
+document.addEventListener('DOMContentLoaded',()=>{const pairs=[['emp-center','emp-center-detail'],['emp-position','emp-position-detail'],['emp-employment','emp-employment-detail'],['emp-grade','emp-grade-summary'],['emp-job-title','emp-job-title-summary'],['emp-join-date','emp-join-date-summary'],['emp-last-promo','emp-last-promo-summary']];const sync=()=>pairs.forEach(([a,b])=>{const x=document.getElementById(a),y=document.getElementById(b);if(x&&y)y.textContent=x.textContent;});const obs=new MutationObserver(sync);pairs.forEach(([a])=>{const x=document.getElementById(a);if(x)obs.observe(x,{childList:true,subtree:true,characterData:true});});const badges=document.getElementById('emp-badges'),promo=document.getElementById('emp-promo-summary');if(badges&&promo){const o=new MutationObserver(()=>promo.textContent=badges.textContent.trim()?'昇格候補':'対象外');o.observe(badges,{childList:true,subtree:true});}sync();});
 </script></body></html>

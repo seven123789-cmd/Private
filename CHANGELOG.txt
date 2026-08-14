@@ -5530,3 +5530,10 @@ Version6 Phase9-4M-2 (2026-08-13) CLOUD.pushCapacity業務コード直接呼出5
   CLOUD.*業務コード直接利用（deleteFile・各種key API・
   downloadJSON・renderForm・saveConfig・onAfterApplyFullState・
   syncSmart等）については、次フェーズで個別に調査・判断が必要。
+
+2026-08-15 Phase19 人事マスターUI拡張
+- 社員詳細に生年月日・入社年月日・現在役職を表示。
+- 職種（職員/内務員/外商員）と役職（副長/課長/センター長等）をUI上でも分離。
+- Phase17 job_titles / employee_job_title_history を社員詳細に接続し、役職履歴を表示。
+- 異動・人事情報変更画面で複数役職と代表役職を選択可能にした。
+- 既存 employee_licenses（免許・公的資格）の処理は変更していない。

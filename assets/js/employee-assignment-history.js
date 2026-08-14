@@ -1,6 +1,6 @@
-/* Phase16-E: 社員所属・役職・等級履歴 Repository / UI
+/* Phase16-E: 社員所属・職種・等級履歴 Repository / UI
    - 履歴表示
-   - 異動・役職・等級変更UI
+   - 異動・職種・等級・役職変更UI
    - Phase16-E DB RPCへ接続
 */
 window.EmployeeAssignmentHistory = (() => {
@@ -10,7 +10,9 @@ window.EmployeeAssignmentHistory = (() => {
   };
   let currentEmployee = null;
   let currentHistory = null;
-  let masterOptions = {centers:[],divisions:[],positions:[],grades:[]};
+  let masterOptions = {centers:[],divisions:[],positions:[],grades:[],job_titles:[]};
+  let currentJobTitles = [];
+  let currentPrimaryJobTitleId = null;
 
   const fmt = v => APP.fmtDate(v) || '—';
   const esc = v => APP.escape(v ?? '');
@@ -57,7 +59,7 @@ window.EmployeeAssignmentHistory = (() => {
   function render(rows,target) {
     if(!target) return;
     if(!rows.length){
-      target.innerHTML='<div class="empty">所属・役職・等級の履歴はありません</div>';
+      target.innerHTML='<div class="empty">所属・職種・等級の履歴はありません</div>';
       return;
     }
     currentHistory = rows.find(r=>r.effective_to===null) || null;
@@ -72,7 +74,7 @@ window.EmployeeAssignmentHistory = (() => {
           <div class="assignment-history__grid">
             <div><span>センター</span><strong>${esc(r.center_name||'—')}</strong></div>
             <div><span>部門</span><strong>${esc(r.division_name||'—')}</strong></div>
-            <div><span>役職・職種</span><strong>${esc(r.position_name||'—')}</strong></div>
+            <div><span>職種</span><strong>${esc(r.position_name||'—')}</strong></div>
             <div><span>等級</span><strong>${esc(r.grade_name||'未設定')}</strong></div>
           </div>
           ${r.memo?`<div class="assignment-history__memo">${esc(r.memo)}</div>`:''}
@@ -103,7 +105,8 @@ window.EmployeeAssignmentHistory = (() => {
       centers:Array.isArray(data.centers)?data.centers:[],
       divisions:Array.isArray(data.divisions)?data.divisions:[],
       positions:Array.isArray(data.positions)?data.positions:[],
-      grades:Array.isArray(data.grades)?data.grades:[]
+      grades:Array.isArray(data.grades)?data.grades:[],
+      job_titles:Array.isArray(data.job_titles)?data.job_titles:[]
     };
   }
 
@@ -135,7 +138,9 @@ window.EmployeeAssignmentHistory = (() => {
       division_id:document.getElementById('assignment-division')?.value||'',
       position_id:document.getElementById('assignment-position')?.value||'',
       grade_id:document.getElementById('assignment-grade')?.value||null,
-      memo:document.getElementById('assignment-memo')?.value?.trim()||null
+      memo:document.getElementById('assignment-memo')?.value?.trim()||null,
+      job_title_ids:[...document.querySelectorAll('input[name="assignment-job-title"]:checked')].map(x=>x.value),
+      primary_job_title_id:document.querySelector('input[name="assignment-primary-job-title"]:checked')?.value||null
     };
   }
 
@@ -147,9 +152,20 @@ window.EmployeeAssignmentHistory = (() => {
     };
     push('センター',currentHistory.center_name,optionLabel('assignment-center'),currentHistory.center_id,values.center_id);
     push('部門',currentHistory.division_name,optionLabel('assignment-division'),currentHistory.division_id,values.division_id);
-    push('役職・職種',currentHistory.position_name,optionLabel('assignment-position'),currentHistory.position_id,values.position_id);
+    push('職種',currentHistory.position_name,optionLabel('assignment-position'),currentHistory.position_id,values.position_id);
     const newGrade=values.grade_id?optionLabel('assignment-grade'):'未設定';
     push('等級',currentHistory.grade_name||'未設定',newGrade,currentHistory.grade_id,values.grade_id);
+    const oldIds=currentJobTitles.map(x=>strId(x.job_title_id)).sort();
+    const newIds=(values.job_title_ids||[]).map(strId).sort();
+    const titleChanged=oldIds.join('|')!==newIds.join('|') || strId(currentPrimaryJobTitleId)!==strId(values.primary_job_title_id);
+    if(titleChanged){
+      const oldNames=currentJobTitles.map(x=>x.title_name+(x.is_primary?' ★':'')).join(' / ')||'なし';
+      const newNames=(values.job_title_ids||[]).map(id=>{
+        const row=masterOptions.job_titles.find(x=>strId(x.id)===strId(id));
+        return (row?.title_name||'—')+(strId(id)===strId(values.primary_job_title_id)?' ★':'');
+      }).join(' / ')||'なし';
+      items.push({label:'役職',oldVal:oldNames,newVal:newNames});
+    }
     return items;
   }
 
@@ -163,6 +179,51 @@ window.EmployeeAssignmentHistory = (() => {
       return;
     }
     target.innerHTML=items.map(x=>`<div class="assignment-diff-row"><span>${esc(x.label)}</span><strong>${esc(x.oldVal)}</strong><i>→</i><strong>${esc(x.newVal)}</strong></div>`).join('');
+  }
+
+  async function loadJobTitles(employeeId) {
+    const sb=APP.client();
+    if(!sb) return {data:[],error:new Error('Supabaseに接続されていません')};
+    const r=await sb.rpc('get_employee_job_title_history_v1',{p_employee_id:employeeId});
+    if(r.error) return {data:[],error:r.error};
+    return {data:r.data||[],error:null};
+  }
+
+  function renderJobTitleChoices(){
+    const box=document.getElementById('assignment-job-titles');
+    if(!box) return;
+    box.innerHTML=masterOptions.job_titles.map(x=>`<label class="job-title-choice"><input type="checkbox" name="assignment-job-title" value="${esc(x.id)}"><span>${esc(x.title_name)}</span><input type="radio" name="assignment-primary-job-title" value="${esc(x.id)}" title="代表役職"><b>★</b></label>`).join('') || '<span class="text-muted">役職マスターがありません</span>';
+    box.querySelectorAll('input').forEach(el=>el.addEventListener('change',()=>{syncPrimaryChoices();renderPreview();}));
+  }
+
+  function syncPrimaryChoices(){
+    const selected=new Set([...document.querySelectorAll('input[name="assignment-job-title"]:checked')].map(x=>x.value));
+    document.querySelectorAll('input[name="assignment-primary-job-title"]').forEach(r=>{
+      r.disabled=!selected.has(r.value);
+      if(r.checked && r.disabled) r.checked=false;
+    });
+    if(selected.size && !document.querySelector('input[name="assignment-primary-job-title"]:checked')){
+      const first=[...document.querySelectorAll('input[name="assignment-primary-job-title"]')].find(r=>!r.disabled);
+      if(first) first.checked=true;
+    }
+  }
+
+  async function mountJobTitles(employeeId,targetId='emp-job-title-history'){
+    const target=document.getElementById(targetId);
+    const result=await loadJobTitles(employeeId);
+    if(result.error){
+      console.error('job title history load failed',result.error);
+      if(target) target.innerHTML='<div class="empty">役職履歴を読み込めませんでした</div>';
+      return;
+    }
+    const rows=result.data||[];
+    currentJobTitles=rows.filter(x=>x.effective_to===null);
+    currentPrimaryJobTitleId=currentJobTitles.find(x=>x.is_primary)?.job_title_id||null;
+    const currentLabel=currentJobTitles.map(x=>`${x.title_name}${x.is_primary?' ★':''}`).join(' / ')||'—';
+    const cur=document.getElementById('emp-job-title'); if(cur) cur.textContent=currentLabel;
+    if(!target) return;
+    if(!rows.length){target.innerHTML='<div class="empty">登録済みの役職履歴はありません</div>';return;}
+    target.innerHTML=`<div class="assignment-history">${rows.map(r=>`<article class="assignment-history__item ${r.effective_to===null?'is-current':''}"><div class="assignment-history__rail"><span></span></div><div class="assignment-history__content"><div class="assignment-history__head"><div><strong>${esc(fmt(r.effective_from))}</strong><span class="assignment-history__period">${r.effective_to?' ～ '+esc(fmt(r.effective_to)):' ～ 現在'}</span></div>${r.is_primary?APP.badge('代表役職','primary'):APP.badge('兼務','gray')}</div><div class="assignment-history__grid"><div><span>役職</span><strong>${esc(r.title_name||'—')}</strong></div></div>${r.memo?`<div class="assignment-history__memo">${esc(r.memo)}</div>`:''}</div></article>`).join('')}</div>`;
   }
 
   function closeModal() {
@@ -186,11 +247,21 @@ window.EmployeeAssignmentHistory = (() => {
     fillSelect('assignment-division',masterOptions.divisions,'division_name',null);
     fillSelect('assignment-position',masterOptions.positions,'position_name',null);
     fillSelect('assignment-grade',masterOptions.grades,'grade_name','未設定');
+    renderJobTitleChoices();
 
     document.getElementById('assignment-center').value=strId(currentHistory.center_id);
     document.getElementById('assignment-division').value=strId(currentHistory.division_id);
     document.getElementById('assignment-position').value=strId(currentHistory.position_id);
     document.getElementById('assignment-grade').value=strId(currentHistory.grade_id);
+    currentJobTitles.forEach(x=>{
+      const cb=document.querySelector(`input[name="assignment-job-title"][value="${CSS.escape(strId(x.job_title_id))}"]`);
+      if(cb) cb.checked=true;
+    });
+    if(currentPrimaryJobTitleId){
+      const radio=document.querySelector(`input[name="assignment-primary-job-title"][value="${CSS.escape(strId(currentPrimaryJobTitleId))}"]`);
+      if(radio) radio.checked=true;
+    }
+    syncPrimaryChoices();
 
     const minDate=addDays(currentHistory.effective_from,1);
     const today=todayJst();
@@ -209,7 +280,7 @@ window.EmployeeAssignmentHistory = (() => {
     ev.preventDefault();
     const values=collectForm();
     if(!values.effective_from || !values.center_id || !values.division_id || !values.position_id){
-      APP.toast('適用日・センター・部門・役職/職種は必須です','warning');
+      APP.toast('適用日・センター・部門・職種は必須です','warning');
       return;
     }
     if(values.effective_from > todayJst()){
@@ -238,12 +309,30 @@ window.EmployeeAssignmentHistory = (() => {
       p_change_type:detectChangeType(values),
       p_memo:values.memo
     };
-    const r=await sb.rpc('change_employee_assignment_v2',payload);
+    const assignmentChanged=diffs.some(x=>x.label!=='役職');
+    let r={error:null};
+    if(assignmentChanged) r=await sb.rpc('change_employee_assignment_v2',payload);
     if(r.error){
       console.error('assignment change failed',r.error);
       APP.toast(`人事変更を登録できませんでした：${r.error.message}`,'error');
       btn.disabled=false; btn.textContent='変更を登録';
       return;
+    }
+    const titleChanged=diffs.some(x=>x.label==='役職');
+    if(titleChanged){
+      const tr=await sb.rpc('change_employee_job_titles_v1',{
+        p_employee_id:currentEmployee.id,
+        p_effective_from:values.effective_from,
+        p_job_title_ids:values.job_title_ids||[],
+        p_primary_job_title_id:values.primary_job_title_id||null,
+        p_memo:values.memo
+      });
+      if(tr.error){
+        console.error('job title change failed',tr.error);
+        APP.toast(`所属等は更新されましたが、役職変更に失敗しました：${tr.error.message}`,'error');
+        btn.disabled=false; btn.textContent='変更を登録';
+        return;
+      }
     }
     APP.toast('人事変更を登録しました');
     closeModal();
@@ -348,5 +437,5 @@ window.EmployeeAssignmentHistory = (() => {
     document.getElementById('retirement-form')?.addEventListener('submit',submitRetirement);
   }
 
-  return {load,render,mount,setupChangeUI,setupRetirementUI};
+  return {load,render,mount,mountJobTitles,setupChangeUI,setupRetirementUI};
 })();
