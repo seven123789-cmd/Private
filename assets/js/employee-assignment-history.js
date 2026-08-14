@@ -334,6 +334,28 @@ window.EmployeeAssignmentHistory = (() => {
         return;
       }
     }
+    // Phase20: 今後の手入力も復元履歴と同じ人事イベント台帳へ記録する。
+    // 現在値の更新RPCが正本、イベント台帳は監査・時系列表示用。失敗しても現在値更新は巻き戻さない。
+    try{
+      const eventDetails={
+        changes:diffs,
+        center_id:values.center_id,
+        division_id:values.division_id,
+        position_id:values.position_id,
+        grade_id:values.grade_id||null,
+        job_title_ids:values.job_title_ids||[],
+        primary_job_title_id:values.primary_job_title_id||null,
+        memo:values.memo
+      };
+      const er=await sb.rpc('add_employee_hr_event_v1',{
+        p_employee_id:currentEmployee.id,
+        p_effective_date:values.effective_from,
+        p_event_type:detectChangeType(values),
+        p_details:eventDetails,
+        p_memo:values.memo
+      });
+      if(er.error) console.error('Phase20 HR event append failed',er.error);
+    }catch(eventError){ console.error('Phase20 HR event append failed',eventError); }
     APP.toast('人事変更を登録しました');
     closeModal();
     setTimeout(()=>location.reload(),450);
