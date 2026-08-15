@@ -93,11 +93,23 @@ window.EmployeeHrTimeline = (() => {
   }
 
   function stateLabel(state) {
-    const parts = [];
-    if (text(state.assignment)) parts.push(text(state.assignment));
-    if (Array.isArray(state.jobTitles) && state.jobTitles.length) parts.push(state.jobTitles.join(' 兼 '));
-    if (Array.isArray(state.concurrent) && state.concurrent.length) parts.push(state.concurrent.join(' 兼 '));
-    return parts.join(' 兼 ');
+    const mainParts = [];
+    if (text(state.assignment)) mainParts.push(esc(text(state.assignment)));
+    if (Array.isArray(state.jobTitles) && state.jobTitles.length) {
+      mainParts.push(state.jobTitles.map(v => esc(v)).join('・'));
+    }
+
+    const main = mainParts.join('　');
+    const concurrent = Array.isArray(state.concurrent) && state.concurrent.length
+      ? state.concurrent.map(v => esc(v)).join('・')
+      : '';
+
+    if (main && concurrent) {
+      return `${main}<br><span class="hr-state-concurrent">兼務：${concurrent}</span>`;
+    }
+    if (main) return main;
+    if (concurrent) return `<span class="hr-state-concurrent">兼務：${concurrent}</span>`;
+    return '';
   }
 
   function contextualRows(sourceRows) {
@@ -174,13 +186,13 @@ window.EmployeeHrTimeline = (() => {
       const before = hasGrade
         ? (beforeParts.length ? esc(beforeParts.join('・')) : '—')
         : (hasPersonnelContext && context && context.before
-            ? esc(context.before)
+            ? context.before
             : (beforeParts.length ? esc(beforeParts.join('・')) : '—'));
 
       const after = hasGrade
         ? (afterParts.length ? esc(afterParts.join('・')) : '—')
         : (hasPersonnelContext && context && context.after
-            ? esc(context.after)
+            ? context.after
             : (afterParts.length ? esc(afterParts.join('・')) : '—'));
 
       return `<tr>
@@ -204,10 +216,10 @@ window.EmployeeHrTimeline = (() => {
     const context = window.__hrContextRows && window.__hrContextRows.get(String(r.id));
     const useContext = ['担当', '役職', '兼務'].includes(change.label);
     const before = useContext && context && context.before
-      ? esc(context.before)
+      ? context.before
       : (beforeRaw ? esc(beforeRaw) : '—');
     const after = useContext && context && context.after
-      ? esc(context.after)
+      ? context.after
       : (afterRaw ? esc(afterRaw) : '—');
 
     return `<tr>
@@ -261,6 +273,7 @@ window.EmployeeHrTimeline = (() => {
           white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.5
         }
         #emp-hr-timeline .hr-history-arrow{text-align:center;color:var(--muted,#766d62);white-space:nowrap}
+        #emp-hr-timeline .hr-state-concurrent{display:inline-block;margin-top:4px;font-size:.92em;color:var(--muted,#766d62);font-weight:600}
         #emp-hr-timeline .hr-history-actions{justify-content:flex-start;gap:6px;white-space:nowrap}
         @media(max-width:760px){#emp-hr-timeline .hr-history-table{min-width:760px}}
       </style>
