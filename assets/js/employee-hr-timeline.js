@@ -72,42 +72,54 @@ window.EmployeeHrTimeline = (() => {
     return changes;
   }
 
-  function ensureTimelineStyles() {
-    if (document.getElementById('phase22-hr-timeline-style')) return;
-    const style = document.createElement('style');
-    style.id = 'phase22-hr-timeline-style';
-    style.textContent = `
-      #emp-hr-timeline .assignment-history__grid { display:block; }
-      #emp-hr-timeline .assignment-history__change { min-width:0; padding:12px 14px; }
-      #emp-hr-timeline .assignment-history__change + .assignment-history__change { border-top:1px solid var(--border, #e6ded1); }
-      #emp-hr-timeline .assignment-history__label { display:block; margin-bottom:7px; font-size:12px; font-weight:600; color:var(--text-muted, #7b7066); }
-      #emp-hr-timeline .assignment-history__transition { display:grid; grid-template-columns:minmax(0,1fr); gap:4px; min-width:0; }
-      #emp-hr-timeline .assignment-history__value { display:block; min-width:0; max-width:100%; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere; word-break:break-word; line-height:1.65; }
-      #emp-hr-timeline .assignment-history__arrow { display:block; padding:0; line-height:1; color:var(--text-muted, #8b8178); }
-      #emp-hr-timeline .row-actions { gap:6px; margin-top:8px; }
-      #emp-hr-timeline .row-actions .btn { min-height:32px; padding:5px 10px; font-size:12px; }
-      @media (min-width: 760px) {
-        #emp-hr-timeline .assignment-history__transition--both { grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr); align-items:start; gap:8px; }
-        #emp-hr-timeline .assignment-history__transition--both .assignment-history__arrow { text-align:center; padding-top:4px; }
-      }
-    `;
-    document.head.appendChild(style);
+  function compactAffiliationPair(before, after) {
+    let b = text(before);
+    let a = text(after);
+    if (!b || !a) return [b, a];
+    const bp = b.split(/\\s+/);
+    const ap = a.split(/\\s+/);
+    let i = 0;
+    while (i < bp.length - 1 && i < ap.length - 1 && bp[i] === ap[i]) i += 1;
+    if (i > 0) {
+      b = bp.slice(i).join(' ');
+      a = ap.slice(i).join(' ');
+    }
+    return [b, a];
   }
 
-  function renderChange(change) {
-    const before = change.before ? esc(change.before) : '';
-    const after = change.after ? esc(change.after) : '';
-    let valueHtml = '';
+  function displayPair(change) {
+    if (change.label === '所属') return compactAffiliationPair(change.before, change.after);
+    return [change.before, change.after];
+  }
 
-    if (before && after) {
-      valueHtml = `<div class="assignment-history__transition assignment-history__transition--both"><strong class="assignment-history__value">${before}</strong><span class="assignment-history__arrow" aria-hidden="true">→</span><strong class="assignment-history__value">${after}</strong></div>`;
-    } else if (after) {
-      valueHtml = `<div class="assignment-history__transition"><span class="assignment-history__arrow" aria-hidden="true">→</span><strong class="assignment-history__value">${after}</strong></div>`;
-    } else {
-      valueHtml = `<div class="assignment-history__transition"><strong class="assignment-history__value">${before}</strong><span class="assignment-history__arrow" aria-hidden="true">→</span></div>`;
-    }
+  function renderTableRows(r) {
+    const changes = eventChanges(r);
+    if (!changes.length) return '';
+    const date = esc(fmtOfficialDate(r));
+    const type = esc(typeLabel(r.event_type));
 
-    return `<div class="assignment-history__change"><span class="assignment-history__label">${esc(change.label)}</span>${valueHtml}</div>`;
+    return changes.map((change, index) => {
+      const [beforeRaw, afterRaw] = displayPair(change);
+      const before = beforeRaw ? esc(beforeRaw) : '—';
+      const after = afterRaw ? esc(afterRaw) : '—';
+      const note = index === 0 && text(r.note)
+        ? `<div class="cell-sub">補足：${esc(r.note)}</div>` : '';
+      const actions = index === 0
+        ? `<div class="row-actions" style="justify-content:flex-start;gap:6px;white-space:nowrap">
+             <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
+             <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
+           </div>` : '';
+
+      return `<tr>
+        <td>${index === 0 ? `<strong>${date}</strong>` : ''}</td>
+        <td>${index === 0 ? type : ''}</td>
+        <td><strong>${esc(change.label)}</strong>${note}</td>
+        <td>${before}</td>
+        <td class="hr-history-arrow">→</td>
+        <td><strong>${after}</strong></td>
+        <td>${actions}</td>
+      </tr>`;
+    }).join('');
   }
 
   async function load(id) {
@@ -115,7 +127,6 @@ window.EmployeeHrTimeline = (() => {
   }
 
   function render() {
-    ensureTimelineStyles();
     const box = document.getElementById('emp-hr-timeline');
     if (!box) return;
 
@@ -124,31 +135,31 @@ window.EmployeeHrTimeline = (() => {
       return;
     }
 
-    box.innerHTML = `<div class="assignment-history">${rows.map(r => {
-      const changes = eventChanges(r);
-      const detailHtml = changes.length
-        ? `<div class="assignment-history__grid">${changes.map(renderChange).join('')}</div>`
-        : '<div class="assignment-history__memo">表示対象となる変更項目はありません。</div>';
-      const noteHtml = text(r.note)
-        ? `<div class="assignment-history__memo">補足：${esc(r.note)}</div>`
-        : '';
-
-      return `<article class="assignment-history__item">
-        <div class="assignment-history__rail"><span></span></div>
-        <div class="assignment-history__content">
-          <div class="assignment-history__head">
-            <div><strong>${esc(fmtOfficialDate(r))}</strong></div>
-            ${APP.badge(typeLabel(r.event_type), 'secondary')}
-          </div>
-          ${detailHtml}
-          ${noteHtml}
-          <div class="row-actions">
-            <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
-            <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
-          </div>
-        </div>
-      </article>`;
-    }).join('')}</div>`;
+    const body = rows.map(renderTableRows).join('');
+    box.innerHTML = `
+      <style>
+        #emp-hr-timeline .hr-history-table{table-layout:auto;min-width:900px}
+        #emp-hr-timeline .hr-history-table th,#emp-hr-timeline .hr-history-table td{vertical-align:middle}
+        #emp-hr-timeline .hr-history-table th:nth-child(1){width:112px}
+        #emp-hr-timeline .hr-history-table th:nth-child(2){width:150px}
+        #emp-hr-timeline .hr-history-table th:nth-child(3){width:72px}
+        #emp-hr-timeline .hr-history-table th:nth-child(5){width:34px;text-align:center}
+        #emp-hr-timeline .hr-history-table th:nth-child(7){width:118px}
+        #emp-hr-timeline .hr-history-table td:nth-child(1),
+        #emp-hr-timeline .hr-history-table td:nth-child(2),
+        #emp-hr-timeline .hr-history-table td:nth-child(3){white-space:nowrap}
+        #emp-hr-timeline .hr-history-table td:nth-child(4),
+        #emp-hr-timeline .hr-history-table td:nth-child(6){white-space:normal;overflow-wrap:anywhere;line-height:1.55}
+        #emp-hr-timeline .hr-history-arrow{text-align:center;color:var(--muted,#766d62);white-space:nowrap}
+        #emp-hr-timeline .cell-sub{font-size:12px;font-weight:400;margin-top:4px;white-space:normal}
+        @media(max-width:760px){#emp-hr-timeline .hr-history-table{min-width:760px}}
+      </style>
+      <div class="table-wrap">
+        <table class="hr-history-table">
+          <thead><tr><th>発令日</th><th>種別</th><th>項目</th><th>変更前</th><th></th><th>変更後</th><th>操作</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>`;
 
     box.querySelectorAll('[data-hr-correct]').forEach(btn => {
       btn.onclick = () => openCorrect(btn.dataset.hrCorrect);
