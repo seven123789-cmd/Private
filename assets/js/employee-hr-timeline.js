@@ -95,31 +95,39 @@ window.EmployeeHrTimeline = (() => {
   function renderTableRows(r) {
     const changes = eventChanges(r);
     if (!changes.length) return '';
+
     const date = esc(fmtOfficialDate(r));
     const type = esc(typeLabel(r.event_type));
 
-    return changes.map((change, index) => {
-      const [beforeRaw, afterRaw] = displayPair(change);
-      const before = beforeRaw ? esc(beforeRaw) : '—';
-      const after = afterRaw ? esc(afterRaw) : '—';
-      const note = index === 0 && text(r.note)
-        ? `<div class="cell-sub">補足：${esc(r.note)}</div>` : '';
-      const actions = index === 0
-        ? `<div class="row-actions" style="justify-content:flex-start;gap:6px;white-space:nowrap">
-             <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
-             <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
-           </div>` : '';
+    const labels = [];
+    const befores = [];
+    const afters = [];
 
-      return `<tr>
-        <td>${index === 0 ? `<strong>${date}</strong>` : ''}</td>
-        <td>${index === 0 ? type : ''}</td>
-        <td><strong>${esc(change.label)}</strong>${note}</td>
-        <td>${before}</td>
-        <td class="hr-history-arrow">→</td>
-        <td><strong>${after}</strong></td>
-        <td>${actions}</td>
-      </tr>`;
-    }).join('');
+    changes.forEach(change => {
+      const [beforeRaw, afterRaw] = displayPair(change);
+      labels.push(`<div class="hr-multi-line"><strong>${esc(change.label)}</strong></div>`);
+      befores.push(`<div class="hr-multi-line">${beforeRaw ? esc(beforeRaw) : '—'}</div>`);
+      afters.push(`<div class="hr-multi-line"><strong>${afterRaw ? esc(afterRaw) : '—'}</strong></div>`);
+    });
+
+    const note = text(r.note)
+      ? `<div class="cell-sub">補足：${esc(r.note)}</div>`
+      : '';
+
+    return `<tr>
+      <td><strong>${date}</strong></td>
+      <td>${type}</td>
+      <td>${labels.join('')}${note}</td>
+      <td>${befores.join('')}</td>
+      <td class="hr-history-arrow">→</td>
+      <td>${afters.join('')}</td>
+      <td>
+        <div class="row-actions" style="justify-content:flex-start;gap:6px;white-space:nowrap">
+          <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
+          <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
+        </div>
+      </td>
+    </tr>`;
   }
 
   async function load(id) {
@@ -155,7 +163,7 @@ window.EmployeeHrTimeline = (() => {
       </style>
       <div class="table-wrap">
         <table class="hr-history-table">
-          <thead><tr><th>発令日</th><th>種別</th><th>変更内容</th><th>変更前</th><th></th><th>変更後</th><th>操作</th></tr></thead>
+          <thead><tr><th>発令日・年度</th><th>種別</th><th>変更内容</th><th>変更前</th><th></th><th>変更後</th><th>操作</th></tr></thead>
           <tbody>${body}</tbody>
         </table>
       </div>`;
