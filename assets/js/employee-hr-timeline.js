@@ -72,20 +72,42 @@ window.EmployeeHrTimeline = (() => {
     return changes;
   }
 
+  function ensureTimelineStyles() {
+    if (document.getElementById('phase22-hr-timeline-style')) return;
+    const style = document.createElement('style');
+    style.id = 'phase22-hr-timeline-style';
+    style.textContent = `
+      #emp-hr-timeline .assignment-history__grid { display:block; }
+      #emp-hr-timeline .assignment-history__change { min-width:0; padding:12px 14px; }
+      #emp-hr-timeline .assignment-history__change + .assignment-history__change { border-top:1px solid var(--border, #e6ded1); }
+      #emp-hr-timeline .assignment-history__label { display:block; margin-bottom:7px; font-size:12px; font-weight:600; color:var(--text-muted, #7b7066); }
+      #emp-hr-timeline .assignment-history__transition { display:grid; grid-template-columns:minmax(0,1fr); gap:4px; min-width:0; }
+      #emp-hr-timeline .assignment-history__value { display:block; min-width:0; max-width:100%; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere; word-break:break-word; line-height:1.65; }
+      #emp-hr-timeline .assignment-history__arrow { display:block; padding:0; line-height:1; color:var(--text-muted, #8b8178); }
+      #emp-hr-timeline .row-actions { gap:6px; margin-top:8px; }
+      #emp-hr-timeline .row-actions .btn { min-height:32px; padding:5px 10px; font-size:12px; }
+      @media (min-width: 760px) {
+        #emp-hr-timeline .assignment-history__transition--both { grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr); align-items:start; gap:8px; }
+        #emp-hr-timeline .assignment-history__transition--both .assignment-history__arrow { text-align:center; padding-top:4px; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function renderChange(change) {
     const before = change.before ? esc(change.before) : '';
     const after = change.after ? esc(change.after) : '';
     let valueHtml = '';
 
     if (before && after) {
-      valueHtml = `<strong>${before}</strong><span class="assignment-history__arrow"> → </span><strong>${after}</strong>`;
+      valueHtml = `<div class="assignment-history__transition assignment-history__transition--both"><strong class="assignment-history__value">${before}</strong><span class="assignment-history__arrow" aria-hidden="true">→</span><strong class="assignment-history__value">${after}</strong></div>`;
     } else if (after) {
-      valueHtml = `<span class="assignment-history__arrow">→ </span><strong>${after}</strong>`;
+      valueHtml = `<div class="assignment-history__transition"><span class="assignment-history__arrow" aria-hidden="true">→</span><strong class="assignment-history__value">${after}</strong></div>`;
     } else {
-      valueHtml = `<strong>${before}</strong><span class="assignment-history__arrow"> →</span>`;
+      valueHtml = `<div class="assignment-history__transition"><strong class="assignment-history__value">${before}</strong><span class="assignment-history__arrow" aria-hidden="true">→</span></div>`;
     }
 
-    return `<div><span>${esc(change.label)}</span><div>${valueHtml}</div></div>`;
+    return `<div class="assignment-history__change"><span class="assignment-history__label">${esc(change.label)}</span>${valueHtml}</div>`;
   }
 
   async function load(id) {
@@ -93,6 +115,7 @@ window.EmployeeHrTimeline = (() => {
   }
 
   function render() {
+    ensureTimelineStyles();
     const box = document.getElementById('emp-hr-timeline');
     if (!box) return;
 
