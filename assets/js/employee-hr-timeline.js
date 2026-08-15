@@ -164,13 +164,24 @@ window.EmployeeHrTimeline = (() => {
       });
 
       const context = window.__hrContextRows && window.__hrContextRows.get(String(r.id));
+      const labelsSet = new Set(changes.map(c => c.label));
+      const hasGrade = labelsSet.has('等級');
       const hasPersonnelContext = changes.some(c => ['担当', '役職', '兼務'].includes(c.label));
-      const before = hasPersonnelContext && context && context.before
-        ? esc(context.before)
-        : (beforeParts.length ? esc(beforeParts.join('・')) : '—');
-      const after = hasPersonnelContext && context && context.after
-        ? esc(context.after)
-        : (afterParts.length ? esc(afterParts.join('・')) : '—');
+
+      // 等級＋役職など、等級を含む複合同時発令では等級値を絶対に落とさない。
+      // 例: 4級（主任） → 5級・副長
+      // 担当・役職・兼務だけの変更では、その時点の人事状態を組み合わせて表示する。
+      const before = hasGrade
+        ? (beforeParts.length ? esc(beforeParts.join('・')) : '—')
+        : (hasPersonnelContext && context && context.before
+            ? esc(context.before)
+            : (beforeParts.length ? esc(beforeParts.join('・')) : '—'));
+
+      const after = hasGrade
+        ? (afterParts.length ? esc(afterParts.join('・')) : '—')
+        : (hasPersonnelContext && context && context.after
+            ? esc(context.after)
+            : (afterParts.length ? esc(afterParts.join('・')) : '—'));
 
       return `<tr>
         <td><strong>${date}</strong></td>
