@@ -1,16 +1,25 @@
+const CENTER_ORDER = ['本部','群馬センター','さいたまセンター','北埼玉センター','東松山センター','南埼玉センター','練馬センター','東北センター','船橋センター','福島センター','戸田センター','三河センター','静岡センター'];
+const CENTER_RANK = new Map(CENTER_ORDER.map((name,index)=>[name,index]));
+function centerRank(name){ return CENTER_RANK.has(name) ? CENTER_RANK.get(name) : 999; }
+function employeeListSort(a,b){
+  return centerRank(a.center)-centerRank(b.center)
+    || String(a.center||'').localeCompare(String(b.center||''),'ja')
+    || String(a.employee_code||'').localeCompare(String(b.employee_code||''),'ja',{numeric:true});
+}
 let EMP_ROWS = [];
 let EMP_FILTERED = [];
 let empPage = 1;
 const empPerPage = 20;
 async function initEmployees() {
   APP.initHeader();
-  EMP_ROWS = await APP.loadEmployees();
+  EMP_ROWS = (await APP.loadEmployees()).sort(employeeListSort);
   fillEmployeeFilters();
   bindEmployeeFilters();
   renderEmployees();
 }
 function fillEmployeeFilters() {
-  const centers = [...new Set(EMP_ROWS.map(e => e.center).filter(Boolean))].sort((a,b)=>Number(a)-Number(b)||a.localeCompare(b));
+  const centers = [...new Set(EMP_ROWS.map(e => e.center).filter(Boolean))]
+    .sort((a,b)=>centerRank(a)-centerRank(b)||a.localeCompare(b,'ja'));
   const positions = [...new Set(EMP_ROWS.map(e => e.position).filter(Boolean))].sort();
   const empTypes = [...new Set(EMP_ROWS.map(e => e.employment_type).filter(Boolean))].sort();
   fillSelect('filter-center', centers, '全センター');
@@ -43,7 +52,7 @@ function renderEmployees() {
   const tbody = document.getElementById('emp-tbody'); if (!tbody) return;
   const start = (empPage - 1) * empPerPage;
   const rows = EMP_FILTERED.slice(start, start + empPerPage);
-  tbody.innerHTML = rows.length ? rows.map(e => `<tr onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')"><td><strong>${APP.escape(e.employee_code || '')}</strong></td><td><div class="name-cell"><div class="mini-avatar">${APP.escape((e.name || '?')[0])}</div><div><div class="cell-main">${APP.escape(e.name)}</div><div class="cell-sub">${APP.escape(e.kana || '')}</div></div></div></td><td>${APP.escape(e.center || '')}</td><td>${APP.escape(e.position || '')}</td><td>${APP.escape(e.employment_type || '')}</td><td>${APP.badge(e.current_grade || '未設定', 'gray')}</td><td>${(e.promotion_target_flag === true || e.promotion_target_flag === 'true') ? APP.badge('候補', 'primary') : APP.badge('—', 'gray')}</td><td><div class="row-actions"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')">確認</button></div></td></tr>`).join('') : `<tr><td colspan="8" class="empty">条件に一致する社員がありません</td></tr>`;
+  tbody.innerHTML = rows.length ? rows.map(e => `<tr onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')"><td><strong>${APP.escape(e.employee_code || '')}</strong></td><td><div class="name-cell"><div><div class="cell-main">${APP.escape(e.name)}</div><div class="cell-sub">${APP.escape(e.kana || '')}</div></div></div></td><td>${APP.escape(e.center || '')}</td><td>${APP.escape(e.position || '')}</td><td>${APP.escape(e.employment_type || '')}</td><td>${APP.badge(e.current_grade || '未設定', 'gray')}</td><td>${(e.promotion_target_flag === true || e.promotion_target_flag === 'true') ? APP.badge('候補', 'primary') : APP.badge('—', 'gray')}</td><td><div class="row-actions"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')">確認</button></div></td></tr>`).join('') : `<tr><td colspan="8" class="empty">条件に一致する社員がありません</td></tr>`;
   renderEmpPager();
 }
 function renderEmpPager() {
