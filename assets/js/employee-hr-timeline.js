@@ -92,6 +92,41 @@ window.EmployeeHrTimeline = (() => {
     return [change.before, change.after];
   }
 
+  function stateLabel(state) {
+    const parts = [];
+    if (text(state.assignment)) parts.push(text(state.assignment));
+    if (Array.isArray(state.jobTitles) && state.jobTitles.length) parts.push(state.jobTitles.join(' 兼 '));
+    if (Array.isArray(state.concurrent) && state.concurrent.length) parts.push(state.concurrent.join(' 兼 '));
+    return parts.join(' 兼 ');
+  }
+
+  function contextualRows(sourceRows) {
+    const state = { assignment: '', jobTitles: [], concurrent: [] };
+    const map = new Map();
+
+    [...sourceRows].sort((a, b) => {
+      const da = text(a.effective_date) || text(a.effective_label);
+      const db = text(b.effective_date) || text(b.effective_label);
+      return da.localeCompare(db);
+    }).forEach(r => {
+      // 発令前状態。from値が明示されていれば、その値を優先して状態を補正する。
+      if (text(r.from_assignment)) state.assignment = text(r.from_assignment);
+      if (Array.isArray(r.from_job_titles) && r.from_job_titles.length) state.jobTitles = [...r.from_job_titles];
+      if (Array.isArray(r.from_concurrent) && r.from_concurrent.length) state.concurrent = [...r.from_concurrent];
+
+      const before = stateLabel(state);
+
+      // 発令後状態
+      if (text(r.to_assignment)) state.assignment = text(r.to_assignment);
+      if (Array.isArray(r.to_job_titles) && r.to_job_titles.length) state.jobTitles = [...r.to_job_titles];
+      if (Array.isArray(r.to_concurrent) && r.to_concurrent.length) state.concurrent = [...r.to_concurrent];
+
+      const after = stateLabel(state);
+      map.set(String(r.id), { before, after });
+    });
+    return map;
+  }
+
   function renderTableRows(r) {
     const changes = eventChanges(r);
     const date = esc(fmtOfficialDate(r));
@@ -128,8 +163,14 @@ window.EmployeeHrTimeline = (() => {
         if (afterRaw) afterParts.push(afterRaw);
       });
 
-      const before = beforeParts.length ? esc(beforeParts.join('・')) : '—';
-      const after = afterParts.length ? esc(afterParts.join('・')) : '—';
+      const context = window.__hrContextRows && window.__hrContextRows.get(String(r.id));
+      const hasPersonnelContext = changes.some(c => ['担当', '役職', '兼務'].includes(c.label));
+      const before = hasPersonnelContext && context && context.before
+        ? esc(context.before)
+        : (beforeParts.length ? esc(beforeParts.join('・')) : '—');
+      const after = hasPersonnelContext && context && context.after
+        ? esc(context.after)
+        : (afterParts.length ? esc(afterParts.join('・')) : '—');
 
       return `<tr>
         <td><strong>${date}</strong></td>
@@ -149,8 +190,14 @@ window.EmployeeHrTimeline = (() => {
 
     const change = changes[0];
     const [beforeRaw, afterRaw] = displayPair(change);
-    const before = beforeRaw ? esc(beforeRaw) : '—';
-    const after = afterRaw ? esc(afterRaw) : '—';
+    const context = window.__hrContextRows && window.__hrContextRows.get(String(r.id));
+    const useContext = ['担当', '役職', '兼務'].includes(change.label);
+    const before = useContext && context && context.before
+      ? esc(context.before)
+      : (beforeRaw ? esc(beforeRaw) : '—');
+    const after = useContext && context && context.after
+      ? esc(context.after)
+      : (afterRaw ? esc(afterRaw) : '—');
 
     return `<tr>
       <td><strong>${date}</strong></td>
@@ -182,6 +229,7 @@ window.EmployeeHrTimeline = (() => {
       return;
     }
 
+    window.__hrContextRows = contextualRows(rows);
     const body = rows.map(renderTableRows).join('');
     box.innerHTML = `
       <style>
