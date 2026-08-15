@@ -94,60 +94,10 @@ window.EmployeeHrTimeline = (() => {
 
   function renderTableRows(r) {
     const changes = eventChanges(r);
-    if (!changes.length) return '';
     const date = esc(fmtOfficialDate(r));
     const type = esc(typeLabel(r.event_type));
 
-    return changes.map((change, index) => {
-      const [beforeRaw, afterRaw] = displayPair(change);
-      const before = beforeRaw ? esc(beforeRaw) : '—';
-      const after = afterRaw ? esc(afterRaw) : '—';
-      const actions = index === 0
-        ? `<div class="row-actions" style="justify-content:flex-start;gap:6px;white-space:nowrap">
-             <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
-             <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
-           </div>` : '';
-
-      return `<tr>
-        <td>${index === 0 ? `<strong>${date}</strong>` : ''}</td>
-        <td>${index === 0 ? type : ''}</td>
-        <td><strong>${esc(change.label)}</strong></td>
-        <td>${before}</td>
-        <td class="hr-history-arrow">→</td>
-        <td><strong>${after}</strong></td>
-        <td>${actions}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  function compactAffiliationPair(before, after) {
-    let b = text(before);
-    let a = text(after);
-    if (!b || !a) return [b, a];
-
-    const bp = b.split(/\s+/);
-    const ap = a.split(/\s+/);
-    let i = 0;
-    while (i < bp.length - 1 && i < ap.length - 1 && bp[i] === ap[i]) i += 1;
-
-    if (i > 0) {
-      b = bp.slice(i).join(' ');
-      a = ap.slice(i).join(' ');
-    }
-    return [b, a];
-  }
-
-  function displayPair(change) {
-    if (change.label === '所属') return compactAffiliationPair(change.before, change.after);
-    return [change.before, change.after];
-  }
-
-  function renderTableRows(r) {
-    const changes = eventChanges(r);
-    const date = esc(fmtOfficialDate(r));
-    const type = esc(typeLabel(r.event_type));
-
-    // 正社員登用など「イベント自体」が正式履歴で、前後項目を持たないものも消さない。
+    // 正社員登用など、イベント自体に意味があり前後項目を持たない履歴
     if (!changes.length) {
       return `<tr>
         <td><strong>${date}</strong></td>
@@ -165,29 +115,59 @@ window.EmployeeHrTimeline = (() => {
       </tr>`;
     }
 
-    return changes.map((change, index) => {
-      const [beforeRaw, afterRaw] = displayPair(change);
-      const before = beforeRaw ? esc(beforeRaw) : '—';
-      const after = afterRaw ? esc(afterRaw) : '—';
-      const note = index === 0 && text(r.note)
-        ? `<div class="cell-sub">補足：${esc(r.note)}</div>` : '';
-      const actions = index === 0
-        ? `<div class="row-actions hr-history-actions">
-             <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
-             <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
-           </div>` : '';
+    // 1回の発令で複数項目が同時変更された場合は、一覧上は1行に集約する。
+    // DB上は所属・担当・等級・役職・兼務を分離したまま保持する。
+    if (changes.length > 1) {
+      const labels = changes.map(c => c.label).join('・');
+      const beforeParts = [];
+      const afterParts = [];
+
+      changes.forEach(change => {
+        const [beforeRaw, afterRaw] = displayPair(change);
+        if (beforeRaw) beforeParts.push(beforeRaw);
+        if (afterRaw) afterParts.push(afterRaw);
+      });
+
+      const before = beforeParts.length ? esc(beforeParts.join('・')) : '—';
+      const after = afterParts.length ? esc(afterParts.join('・')) : '—';
 
       return `<tr>
-        <td>${index === 0 ? `<strong>${date}</strong>` : ''}</td>
-        <td>${index === 0 ? type : ''}</td>
-        <td><strong>${esc(change.label)}</strong></td>
+        <td><strong>${date}</strong></td>
+        <td>${type}</td>
+        <td><strong>${esc(labels)}</strong></td>
         <td>${before}</td>
         <td class="hr-history-arrow">→</td>
         <td><strong>${after}</strong></td>
-        <td>${actions}</td>
+        <td>
+          <div class="row-actions hr-history-actions">
+            <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
+            <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
+          </div>
+        </td>
       </tr>`;
-    }).join('');
+    }
+
+    const change = changes[0];
+    const [beforeRaw, afterRaw] = displayPair(change);
+    const before = beforeRaw ? esc(beforeRaw) : '—';
+    const after = afterRaw ? esc(afterRaw) : '—';
+
+    return `<tr>
+      <td><strong>${date}</strong></td>
+      <td>${type}</td>
+      <td><strong>${esc(change.label)}</strong></td>
+      <td>${before}</td>
+      <td class="hr-history-arrow">→</td>
+      <td><strong>${after}</strong></td>
+      <td>
+        <div class="row-actions hr-history-actions">
+          <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
+          <button class="btn btn-danger-subtle btn-sm" data-hr-cancel="${esc(r.id)}">取消</button>
+        </div>
+      </td>
+    </tr>`;
   }
+
 
   async function load(id) {
     return APP.client().rpc('get_employee_hr_history_official_v1', { p_employee_id: id });
