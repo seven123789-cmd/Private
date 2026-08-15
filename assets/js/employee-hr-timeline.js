@@ -138,25 +138,24 @@ window.EmployeeHrTimeline = (() => {
     const body = rows.map(renderTableRows).join('');
     box.innerHTML = `
       <style>
-        #emp-hr-timeline .hr-history-table{table-layout:auto;min-width:900px}
+        .employee-hr-history-card{margin-top:18px}
+        #emp-hr-timeline .hr-history-table{table-layout:auto;width:100%;min-width:1040px}
         #emp-hr-timeline .hr-history-table th,#emp-hr-timeline .hr-history-table td{vertical-align:middle}
-        #emp-hr-timeline .hr-history-table th:nth-child(1){width:112px}
-        #emp-hr-timeline .hr-history-table th:nth-child(2){width:150px}
-        #emp-hr-timeline .hr-history-table th:nth-child(3){width:72px}
-        #emp-hr-timeline .hr-history-table th:nth-child(5){width:34px;text-align:center}
-        #emp-hr-timeline .hr-history-table th:nth-child(7){width:118px}
-        #emp-hr-timeline .hr-history-table td:nth-child(1),
-        #emp-hr-timeline .hr-history-table td:nth-child(2),
-        #emp-hr-timeline .hr-history-table td:nth-child(3){white-space:nowrap}
-        #emp-hr-timeline .hr-history-table td:nth-child(4),
-        #emp-hr-timeline .hr-history-table td:nth-child(6){white-space:normal;overflow-wrap:anywhere;line-height:1.55}
+        #emp-hr-timeline .hr-history-table th:nth-child(1){width:118px}
+        #emp-hr-timeline .hr-history-table th:nth-child(2){width:170px}
+        #emp-hr-timeline .hr-history-table th:nth-child(3){width:88px}
+        #emp-hr-timeline .hr-history-table th:nth-child(5){width:36px;text-align:center}
+        #emp-hr-timeline .hr-history-table th:nth-child(7){width:128px}
+        #emp-hr-timeline .hr-history-table td:nth-child(1),#emp-hr-timeline .hr-history-table td:nth-child(2),#emp-hr-timeline .hr-history-table td:nth-child(3){white-space:nowrap}
+        #emp-hr-timeline .hr-history-table td:nth-child(4),#emp-hr-timeline .hr-history-table td:nth-child(6){white-space:normal;overflow-wrap:anywhere;line-height:1.45}
         #emp-hr-timeline .hr-history-arrow{text-align:center;color:var(--muted,#766d62);white-space:nowrap}
-        #emp-hr-timeline .cell-sub{font-size:12px;font-weight:400;margin-top:4px;white-space:normal}
-        @media(max-width:760px){#emp-hr-timeline .hr-history-table{min-width:760px}}
+        #emp-hr-timeline .cell-sub{font-size:11px;font-weight:400;margin-top:3px;white-space:normal;color:var(--muted,#766d62)}
+        #emp-hr-timeline .row-actions{justify-content:flex-end!important}
+        @media(max-width:760px){#emp-hr-timeline .hr-history-table{min-width:920px}}
       </style>
       <div class="table-wrap">
         <table class="hr-history-table">
-          <thead><tr><th>発令日</th><th>種別</th><th>項目</th><th>変更前</th><th></th><th>変更後</th><th>操作</th></tr></thead>
+          <thead><tr><th>発令日</th><th>種別</th><th>変更内容</th><th>変更前</th><th></th><th>変更後</th><th>操作</th></tr></thead>
           <tbody>${body}</tbody>
         </table>
       </div>`;
