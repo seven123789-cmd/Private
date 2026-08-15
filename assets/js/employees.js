@@ -46,13 +46,13 @@ function renderEmployees() {
   const employmentStatus=document.getElementById('filter-employment-status')?.value||'active';
   EMP_FILTERED = EMP_ROWS.filter(e => (!kw || [e.employee_code, e.name, e.kana, e.center, e.position].join(' ').includes(kw)) && (!center || e.center === center) && (!position || e.position === position) && (!employment || e.employment_type === employment) && (!promo || (e.promotion_target_flag === true || e.promotion_target_flag === 'true'))
       && (employmentStatus==='all' || (employmentStatus==='retired'
-        ? (e.is_active===false || e.status==='retired' || !!e.retirement_date)
-        : !(e.is_active===false || e.status==='retired' || !!e.retirement_date))));
+        ? (e.is_active===false || e.status==='retired' || e.status==='past' || !!e.retirement_date)
+        : !(e.is_active===false || e.status==='retired' || e.status==='past' || !!e.retirement_date))));
   const cnt = document.getElementById('emp-count'); if (cnt) cnt.textContent = EMP_FILTERED.length;
   const tbody = document.getElementById('emp-tbody'); if (!tbody) return;
   const start = (empPage - 1) * empPerPage;
   const rows = EMP_FILTERED.slice(start, start + empPerPage);
-  tbody.innerHTML = rows.length ? rows.map(e => `<tr onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')"><td><strong>${APP.escape(e.employee_code || '')}</strong></td><td><div class="name-cell"><div><div class="cell-main">${APP.escape(e.name)}</div><div class="cell-sub">${APP.escape(e.kana || '')}</div></div></div></td><td>${APP.escape(e.center || '')}</td><td>${APP.escape(e.position || '')}</td><td>${APP.escape(e.employment_type || '')}</td><td>${APP.badge(e.current_grade || '未設定', 'gray')}</td><td>${(e.promotion_target_flag === true || e.promotion_target_flag === 'true') ? APP.badge('候補', 'primary') : APP.badge('—', 'gray')}</td><td><div class="row-actions"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')">確認</button></div></td></tr>`).join('') : `<tr><td colspan="8" class="empty">条件に一致する社員がありません</td></tr>`;
+  tbody.innerHTML = rows.length ? rows.map(e => `<tr onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')"><td><strong>${APP.escape(e.employee_code || '')}</strong></td><td><div class="name-cell"><div><div class="cell-main">${APP.escape(e.name)}</div><div class="cell-sub">${APP.escape(e.kana || '')}</div>${(e.status==='past' && !e.retirement_date) ? `<div class="cell-sub">最終在籍確認：${APP.escape(String(e.last_active_confirmed_month || '').slice(0,7).replace('-', '/'))}</div>` : ((e.status==='retired' || e.retirement_date) ? `<div class="cell-sub">退職日：${APP.escape(String(e.retirement_date || '').slice(0,10).replaceAll('-', '/'))}</div>` : '')}</div></div></td><td>${APP.escape(e.center || '')}</td><td>${APP.escape(e.position || '')}</td><td>${APP.escape(e.employment_type || '')}</td><td>${APP.badge(e.current_grade || 'なし', 'gray')}</td><td>${(e.promotion_target_flag === true || e.promotion_target_flag === 'true') ? APP.badge('候補', 'primary') : APP.badge('—', 'gray')}</td><td><div class="row-actions"><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();openEmployeeDetail('${APP.escape(e.id)}')">確認</button></div></td></tr>`).join('') : `<tr><td colspan="8" class="empty">条件に一致する社員がありません</td></tr>`;
   renderEmpPager();
 }
 function renderEmpPager() {
@@ -68,8 +68,9 @@ function exportEmployeeCSV() {
     {label:'雇用形態',value:'employment_type'},{label:'現在等級',value:'current_grade'},
     {label:'昇格候補',value:e=>(e.promotion_target_flag===true||e.promotion_target_flag==='true')?'対象':'対象外'},
     {label:'最終昇格日',value:'last_promotion_date'},
-    {label:'在籍状況',value:e=>(e.is_active===false||e.status==='retired'||e.retirement_date)?'退職':'在籍'},
-    {label:'退職日',value:'retirement_date'}
+    {label:'在籍状況',value:e=>e.status==='past'?'過去社員（退職日未確定）':((e.is_active===false||e.status==='retired'||e.retirement_date)?'退職':'在籍')},
+    {label:'退職日',value:'retirement_date'},
+    {label:'最終在籍確認月',value:e=>e.last_active_confirmed_month?String(e.last_active_confirmed_month).slice(0,7).replace('-', '/') : ''}
   ], EMP_FILTERED);
 }
 window.initEmployees = initEmployees; window.renderEmployees = renderEmployees; window.openEmployeeDetail = openEmployeeDetail; window.exportEmployeeCSV = exportEmployeeCSV;
