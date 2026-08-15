@@ -102,8 +102,6 @@ window.EmployeeHrTimeline = (() => {
       const [beforeRaw, afterRaw] = displayPair(change);
       const before = beforeRaw ? esc(beforeRaw) : '—';
       const after = afterRaw ? esc(afterRaw) : '—';
-      const note = index === 0 && text(r.note)
-        ? `<div class="cell-sub">補足：${esc(r.note)}</div>` : '';
       const actions = index === 0
         ? `<div class="row-actions" style="justify-content:flex-start;gap:6px;white-space:nowrap">
              <button class="btn btn-secondary btn-sm" data-hr-correct="${esc(r.id)}">訂正</button>
@@ -113,7 +111,7 @@ window.EmployeeHrTimeline = (() => {
       return `<tr>
         <td>${index === 0 ? `<strong>${date}</strong>` : ''}</td>
         <td>${index === 0 ? type : ''}</td>
-        <td><strong>${esc(change.label)}</strong>${note}</td>
+        <td><strong>${esc(change.label)}</strong></td>
         <td>${before}</td>
         <td class="hr-history-arrow">→</td>
         <td><strong>${after}</strong></td>
@@ -182,7 +180,7 @@ window.EmployeeHrTimeline = (() => {
       return `<tr>
         <td>${index === 0 ? `<strong>${date}</strong>` : ''}</td>
         <td>${index === 0 ? type : ''}</td>
-        <td><strong>${esc(change.label)}</strong>${note}</td>
+        <td><strong>${esc(change.label)}</strong></td>
         <td>${before}</td>
         <td class="hr-history-arrow">→</td>
         <td><strong>${after}</strong></td>
@@ -224,7 +222,6 @@ window.EmployeeHrTimeline = (() => {
           white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.5
         }
         #emp-hr-timeline .hr-history-arrow{text-align:center;color:var(--muted,#766d62);white-space:nowrap}
-        #emp-hr-timeline .cell-sub{font-size:12px;font-weight:400;margin-top:4px;white-space:normal}
         #emp-hr-timeline .hr-history-actions{justify-content:flex-start;gap:6px;white-space:nowrap}
         @media(max-width:760px){#emp-hr-timeline .hr-history-table{min-width:760px}}
       </style>
