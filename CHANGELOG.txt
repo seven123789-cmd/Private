@@ -1,3 +1,10 @@
+2026-08-16 Phase26J employee import transaction sync
+- 社員Excel一括取込を import_employees_batch_v1 RPCへ接続
+- 実ファイル名・サイズ・最終更新時刻を取込バッチへ送信
+- 入社日を join_date としてDBへ連携
+- DBエラー時はRPCトランザクション全体をロールバック
+- 取込完了時にbatch_idと新規/更新/変更なし件数を表示
+
 2026-08-16 Phase26I code sync\n- データ運用確認画面を復旧基盤へ同期\n- バックアップ/DBロードマップ文書を現状へ更新\n\nPhase1
 - Removed duplicate Version2 header.
 - Removed legacy revision comment block from app.js.

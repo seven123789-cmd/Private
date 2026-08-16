@@ -102,6 +102,18 @@ const APP = (() => {
     if (!session) return {data:null,error:new Error('DB更新にはSupabaseの認証済みセッションが必要です')};
     return await sb.from('employees').upsert(rows,{onConflict:'employee_code'}).select('id,employee_code');
   }
+  async function importEmployeesBatch({sourceFile,rows,fileSize=null,lastModified=null}) {
+    const sb = client();
+    if (!sb) return {data:null,error:new Error('Supabaseに接続されていません')};
+    const session = await currentSession();
+    if (!session) return {data:null,error:new Error('DB更新にはSupabaseの認証済みセッションが必要です')};
+    return await sb.rpc('import_employees_batch_v1',{
+      p_source_file:sourceFile,
+      p_rows:rows,
+      p_source_file_size:fileSize,
+      p_source_file_last_modified:lastModified
+    });
+  }
 
   // JSONファイルから社員マスタを読み込む（Supabase未接続時のフォールバック）
   let _employeeCache = null;
@@ -457,7 +469,7 @@ const APP = (() => {
   return {
     today, fmtDate, daysUntil, normStatus, statusClass,
     escape, badge, alertBadge, toast, client, isSupabaseReady,
-    query, insert, currentSession, upsertEmployees, loadEmployees, loadLicenseRows, loadAlertRows,
+    query, insert, currentSession, upsertEmployees, importEmployeesBatch, loadEmployees, loadLicenseRows, loadAlertRows,
     loadLicenseMaster, loadMasters, saveEmployeeLicense,
     downloadCSV, exportStamp, dataSourceStatus,
     renderSidebar, initHeader, initExternalLinksPage, Auth, enforcePageAuth, NAV,

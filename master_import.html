@@ -135,6 +135,7 @@
 </script>
 <script>
 let parsedEmployees = [];
+let selectedImportFile = null;
 let importDiff = {newRows:[],changedRows:[],unchangedRows:[]};
 let importSession = null;
 
@@ -309,7 +310,7 @@ function doImport() {
   btn.disabled = true; btn.textContent = '処理中...';
 
   const output = {
-    source_file: '社員管理.xls',
+    source_file: selectedImportFile?.name || '社員管理.xls',
     sheet: '社員管理',
     imported_at: new Date().toISOString().slice(0,10),
     summary: {
@@ -344,10 +345,10 @@ function toDbEmployee(row){
     position:row.position || null,
     employment_type:row.employment_type || null,
     birth_date:row.birth_date || null,
+    join_date:row.hire_date || row.join_date || null,
     current_grade:row.current_grade || null,
     promotion_target_flag:row.promotion_target_flag === true,
-    source_file:'社員管理.xls',
-    updated_at:new Date().toISOString()
+    source_file:selectedImportFile?.name || '社員管理.xls'
   };
 }
 async function applyToDatabase(){
@@ -360,11 +361,17 @@ async function applyToDatabase(){
   const ok=confirm(`DBへ ${rows.length}件を反映します。\n新規 ${importDiff.newRows.length}件 / 更新 ${importDiff.changedRows.length}件\n\nファイルに存在しない社員は変更しません。実行しますか？`);
   if(!ok) return;
   btn.disabled=true; btn.textContent='DB反映中…';
-  const {data,error}=await APP.upsertEmployees(rows);
-  if(error){ console.error(error); APP.toast('DB反映に失敗しました: '+error.message,'error'); btn.disabled=false; btn.textContent='DBへ反映'; return; }
-  APP.toast(`${data?.length||rows.length}件をDBへ反映しました`);
+  const {data,error}=await APP.importEmployeesBatch({
+    sourceFile:selectedImportFile?.name || '社員管理.xls',
+    rows,
+    fileSize:selectedImportFile?.size ?? null,
+    lastModified:selectedImportFile?.lastModified ?? null
+  });
+  if(error){ console.error(error); APP.toast('DB反映に失敗しました（全件ロールバック）: '+error.message,'error'); btn.disabled=false; btn.textContent='DBへ反映'; return; }
+  const result=data||{};
+  APP.toast(`${result.inserted_rows??importDiff.newRows.length}件新規 / ${result.updated_rows??importDiff.changedRows.length}件更新しました`);
   btn.textContent='✓ DB反映完了';
-  document.getElementById('import-result-msg').textContent=`✓ DB反映完了：新規 ${importDiff.newRows.length}件 / 更新 ${importDiff.changedRows.length}件`;
+  document.getElementById('import-result-msg').textContent=`✓ DB反映完了：新規 ${result.inserted_rows??importDiff.newRows.length}件 / 更新 ${result.updated_rows??importDiff.changedRows.length}件 / 変更なし ${result.unchanged_rows??0}件 / Batch ${result.batch_id||'—'}`;
 }
 
 function downloadJson() {
