@@ -1,9 +1,10 @@
 # バックアップ・出力方針
-基準日: 2026-08-11
+基準日: 2026-08-16
 
-- 日常出力: 業務画面のCSV（UTF-8 BOM）
-- 定期保全: DBの論理バックアップを別保管
-- 復旧確認: バックアップ取得だけでなく、定期的に復元手順を検証
-- 添付書類導入後: DBメタデータとStorage実体を同じ世代で保全
-- 長期保存データ: 社員コード、資格コード等の安定キーを必ず含める
-- 個人情報を含むため、バックアップへのアクセス権と保管期間を定義する
+- 正本は Supabase/PostgreSQL。CSVは業務交換用で完全バックアップの代替にしない。
+- DB内部: schema_versions / backup_restore_manifest / restore_verification_snapshots / verify_restore_baseline() を使用する。
+- Supabase管理側のBackup/PITRと、Supabase外の論理バックアップを併用する。
+- 復元後は verify_restore_baseline('baseline-20260816-phase26i') で業務テーブル件数・主要FK孤児・Schema Versionを検証する。
+- Storage導入後はDBメタデータとStorage実体を同一世代で保全する。
+- 個人情報を含むため、外部バックアップの保管先・アクセス権・保持期間を会社ルールで定義する。
+- CSVは UTF-8 BOM + CRLF。社員連携は employee_code を安定キーとする。

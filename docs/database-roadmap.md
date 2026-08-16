@@ -1,26 +1,16 @@
 # DBロードマップ
-基準日: 2026-08-11
+基準日: 2026-08-16
 
-## 現状
-employees / license_master / license_categories / employee_licenses と既存ビューは破壊的変更を行わない。
+## 完了
+employee_code UNIQUE、履歴正規化、重複防止、PK/FK/INDEX、RLS/RPC、SECURITY DEFINER保護、updated_at、schema_versions、backup_restore_manifest、restore_verification_snapshots、verify_restore_baseline()。
 
-## 優先実装
-1. employees.employee_code の一意性確認・制約
-2. 更新系テーブルへの created_at / created_by / updated_at / updated_by
-3. audit_log
-4. evaluation_cycles / employee_evaluations
-5. promotion_history
-6. employee_license_history
-7. employee_history（所属・役職・雇用）
-8. documents（証憑・添付書類）
-9. RLS/権限設計
+## 次期優先
+1. created_by / updated_by
+2. audit_logまたは業務別変更履歴
+3. 社員一括取込のDBトランザクション化と取込監査
+4. Supabase Backup/PITR運用確認
+5. Supabase外バックアップの世代管理と定期復元テスト
+6. Storage導入時の同世代バックアップ
 
-## 一括取込をDB直結する前の確認事項
-- employee_code にDB上の UNIQUE 制約が存在するか
-- anon/authenticated ロールの INSERT/UPDATE 権限とRLS
-- 既存社員を更新するのか、新規だけ追加するのか
-- 退職者・取込ファイルから消えた社員をどう扱うか
-- 部分失敗時のロールバック方法
-- 取込実行者と実行結果をどこへ記録するか
-
-確認後、「差分プレビュー → トランザクション相当の一括反映 → 監査記録」を実装する。
+## 原則
+現在値と履歴を分離し、取込は安定キーで照合する。推測履歴は作らない。完全バックアップはDBダンプを正とする。

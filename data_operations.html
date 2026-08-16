@@ -12,7 +12,7 @@
 <div class="stat-card"><div class="stat-top"><span>期限管理</span></div><div class="stat-value" id="health-alerts">—</div><div class="stat-sub">期限設定件数</div></div>
 </div>
 <div class="card"><div class="card-header"><div><div class="card-title">運用チェック</div><div class="card-sub">ブラウザから確認可能な範囲</div></div></div><div class="card-body" id="health-checks"><div class="empty">確認中…</div></div></div>
-<div class="alert-box gold data-ops-warning"><strong>DB制約・RLS・バックアップ状態はこの画面だけでは確認できません。</strong> Supabase側のスキーマ確認後にDB移行SQLを確定します。</div>
+<div class="alert-box gold data-ops-warning"><strong>DB内部の復元基準・スキーマ版・主要整合性はこの画面で確認できます。</strong> Supabase管理側の自動Backup/PITR有効化・保持日数と、Supabase外へのバックアップ保管状況は別途運用確認が必要です。</div>
 </main></div></div><div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script>
 <script>
