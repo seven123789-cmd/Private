@@ -1,7 +1,4 @@
-Phase26N-1～18 (2026-08-17)
-- Defined grade promotion separately from job-title/position changes.
-- Defined elapsed time since last grade promotion as a derived value, not stored duration.
-- Added employee-list sorting requirement for grade-promotion elapsed time.
-- Simplified evaluation model for the confirmed single-operator workflow.
-- Chose employee_hr_history_official as the first candidate for formal grade-promotion truth instead of creating a duplicate promotion-history truth.
-- Added read-only DB preflight before any schema change.
+Phase26N-19～28 (2026-08-17)
+- Removed the temporary Supabase preflight SQL from the GitHub-managed docs path.
+- Finalized canonical rules for last grade promotion date.
+- SQL execution artifacts are now distributed separately from GitHub code/docs.
