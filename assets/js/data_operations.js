@@ -87,14 +87,16 @@ async function initDataOperations(){
 
     const sb=APP.client();
     if(sb&&user){
-      const [versionRes,manifestRes,naturalKeyRes,baselineRes,verifyRes,auditCountRes,importBatchRes]=await Promise.all([
+      const [versionRes,manifestRes,naturalKeyRes,baselineRes,verifyRes,auditCountRes,importBatchRes,promoReviewsRes,officialPromoRes]=await Promise.all([
         sb.from('schema_versions').select('version_code,phase,applied_at').order('applied_at',{ascending:false}).limit(1),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('backup_required',true),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('schema_name','public').or('natural_key_hint.is.null,natural_key_hint.eq.'),
         sb.from('restore_verification_snapshots').select('table_name',{count:'exact',head:true}).eq('snapshot_code','baseline-20260817-phase26l-final'),
         sb.rpc('verify_restore_baseline',{p_snapshot_code:'baseline-20260817-phase26l-final'}),
         sb.from('audit_log').select('id',{count:'exact',head:true}),
-        sb.from('employee_import_batches').select('id',{count:'exact',head:true})
+        sb.from('employee_import_batches').select('id',{count:'exact',head:true}),
+        sb.from('employee_promotion_reviews').select('id,employee_id,decision_status,result_hr_history_id'),
+        sb.from('employee_hr_history_official').select('id,employee_id,effective_date,to_grade,status').eq('event_type','資格昇格')
       ]);
       const latest=versionRes.data?.[0];
       checks.push(['DBスキーマ版',latest?.version_code||'取得不可',!versionRes.error&&!!latest]);
@@ -110,6 +112,19 @@ async function initDataOperations(){
       }
       checks.push(['監査ログ',auditCountRes.error?'取得エラー':`${auditCountRes.count??0}件`,!auditCountRes.error]);
       checks.push(['社員取込バッチ',importBatchRes.error?'取得エラー':`${importBatchRes.count??0}件`,!importBatchRes.error]);
+      if(promoReviewsRes.error||officialPromoRes.error){
+        checks.push(['評価・正式発令整合','取得エラー',false]);
+      }else{
+        const officialMap=new Map((officialPromoRes.data||[]).map(x=>[x.id,x]));
+        const broken=(promoReviewsRes.data||[]).filter(r=>r.result_hr_history_id&&!officialMap.has(r.result_hr_history_id));
+        const wrongEmployee=(promoReviewsRes.data||[]).filter(r=>{
+          const o=officialMap.get(r.result_hr_history_id); return o&&String(o.employee_id)!==String(r.employee_id);
+        });
+        const decidedNotIssued=(promoReviewsRes.data||[]).filter(r=>r.decision_status==='昇格決定'&&!r.result_hr_history_id);
+        checks.push(['正式発令リンク欠落',`${broken.length}件`,broken.length===0]);
+        checks.push(['正式発令社員不一致',`${wrongEmployee.length}件`,wrongEmployee.length===0]);
+        checks.push(['昇格決定・発令待ち',`${decidedNotIssued.length}件`,true]);
+      }
     }else{
       checks.push(['長期運用DB監査','ログイン後に確認',false]);
     }

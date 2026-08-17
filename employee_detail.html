@@ -22,7 +22,7 @@
 <section class="card"><div class="card-header card-header-navy"><div><div class="card-title">資格・免許</div><div class="card-sub">この社員に登録されている保有資格</div></div><a class="btn btn-secondary btn-sm" href="licenses.html">資格・免許管理へ</a></div><div class="card-body" id="emp-licenses-body"><div class="empty">読込中…</div></div></section>
 </div><aside class="profile-stack">
 <section class="card"><div class="card-header"><div><div class="card-title">人事サマリー</div><div class="card-sub">現在の登録情報</div></div><div class="employee-action-group" id="employee-action-group"></div></div><div class="card-body"><div class="summary-list"><div class="summary-row"><span>等級</span><strong id="emp-grade-summary">—</strong></div><div class="summary-row"><span>役職</span><strong id="emp-job-title-summary">—</strong></div><div class="summary-row"><span>入社日</span><strong id="emp-join-date-summary">—</strong></div><div class="summary-row"><span>最終昇格日</span><strong id="emp-last-promo-summary">—</strong></div><div class="summary-row"><span>昇格対象</span><strong id="emp-promo-summary">対象外</strong></div></div></div></section>
-<section class="card future-card"><div class="card-header"><div><div class="card-title">拡張予定</div><div class="card-sub">データ項目追加後に実装</div></div></div><div class="card-body"><div class="future-list"><span>評価履歴</span><span>添付書類</span><span>変更履歴</span></div><p class="text-muted text-sm future-note">未実装データは仮表示せず、DB設計後に順次追加します。</p></div></section>
+<section class="card"><div class="card-header"><div><div class="card-title">評価・昇格履歴</div><div class="card-sub">年度別評価・昇格判断・正式発令との接続状況</div></div><a class="btn btn-secondary btn-sm" href="promotion.html">人事評価・昇格へ</a></div><div class="card-body" id="emp-evaluation-history"><div class="empty">読込中…</div></div></section>
 </aside></div>
 <section class="card employee-hr-history-card"><div class="card-header card-header-navy"><div><div class="card-title">人事履歴</div><div class="card-sub">正式な所属・担当・等級・役職・兼務の発令履歴</div></div><button type="button" class="btn btn-secondary btn-sm" id="btn-add-hr-event">人事履歴を追加</button></div><div class="card-body" id="emp-assignment-history" hidden></div><div class="card-body" id="emp-hr-timeline"><div class="empty">読込中…</div></div></section>
 </main></div></div>
@@ -109,6 +109,40 @@
 (async()=>{const ok=await APP.enforcePageAuth();if(ok){const gate=document.getElementById('auth-gate-screen');if(gate)gate.hidden=true;}})();
 </script>
 <script>
+async function loadEmployeeEvaluationHistory(employeeId){
+  const body=document.getElementById('emp-evaluation-history'); if(!body)return;
+  const sb=APP.client();
+  if(!sb){body.innerHTML='<div class="empty">DB接続時に年度別評価履歴を表示します</div>';return;}
+  const [cycles,evals,reviews]=await Promise.all([
+    sb.from('evaluation_cycles').select('id,fiscal_year,name,status').order('fiscal_year',{ascending:false}),
+    sb.from('employee_evaluations').select('*').eq('employee_id',employeeId),
+    sb.from('employee_promotion_reviews').select('*').eq('employee_id',employeeId)
+  ]);
+  if(cycles.error||evals.error||reviews.error){
+    console.error(cycles.error||evals.error||reviews.error);
+    body.innerHTML='<div class="empty">評価・昇格履歴を取得できませんでした</div>';return;
+  }
+  const cycleMap=new Map((cycles.data||[]).map(x=>[x.id,x]));
+  const evalMap=new Map((evals.data||[]).map(x=>[x.evaluation_cycle_id,x]));
+  const reviewMap=new Map((reviews.data||[]).map(x=>[x.evaluation_cycle_id,x]));
+  const cycleIds=[...new Set([...evalMap.keys(),...reviewMap.keys()])];
+  if(!cycleIds.length){body.innerHTML='<div class="empty">年度別の評価・昇格履歴はまだありません</div>';return;}
+  const historyIds=[...reviewMap.values()].map(x=>x.result_hr_history_id).filter(Boolean);
+  let official=new Map();
+  if(historyIds.length){
+    const r=await sb.from('employee_hr_history_official').select('id,effective_date,to_grade,status').in('id',historyIds);
+    if(!r.error)(r.data||[]).forEach(x=>official.set(x.id,x));
+  }
+  const rows=cycleIds.map(id=>{
+    const c=cycleMap.get(id)||{},e=evalMap.get(id),r=reviewMap.get(id),o=official.get(r?.result_hr_history_id);
+    return {year:c.fiscal_year??'',name:c.name||`${c.fiscal_year||'—'}年度`,rating:e?.rating||'—',evalStatus:e?.status||'未評価',decision:r?.decision_status||'未判断',official:o};
+  }).sort((a,b)=>Number(b.year||0)-Number(a.year||0));
+  body.innerHTML=`<div class="evaluation-history-list">${rows.map(x=>`<div class="evaluation-history-item">
+    <div class="evaluation-history-year"><strong>${APP.escape(x.name)}</strong><span>${APP.escape(x.evalStatus)}</span></div>
+    <div class="evaluation-history-grid"><div><span>評価</span><strong>${APP.escape(x.rating)}</strong></div><div><span>昇格判断</span><strong>${APP.escape(x.decision)}</strong></div><div><span>正式発令</span><strong>${x.official?(x.official.status==='active'?`${APP.fmtDate(x.official.effective_date)} / ${APP.escape(x.official.to_grade||'—')}`:'取消・無効'):'—'}</strong></div></div>
+  </div>`).join('')}</div>`;
+}
+
 async function initDetail() {
   APP.initHeader();
   const params = new URLSearchParams(location.search);
@@ -130,6 +164,7 @@ async function initDetail() {
   document.getElementById('emp-birth-date').textContent = APP.fmtDate(e.birth_date);
   document.getElementById('emp-join-date').textContent = APP.fmtDate(e.join_date);
   document.getElementById('emp-last-promo').textContent = APP.fmtDate(e.last_promotion_date);
+  await loadEmployeeEvaluationHistory(id);
   await EmployeeAssignmentHistory.mount(id);
   await EmployeeAssignmentHistory.mountJobTitles(id);
   await EmployeeAssignmentHistory.setupChangeUI(e);

@@ -257,3 +257,12 @@
 .promotion-workspace .table-wrap table{min-width:1380px}
 @media(max-width:900px){.promotion-progress-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.promotion-progress-grid{grid-template-columns:1fr}}
+
+/* Phase26N-76 — employee evaluation history & cross-module integrity */
+.evaluation-history-list{display:grid;gap:10px}
+.evaluation-history-item{padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.evaluation-history-year{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.evaluation-history-year strong{font-size:13px}.evaluation-history-year span{font-size:11px;color:var(--muted)}
+.evaluation-history-grid{display:grid;grid-template-columns:.7fr 1fr 1.4fr;gap:12px}
+.evaluation-history-grid div{display:grid;gap:3px}.evaluation-history-grid span{font-size:10px;color:var(--muted)}.evaluation-history-grid strong{font-size:12px;font-weight:600}
+@media(max-width:720px){.evaluation-history-grid{grid-template-columns:1fr}}
