@@ -1,7 +1,6 @@
-Phase26M-13～32 (2026-08-17)
-- Added Git-safe backup exclusions.
-- Added environment template without credentials.
-- Added Windows PowerShell logical backup script using Supabase CLI.
-- Added SHA-256 backup integrity verification.
-- Added external logical backup / restore procedure.
-- Production backup data and secrets remain outside Git.
+Phase26M-33～52 (2026-08-17)
+- Added isolated restore preflight script.
+- Added guarded restore-to-test-project script.
+- Added explicit Project Ref matching and interactive restore confirmation.
+- Added post-restore baseline and structural verification.
+- Production restore automation is intentionally not included.
