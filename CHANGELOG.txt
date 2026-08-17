@@ -2,3 +2,10 @@ Phase26N-19～28 (2026-08-17)
 - Removed the temporary Supabase preflight SQL from the GitHub-managed docs path.
 - Finalized canonical rules for last grade promotion date.
 - SQL execution artifacts are now distributed separately from GitHub code/docs.
+
+Phase26N-68 (2026-08-17)
+- Increased vertical separation between the employee profile grid and the HR history card.
+- Moved HR history table layout rules from runtime inline CSS into the shared stylesheet.
+- Added an explicit HR history column model and wider minimum table width.
+- Long affiliation, assignment, role, and concurrent-assignment text now wraps without clipping.
+- Preserved existing HR history data loading, correction, cancellation, and business logic.

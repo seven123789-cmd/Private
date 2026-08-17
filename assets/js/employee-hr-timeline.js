@@ -255,30 +255,17 @@ window.EmployeeHrTimeline = (() => {
     window.__hrContextRows = contextualRows(rows);
     const body = rows.map(renderTableRows).join('');
     box.innerHTML = `
-      <style>
-        #emp-hr-timeline{padding-top:8px}
-        #emp-hr-timeline .hr-history-table{table-layout:auto;min-width:860px;width:100%;border-collapse:collapse}
-        #emp-hr-timeline .hr-history-table th,
-        #emp-hr-timeline .hr-history-table td{vertical-align:middle;padding:10px 12px}
-        #emp-hr-timeline .hr-history-table th:nth-child(1){width:112px}
-        #emp-hr-timeline .hr-history-table th:nth-child(2){width:142px}
-        #emp-hr-timeline .hr-history-table th:nth-child(3){width:70px}
-        #emp-hr-timeline .hr-history-table th:nth-child(5){width:30px;text-align:center}
-        #emp-hr-timeline .hr-history-table th:nth-child(7){width:116px}
-        #emp-hr-timeline .hr-history-table td:nth-child(1),
-        #emp-hr-timeline .hr-history-table td:nth-child(2),
-        #emp-hr-timeline .hr-history-table td:nth-child(3){white-space:nowrap}
-        #emp-hr-timeline .hr-history-table td:nth-child(4),
-        #emp-hr-timeline .hr-history-table td:nth-child(6){
-          white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.5
-        }
-        #emp-hr-timeline .hr-history-arrow{text-align:center;color:var(--muted,#766d62);white-space:nowrap}
-        #emp-hr-timeline .hr-state-concurrent{display:inline-block;margin-top:4px;font-size:.92em;color:var(--muted,#766d62);font-weight:600}
-        #emp-hr-timeline .hr-history-actions{justify-content:flex-start;gap:6px;white-space:nowrap}
-        @media(max-width:760px){#emp-hr-timeline .hr-history-table{min-width:760px}}
-      </style>
       <div class="table-wrap">
         <table class="hr-history-table">
+          <colgroup>
+            <col class="hr-col-date">
+            <col class="hr-col-type">
+            <col class="hr-col-item">
+            <col class="hr-col-before">
+            <col class="hr-col-arrow">
+            <col class="hr-col-after">
+            <col class="hr-col-actions">
+          </colgroup>
           <thead>
             <tr>
               <th>発令日</th><th>種別</th><th>項目</th>
