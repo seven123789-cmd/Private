@@ -11,7 +11,10 @@
 <div class="stat-card"><div class="stat-top"><span>資格登録</span></div><div class="stat-value" id="health-licenses">—</div><div class="stat-sub">読込件数</div></div>
 <div class="stat-card"><div class="stat-top"><span>期限管理</span></div><div class="stat-value" id="health-alerts">—</div><div class="stat-sub">期限設定件数</div></div>
 </div>
-<div class="card"><div class="card-header"><div><div class="card-title">運用チェック</div><div class="card-sub">ブラウザから確認可能な範囲</div></div></div><div class="card-body" id="health-checks"><div class="empty">確認中…</div></div></div>
+<div class="card"><div class="card-header"><div><div class="card-title">運用チェック</div><div class="card-sub">ブラウザから確認可能な範囲</div></div></div><div class="card-body" id="health-checks"><div class="empty">確認中…</div></div></div><div class="card ops-issue-card" id="ops-issue-panel" hidden>
+<div class="card-header"><div><div class="card-title" id="ops-issue-title">監査詳細</div><div class="card-sub"><span id="ops-issue-count">0件</span>。修正は自動実行せず、対象特定のみ行います。</div></div><button id="btn-ops-issue-export" class="btn btn-secondary btn-sm" type="button">詳細CSV出力</button></div>
+<div class="card-body" style="overflow:auto"><table class="table ops-issue-table"><thead id="ops-issue-head"></thead><tbody id="ops-issue-body"></tbody></table></div>
+</div>
 <div class="card">
 <div class="card-header"><div><div class="card-title">変更監査ログ</div><div class="card-sub">直近200件。変更前後を含む監査記録です。</div></div><div><button id="btn-audit-probe" class="btn btn-secondary btn-sm" type="button">監査テスト</button>
 <button id="btn-audit-export" class="btn btn-secondary btn-sm" type="button">CSV出力</button></div></div>

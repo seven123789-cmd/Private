@@ -266,3 +266,11 @@
 .evaluation-history-grid{display:grid;grid-template-columns:.7fr 1fr 1.4fr;gap:12px}
 .evaluation-history-grid div{display:grid;gap:3px}.evaluation-history-grid span{font-size:10px;color:var(--muted)}.evaluation-history-grid strong{font-size:12px;font-weight:600}
 @media(max-width:720px){.evaluation-history-grid{grid-template-columns:1fr}}
+
+/* Phase26N-78 — audit issue drill-down */
+.ops-check-result{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.btn-xs{padding:4px 8px;font-size:10px;line-height:1.2}
+.ops-issue-card{margin-top:14px;border-color:#ded7c8}
+.ops-issue-table{min-width:760px}
+.ops-issue-table a{font-weight:700;text-decoration:none}
+.ops-issue-table a:hover{text-decoration:underline}

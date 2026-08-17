@@ -1,4 +1,52 @@
 let OPS_AUDIT_ROWS=[];
+let OPS_HEALTH_ISSUES=new Map();
+let OPS_ACTIVE_ISSUE_KEY=null;
+
+function opsIssueKey(label){return String(label||'').replace(/[^\wぁ-んァ-ヶ一-龠々ー]+/g,'_');}
+function setOpsIssue(label,rows,columns){
+  const key=opsIssueKey(label);
+  OPS_HEALTH_ISSUES.set(key,{label,rows:rows||[],columns:columns||[]});
+  return key;
+}
+function clearOpsIssues(){
+  OPS_HEALTH_ISSUES=new Map();
+  OPS_ACTIVE_ISSUE_KEY=null;
+  const panel=document.getElementById('ops-issue-panel');
+  if(panel) panel.hidden=true;
+}
+function opsEmployeeLink(employeeId,name,code){
+  if(!employeeId)return APP.escape(name||code||'—');
+  const label=APP.escape(name||code||employeeId);
+  return `<a href="employee_detail.html?id=${encodeURIComponent(employeeId)}">${label}</a>`;
+}
+function showOpsIssue(key){
+  const issue=OPS_HEALTH_ISSUES.get(key),panel=document.getElementById('ops-issue-panel');
+  if(!issue||!panel)return;
+  OPS_ACTIVE_ISSUE_KEY=key;
+  document.getElementById('ops-issue-title').textContent=issue.label;
+  document.getElementById('ops-issue-count').textContent=`${issue.rows.length}件`;
+  const head=document.getElementById('ops-issue-head'),body=document.getElementById('ops-issue-body');
+  head.innerHTML=`<tr>${issue.columns.map(c=>`<th>${APP.escape(c.label)}</th>`).join('')}</tr>`;
+  body.innerHTML=issue.rows.length?issue.rows.map(row=>`<tr>${issue.columns.map(c=>{
+    let v=typeof c.value==='function'?c.value(row):row[c.value];
+    if(c.type==='employee') return `<td>${opsEmployeeLink(row.employee_id,row.employee_name,row.employee_code)}</td>`;
+    if(c.type==='date') v=v?APP.fmtDate(v):'—';
+    return `<td>${APP.escape(v??'—')}</td>`;
+  }).join('')}</tr>`).join(''):`<tr><td colspan="${Math.max(1,issue.columns.length)}" class="empty">対象はありません</td></tr>`;
+  panel.hidden=false;
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function exportOpsIssueCSV(){
+  const issue=OPS_HEALTH_ISSUES.get(OPS_ACTIVE_ISSUE_KEY);
+  if(!issue||!issue.rows.length){APP.toast('出力できる詳細データがありません','warning');return;}
+  APP.downloadCSV(`整合監査_${issue.label}_${APP.exportStamp()}.csv`,
+    issue.columns.map(c=>({label:c.label,value:r=>{
+      if(c.type==='employee')return `${r.employee_code||''} ${r.employee_name||''}`.trim();
+      const v=typeof c.value==='function'?c.value(r):r[c.value];
+      return c.type==='date'&&v?APP.fmtDate(v):(v??'');
+    }})),issue.rows);
+}
+
 
 function opsFmtDateTime(v){
   if(!v) return '—';
@@ -66,6 +114,7 @@ async function initDataOperations(){
   const btn=document.getElementById('btn-health-refresh');
   if(btn){btn.disabled=true;btn.textContent='確認中…';}
   try{
+    clearOpsIssues();
     const [source,employees,licenses,alerts,user]=await Promise.all([APP.dataSourceStatus(),APP.loadEmployees(),APP.loadLicenseRows(),APP.loadAlertRows(),Auth.currentUser()]);
     document.getElementById('health-source').textContent=source.label;
     document.getElementById('health-auth').textContent=user?'ログイン済み':(Auth.isRequired()?'未ログイン':'任意ログイン');
@@ -84,6 +133,26 @@ async function initDataOperations(){
       ['社員コード重複',`${duplicateCodes.length}件`,duplicateCodes.length===0],
       ['社員識別子のない資格',`${orphanLicenses}件`,orphanLicenses===0]
     ];
+    if(missingCode){
+      setOpsIssue('社員コード未設定',employees.filter(e=>!String(e.employee_code||'').trim()).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center})),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'}
+      ]);
+    }
+    if(missingName){
+      setOpsIssue('氏名未設定',employees.filter(e=>!String(e.name||'').trim()).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center})),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'}
+      ]);
+    }
+    if(duplicateCodes.length){
+      setOpsIssue('社員コード重複',employees.filter(e=>duplicateCodes.includes(String(e.employee_code||'').trim())).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,status:e.status})),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'状態',value:'status'}
+      ]);
+    }
+    if(orphanLicenses){
+      setOpsIssue('社員識別子のない資格',licenses.filter(l=>!l.employee_id&&!l.employee_code).map(l=>({license_id:l.id,license_name:l.license_name||l.name||'',expiration_date:l.expiration_date})),[
+        {label:'資格レコードID',value:'license_id'},{label:'資格',value:'license_name'},{label:'期限',value:'expiration_date',type:'date'}
+      ]);
+    }
 
     const sb=APP.client();
     if(sb&&user){
@@ -130,6 +199,22 @@ async function initDataOperations(){
         checks.push(['正式発令リンク欠落',`${broken.length}件`,broken.length===0]);
         checks.push(['正式発令社員不一致',`${wrongEmployee.length}件`,wrongEmployee.length===0]);
         checks.push(['昇格決定・発令待ち',`${decidedNotIssued.length}件`,true]);
+        const employeeById=new Map(employees.map(e=>[String(e.id),e]));
+        if(broken.length){
+          setOpsIssue('正式発令リンク欠落',broken.map(r=>{const e=employeeById.get(String(r.employee_id))||{};return {employee_id:r.employee_id,employee_name:e.name,employee_code:e.employee_code,review_id:r.id,history_id:r.result_hr_history_id,decision:r.decision_status};}),[
+            {label:'社員',type:'employee'},{label:'昇格判断',value:'decision'},{label:'年度判断ID',value:'review_id'},{label:'正式履歴ID',value:'history_id'}
+          ]);
+        }
+        if(wrongEmployee.length){
+          setOpsIssue('正式発令社員不一致',wrongEmployee.map(r=>{const e=employeeById.get(String(r.employee_id))||{},o=officialMap.get(r.result_hr_history_id)||{};return {employee_id:r.employee_id,employee_name:e.name,employee_code:e.employee_code,review_id:r.id,history_id:r.result_hr_history_id,official_employee_id:o.employee_id};}),[
+            {label:'判断側社員',type:'employee'},{label:'年度判断ID',value:'review_id'},{label:'正式履歴ID',value:'history_id'},{label:'正式履歴の社員ID',value:'official_employee_id'}
+          ]);
+        }
+        if(decidedNotIssued.length){
+          setOpsIssue('昇格決定・発令待ち',decidedNotIssued.map(r=>{const e=employeeById.get(String(r.employee_id))||{};return {employee_id:r.employee_id,employee_name:e.name,employee_code:e.employee_code,review_id:r.id,decision:r.decision_status};}),[
+            {label:'社員',type:'employee'},{label:'状態',value:'decision'},{label:'年度判断ID',value:'review_id'}
+          ]);
+        }
       }
       if(assignmentRes.error){
         checks.push(['所属履歴整合','取得エラー',false]);
@@ -149,6 +234,27 @@ async function initDataOperations(){
         checks.push(['所属履歴・センター参照切れ',`${badCenter.length}件`,badCenter.length===0]);
         checks.push(['所属履歴・役職参照切れ',`${badPosition.length}件`,badPosition.length===0]);
         checks.push(['所属履歴・現行レコード重複',`${multiActive}名`,multiActive===0]);
+        const employeeById=new Map(employees.map(e=>[String(e.id),e]));
+        const decorateAssignment=x=>{const e=employeeById.get(String(x.employee_id))||{};return {...x,employee_name:e.name,employee_code:e.employee_code};};
+        if(orphanAssignments.length)setOpsIssue('所属履歴・社員参照切れ',orphanAssignments.map(decorateAssignment),[
+          {label:'履歴ID',value:'id'},{label:'社員ID',value:'employee_id'},{label:'開始日',value:'effective_from',type:'date'},{label:'終了日',value:'effective_to',type:'date'}
+        ]);
+        if(badCenter.length)setOpsIssue('所属履歴・センター参照切れ',badCenter.map(decorateAssignment),[
+          {label:'社員',type:'employee'},{label:'履歴ID',value:'id'},{label:'センターID',value:'center_id'},{label:'開始日',value:'effective_from',type:'date'}
+        ]);
+        if(badPosition.length)setOpsIssue('所属履歴・役職参照切れ',badPosition.map(decorateAssignment),[
+          {label:'社員',type:'employee'},{label:'履歴ID',value:'id'},{label:'役職ID',value:'position_id'},{label:'開始日',value:'effective_from',type:'date'}
+        ]);
+        const duplicateActiveRows=[];
+        for(const [eid,n] of activeByEmployee.entries()){
+          if(n>1){
+            const e=employeeById.get(eid)||{};
+            (assignmentRes.data||[]).filter(x=>String(x.employee_id)===eid&&!x.effective_to).forEach(x=>duplicateActiveRows.push({...x,employee_name:e.name,employee_code:e.employee_code}));
+          }
+        }
+        if(duplicateActiveRows.length)setOpsIssue('所属履歴・現行レコード重複',duplicateActiveRows,[
+          {label:'社員',type:'employee'},{label:'履歴ID',value:'id'},{label:'センターID',value:'center_id'},{label:'役職ID',value:'position_id'},{label:'開始日',value:'effective_from',type:'date'}
+        ]);
       }
       if(licenseLinkRes.error||licenseMasterRes.error){
         checks.push(['資格免許参照整合','取得エラー',false]);
@@ -165,23 +271,54 @@ async function initDataOperations(){
         checks.push(['資格免許・社員参照切れ',`${orphanEmployee.length}件`,orphanEmployee.length===0]);
         checks.push(['資格免許・マスタ参照切れ',`${orphanMaster.length}件`,orphanMaster.length===0]);
         checks.push(['資格免許・同一社員同一資格重複',`${duplicatePairs}組`,duplicatePairs===0]);
+        const employeeById=new Map(employees.map(e=>[String(e.id),e]));
+        if(orphanEmployee.length)setOpsIssue('資格免許・社員参照切れ',orphanEmployee.map(x=>({license_row_id:x.id,employee_id:x.employee_id,license_id:x.license_id})),[
+          {label:'資格登録ID',value:'license_row_id'},{label:'社員ID',value:'employee_id'},{label:'資格ID',value:'license_id'}
+        ]);
+        if(orphanMaster.length)setOpsIssue('資格免許・マスタ参照切れ',orphanMaster.map(x=>{const e=employeeById.get(String(x.employee_id))||{};return {...x,employee_name:e.name,employee_code:e.employee_code};}),[
+          {label:'社員',type:'employee'},{label:'資格登録ID',value:'id'},{label:'資格ID',value:'license_id'}
+        ]);
+        const duplicateRows=[];
+        for(const [k,n] of duplicateLicenseKeys.entries()){
+          if(n>1){
+            const [eid,lid]=k.split('::'),e=employeeById.get(String(eid))||{};
+            (licenseLinkRes.data||[]).filter(x=>String(x.employee_id)===eid&&String(x.license_id)===lid).forEach(x=>duplicateRows.push({...x,employee_name:e.name,employee_code:e.employee_code}));
+          }
+        }
+        if(duplicateRows.length)setOpsIssue('資格免許・同一社員同一資格重複',duplicateRows,[
+          {label:'社員',type:'employee'},{label:'資格登録ID',value:'id'},{label:'資格ID',value:'license_id'}
+        ]);
       }
       const retired=employees.filter(e=>e.is_active===false||e.status==='retired'||e.status==='past'||!!e.retirement_date);
       const retiredMissingDate=retired.filter(e=>e.status!=='past'&&!e.retirement_date).length;
       const activeWithRetirement=employees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!!e.retirement_date).length;
       checks.push(['退職者・退職日未設定',`${retiredMissingDate}名`,retiredMissingDate===0]);
       checks.push(['在籍状態・退職日矛盾',`${activeWithRetirement}名`,activeWithRetirement===0]);
+      if(retiredMissingDate)setOpsIssue('退職者・退職日未設定',retired.filter(e=>e.status!=='past'&&!e.retirement_date).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,status:e.status})),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'状態',value:'status'}
+      ]);
+      if(activeWithRetirement)setOpsIssue('在籍状態・退職日矛盾',employees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!!e.retirement_date).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,retirement_date:e.retirement_date,status:e.status})),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'退職日',value:'retirement_date',type:'date'},{label:'状態',value:'status'}
+      ]);
     }else{
       checks.push(['長期運用DB監査','ログイン後に確認',false]);
     }
-    document.getElementById('health-checks').innerHTML=`<div class="ops-check-list">${checks.map(([label,value,ok])=>`<div class="ops-check-row"><span>${APP.escape(label)}</span><strong>${APP.badge(ok?'OK':'要確認',ok?'success':'warning')} ${APP.escape(value)}</strong></div>`).join('')}</div>`;
+    document.getElementById('health-checks').innerHTML=`<div class="ops-check-list">${checks.map(([label,value,ok])=>{
+      const key=opsIssueKey(label),issue=OPS_HEALTH_ISSUES.get(key);
+      const detail=issue&&issue.rows.length?`<button class="btn btn-secondary btn-xs ops-detail-btn" type="button" data-ops-issue="${APP.escape(key)}">詳細 ${issue.rows.length}</button>`:'';
+      return `<div class="ops-check-row"><span>${APP.escape(label)}</span><div class="ops-check-result"><strong>${APP.badge(ok?'OK':'要確認',ok?'success':'warning')} ${APP.escape(value)}</strong>${detail}</div></div>`;
+    }).join('')}</div>`;
+    document.querySelectorAll('[data-ops-issue]').forEach(btn=>btn.addEventListener('click',()=>showOpsIssue(btn.dataset.opsIssue)));
     await loadAuditLog();
   }catch(e){console.error(e);APP.toast('データ運用確認に失敗しました','error');}
   finally{if(btn){btn.disabled=false;btn.textContent='再確認';}}
 }
 document.getElementById('btn-health-refresh')?.addEventListener('click',initDataOperations);
 document.getElementById('btn-audit-export')?.addEventListener('click',exportAuditCSV);
+document.getElementById('btn-ops-issue-export')?.addEventListener('click',exportOpsIssueCSV);
 document.getElementById('btn-audit-probe')?.addEventListener('click',runAuditProbe);
 window.initDataOperations=initDataOperations;
 window.exportAuditCSV=exportAuditCSV;
 window.runAuditProbe=runAuditProbe;
+window.showOpsIssue=showOpsIssue;
+window.exportOpsIssueCSV=exportOpsIssueCSV;
