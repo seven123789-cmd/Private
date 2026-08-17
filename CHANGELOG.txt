@@ -1,5 +1,7 @@
-Phase26M-73～88 (2026-08-17)
-- Reframed operations for a single-operator personal management system.
-- Recorded Supabase Free and Supabase-only normal storage assumptions.
-- Removed multi-admin approval and mandatory off-site/PITR assumptions from current operations.
-- Retained audit, baseline, manifest, logical backup and restore tooling for long-term safety and future migration.
+Phase26N-1～18 (2026-08-17)
+- Defined grade promotion separately from job-title/position changes.
+- Defined elapsed time since last grade promotion as a derived value, not stored duration.
+- Added employee-list sorting requirement for grade-promotion elapsed time.
+- Simplified evaluation model for the confirmed single-operator workflow.
+- Chose employee_hr_history_official as the first candidate for formal grade-promotion truth instead of creating a duplicate promotion-history truth.
+- Added read-only DB preflight before any schema change.
