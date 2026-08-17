@@ -130,9 +130,64 @@ const APP = (() => {
       return getLocal().employees;
     }
   }
+  function gradeHistoryDate(row) {
+    const value = String(row?.effective_date || '').slice(0,10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+  }
+  function isGradeHistory(row) {
+    const before = String(row?.from_grade || '').trim();
+    const after = String(row?.to_grade || '').trim();
+    if (!after) return false;
+    if (before && before === after) return false;
+    return ['資格昇格','入社時等級','正社員登用時等級','懲戒・降格','資格等級確認']
+      .some(type => String(row?.event_type || '').includes(type));
+  }
+  function elapsedLabel(dateValue) {
+    if (!dateValue) return '—';
+    const start = new Date(`${dateValue}T00:00:00+09:00`);
+    const now = new Date();
+    if (Number.isNaN(start.getTime()) || start > now) return '—';
+    let months = (now.getFullYear()-start.getFullYear())*12 + (now.getMonth()-start.getMonth());
+    if (now.getDate() < start.getDate()) months -= 1;
+    months = Math.max(0, months);
+    const years = Math.floor(months/12), rest = months%12;
+    return years ? `${years}年${rest}ヶ月` : `${rest}ヶ月`;
+  }
+  async function enrichEmployeesWithHrHistory(employees) {
+    const sb = client();
+    if (!sb || !employees?.length) return employees;
+    const {data,error} = await sb.from('employee_hr_history_official')
+      .select('employee_id,effective_date,effective_label,event_type,from_grade,to_grade,status')
+      .eq('status','active');
+    if (error) {
+      console.warn('正式人事履歴の社員一覧連携に失敗:', error);
+      return employees;
+    }
+    const byEmployee = new Map();
+    (data || []).filter(isGradeHistory).forEach(row => {
+      if (!byEmployee.has(row.employee_id)) byEmployee.set(row.employee_id, []);
+      byEmployee.get(row.employee_id).push(row);
+    });
+    return employees.map(emp => {
+      const history = byEmployee.get(emp.id) || [];
+      const dated = history.filter(r => gradeHistoryDate(r)).sort((a,b)=>gradeHistoryDate(a).localeCompare(gradeHistoryDate(b)));
+      const latest = dated.at(-1) || null;
+      const promotions = dated.filter(r => String(r.event_type||'').includes('資格昇格'));
+      const latestPromotion = promotions.at(-1) || null;
+      const lastGradeDate = latest ? gradeHistoryDate(latest) : null;
+      const unknownGradeDate = !lastGradeDate && history.some(r => !gradeHistoryDate(r));
+      return {
+        ...emp,
+        last_promotion_date: latestPromotion ? gradeHistoryDate(latestPromotion) : (emp.last_promotion_date || null),
+        last_grade_change_date: lastGradeDate,
+        last_grade_change_label: lastGradeDate ? null : (unknownGradeDate ? '日付不明' : null),
+        grade_tenure_label: lastGradeDate ? elapsedLabel(lastGradeDate) : (unknownGradeDate ? '日付不明' : '—')
+      };
+    });
+  }
   async function loadEmployees() {
     const r = await query('employees','*',{order:'employee_code'});
-    if (!r.demo && !r.error && r.data?.length > 0) return r.data;
+    if (!r.demo && !r.error && r.data?.length > 0) return await enrichEmployeesWithHrHistory(r.data);
     return loadEmployeesFromJson();
   }
   async function loadLicenseRows() {

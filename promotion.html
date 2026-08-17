@@ -25,14 +25,14 @@
   </div>
 
   <div class="alert-box gold promotion-data-note">
-    現在の候補判定は社員マスタの「昇格候補フラグ」を使用しています。年度別評価・評価者・確定履歴はDB整備後に追加します。
+    候補判定は現行の社員マスタ「昇格候補フラグ」を維持し、最終資格変更日・資格滞留期間は正式人事履歴から取得します。
   </div>
 
   <div class="stats promotion-stats">
     <div class="stat-card sakura"><div class="stat-top"><span>昇格候補</span></div><div class="stat-value" id="promo-count">—</div><div class="stat-sub">現在の候補フラグ</div></div>
     <div class="stat-card"><div class="stat-top"><span>登録社員</span></div><div class="stat-value" id="promo-employee-count">—</div><div class="stat-sub">社員マスタ</div></div>
     <div class="stat-card info"><div class="stat-top"><span>等級未設定</span></div><div class="stat-value" id="promo-grade-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
-    <div class="stat-card warning"><div class="stat-top"><span>昇格日未設定</span></div><div class="stat-value" id="promo-date-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
+    <div class="stat-card warning"><div class="stat-top"><span>資格変更日未設定</span></div><div class="stat-value" id="promo-date-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
   </div>
 
   <div class="filter-panel">
@@ -53,7 +53,7 @@
       <div><div class="table-count">該当 <strong id="promo-filtered-count">—</strong> 名</div><div class="text-muted text-sm">候補者フラグが有効な社員のみ表示</div></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>雇用形態</th><th>現在等級</th><th>最終昇格日</th><th>状態</th><th></th></tr></thead>
+      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>雇用形態</th><th>現在等級</th><th>最終資格変更日</th><th>資格滞留期間</th><th>状態</th><th></th></tr></thead>
       <tbody id="promo-tbody"></tbody>
     </table></div>
   </div>

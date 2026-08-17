@@ -1,3 +1,9 @@
+Phase26N-70 2026-08-17
+- 人事評価・昇格画面の最終資格変更日を employee_hr_history_official から取得するよう共通社員読込を拡張。
+- 資格昇格だけでなく、入社時等級・正社員登用時等級・懲戒/降格を資格変更として扱い、現在等級の滞留期間を算出。
+- 日付不明で正式確定した古参等級は推測日を作らず「日付不明」と表示。
+- 既存の昇格候補フラグ判定は変更せず、既存業務ロジックを維持。
+
 Phase26N-19～28 (2026-08-17)
 - Removed the temporary Supabase preflight SQL from the GitHub-managed docs path.
 - Finalized canonical rules for last grade promotion date.

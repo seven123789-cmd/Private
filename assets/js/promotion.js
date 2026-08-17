@@ -35,7 +35,7 @@ function bindPromotionFilters(){
 
 function renderPromotionStats(){
   const missingGrade=PROMO_ROWS.filter(e=>!String(e.current_grade||'').trim()).length;
-  const missingDate=PROMO_ROWS.filter(e=>!e.last_promotion_date).length;
+  const missingDate=PROMO_ROWS.filter(e=>!e.last_grade_change_date&&!e.last_grade_change_label).length;
   [['promo-count',PROMO_ROWS.length],['promo-employee-count',PROMO_ALL.length],['promo-grade-missing',missingGrade],['promo-date-missing',missingDate]]
     .forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v;});
 }
@@ -59,15 +59,16 @@ function renderPromotionRows(){
     <td><div class="name-cell"><div class="mini-avatar">${APP.escape((e.name||'?')[0])}</div><div><div class="cell-main">${APP.escape(e.name||'')}</div><div class="cell-sub">${APP.escape(e.employee_code||'')}</div></div></div></td>
     <td>${APP.escape(e.center||'—')}</td><td>${APP.escape(e.position||'—')}</td><td>${APP.escape(e.employment_type||'—')}</td>
     <td>${e.current_grade?APP.badge(e.current_grade,'gray'):'<span class="data-missing">未設定</span>'}</td>
-    <td>${e.last_promotion_date?APP.fmtDate(e.last_promotion_date):'<span class="data-missing">未設定</span>'}</td>
+    <td>${e.last_grade_change_date?APP.fmtDate(e.last_grade_change_date):(e.last_grade_change_label?APP.escape(e.last_grade_change_label):'<span class="data-missing">未設定</span>')}</td>
+    <td>${APP.escape(e.grade_tenure_label||'—')}</td>
     <td>${APP.badge('昇格候補','primary')}</td>
     <td><a class="btn btn-secondary btn-sm" href="employee_detail.html?id=${encodeURIComponent(e.id)}" onclick="event.stopPropagation()">社員詳細</a></td>
-  </tr>`).join(''):`<tr><td colspan="8" class="empty">条件に一致する昇格候補者はありません</td></tr>`;
+  </tr>`).join(''):`<tr><td colspan="9" class="empty">条件に一致する昇格候補者はありません</td></tr>`;
 }
 
 function exportPromotionCSV(){
   const rows=filteredPromotionRows();
-  const columns=[['employee_code','社員コード'],['name','氏名'],['center','所属センター'],['division','部門'],['position','職種'],['employment_type','雇用形態'],['current_grade','現在等級'],['last_promotion_date','最終昇格日'],['promotion_status','候補状態']];
+  const columns=[['employee_code','社員コード'],['name','氏名'],['center','所属センター'],['division','部門'],['position','職種'],['employment_type','雇用形態'],['current_grade','現在等級'],['last_grade_change_date','最終資格変更日'],['grade_tenure_label','資格滞留期間'],['promotion_status','候補状態']];
   const quote=v=>`"${String(v??'').replace(/"/g,'""')}"`;
   const lines=[columns.map(([,label])=>quote(label)).join(',')];
   rows.forEach(e=>{const row={...e,promotion_status:'昇格候補'};lines.push(columns.map(([key])=>quote(row[key])).join(','));});
