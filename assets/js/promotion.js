@@ -9,6 +9,7 @@ async function initPromotion(){
   PROMO_ALL=await APP.loadEmployees();
   fillPromotionFilters();
   bindPromotionFilters();
+  await initAnnualPromotionManagement();
   renderPromotionStats();
   renderPromotionRows();
 }
@@ -23,7 +24,7 @@ function fillPromotionFilters(){
 function bindPromotionFilters(){
   ['promo-keyword','promo-center','promo-position','promo-grade','promo-scope','promo-tenure','promo-date-status','promo-sort','promo-decision'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>{renderPromotionStats();renderPromotionRows();}));
   document.getElementById('btn-clear-promo-filter')?.addEventListener('click',()=>{
-    ['promo-keyword','promo-center','promo-position','promo-grade','promo-tenure','promo-date-status'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['promo-keyword','promo-center','promo-position','promo-grade','promo-tenure','promo-date-status','promo-decision'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     const scope=document.getElementById('promo-scope');if(scope)scope.value='candidate';
     const sort=document.getElementById('promo-sort');if(sort)sort.value='tenure-desc';
     renderPromotionStats();renderPromotionRows();
@@ -31,6 +32,7 @@ function bindPromotionFilters(){
   document.getElementById('promo-cycle')?.addEventListener('change',async e=>selectPromotionCycle(e.target.value));
   document.getElementById('btn-export-promotion')?.addEventListener('click',exportPromotionCSV);
   document.getElementById('btn-save-promo-review')?.addEventListener('click',savePromotionReview);
+  document.getElementById('btn-finalize-promotion')?.addEventListener('click',finalizePromotion);
 }
 
 function fiscalYearJST(){
@@ -91,6 +93,7 @@ function filteredPromotionRows(){
   const grade=document.getElementById('promo-grade')?.value||'';
   const tenure=document.getElementById('promo-tenure')?.value||'';
   const dateStatus=document.getElementById('promo-date-status')?.value||'';
+  const decision=document.getElementById('promo-decision')?.value||'';
   const sort=document.getElementById('promo-sort')?.value||'tenure-desc';
   const minMonths=tenure?Number(tenure):null;
   const rows=scopedRows().filter(e=>{
@@ -100,7 +103,8 @@ function filteredPromotionRows(){
     const dateMissing=!dateKnown&&!dateUnknown;
     const dateOk=!dateStatus||(dateStatus==='known'&&dateKnown)||(dateStatus==='unknown'&&dateUnknown)||(dateStatus==='missing'&&dateMissing);
     const tenureOk=minMonths===null||(Number.isFinite(e.grade_tenure_months)&&e.grade_tenure_months>=minMonths);
-    return (!kw||hay.includes(kw))&&(!center||e.center===center)&&(!position||e.position===position)&&(!grade||e.current_grade===grade)&&dateOk&&tenureOk;
+    const decisionOk=!decision||(reviewFor(e)?.decision_status||'未判断')===decision;
+    return (!kw||hay.includes(kw))&&(!center||e.center===center)&&(!position||e.position===position)&&(!grade||e.current_grade===grade)&&dateOk&&tenureOk&&decisionOk;
   });
   const gradeNum=v=>{const m=String(v||'').match(/(\d+)級/);return m?Number(m[1]):-1;};
   rows.sort((a,b)=>{
@@ -119,6 +123,53 @@ function renderPromotionStats(){
   const missingDate=base.filter(e=>!e.last_grade_change_date&&!e.last_grade_change_label).length;
   [['promo-count',candidates.length],['promo-employee-count',PROMO_ALL.length],['promo-grade-missing',missingGrade],['promo-date-missing',missingDate]].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v;});
 }
+
+function canFinalizePromotion(e){
+  const r=reviewFor(e);
+  return !!r && r.decision_status==='昇格決定' && !r.result_hr_history_id;
+}
+function openPromotionFinalize(id){
+  const e=PROMO_ALL.find(x=>x.id===id),r=e?reviewFor(e):null;
+  if(!e||!r||r.decision_status!=='昇格決定')return;
+  if(r.result_hr_history_id){APP.toast('この年度判断は正式発令済みです','warning');return;}
+  document.getElementById('promo-finalize-employee-id').value=e.id;
+  document.getElementById('promo-finalize-title').textContent=`${e.name}（${e.employee_code}）`;
+  document.getElementById('promo-finalize-context').textContent=`${PROMO_ACTIVE_CYCLE?.name||''} / 現在等級 ${e.current_grade||'未設定'}`;
+  document.getElementById('promo-finalize-from-grade').value=e.current_grade||r.current_grade_snapshot||'';
+  document.getElementById('promo-finalize-to-grade').value='';
+  document.getElementById('promo-finalize-date').value='';
+  document.getElementById('promo-finalize-note').value=r.decision_note||'';
+  Modal.open('promo-finalize-modal');
+}
+async function finalizePromotion(){
+  const e=PROMO_ALL.find(x=>x.id===document.getElementById('promo-finalize-employee-id')?.value);
+  const r=e?reviewFor(e):null;
+  if(!e||!r||!PROMO_ACTIVE_CYCLE)return;
+  const effectiveDate=document.getElementById('promo-finalize-date').value;
+  const fromGrade=document.getElementById('promo-finalize-from-grade').value.trim();
+  const toGrade=document.getElementById('promo-finalize-to-grade').value.trim();
+  const note=document.getElementById('promo-finalize-note').value.trim();
+  if(!effectiveDate||!fromGrade||!toGrade){APP.toast('発令日・変更前等級・変更後等級は必須です','warning');return;}
+  if(fromGrade===toGrade){APP.toast('変更前と変更後の等級が同じです','warning');return;}
+  if(r.result_hr_history_id){APP.toast('すでに正式発令済みです','warning');return;}
+  const message=`${e.name}\n${fromGrade} → ${toGrade}\n発令日：${effectiveDate}\n\n正式人事履歴へ登録します。よろしいですか？`;
+  if(!confirm(message))return;
+  const sb=APP.client();
+  const res=await sb.rpc('finalize_employee_promotion_review_v1',{
+    p_promotion_review_id:r.id,
+    p_effective_date:effectiveDate,
+    p_from_grade:fromGrade,
+    p_to_grade:toGrade,
+    p_note:note||null
+  });
+  if(res.error){APP.toast(`正式発令に失敗しました: ${res.error.message}`,'error');return;}
+  Modal.close('promo-finalize-modal');
+  APP.toast(`${e.name}の正式発令を登録しました`);
+  await selectPromotionCycle(PROMO_ACTIVE_CYCLE.id,false);
+  PROMO_ALL=await APP.loadEmployees();
+  fillPromotionFilters();renderPromotionStats();renderPromotionRows();
+}
+
 function renderPromotionRows(){
   const rows=filteredPromotionRows();const count=document.getElementById('promo-filtered-count');if(count)count.textContent=rows.length;
   const tbody=document.getElementById('promo-tbody');if(!tbody)return;
@@ -126,16 +177,19 @@ function renderPromotionRows(){
     <td><div class="name-cell"><div class="mini-avatar">${APP.escape((e.name||'?')[0])}</div><div><div class="cell-main">${APP.escape(e.name||'')}</div><div class="cell-sub">${APP.escape(e.employee_code||'')}</div></div></div></td>
     <td>${APP.escape(e.center||'—')}</td><td>${APP.escape(e.position||'—')}</td><td>${e.current_grade?APP.badge(e.current_grade,'gray'):'未設定'}</td>
     <td>${e.last_grade_change_date?APP.fmtDate(e.last_grade_change_date):(e.last_grade_change_label||'未設定')}</td><td>${APP.escape(e.grade_tenure_label||'—')}</td>
-    <td>${APP.escape(ev?.rating||'未評価')}</td><td>${APP.badge(rv?.decision_status||'未判断','gray')}</td>
-    <td class="promo-actions"><button class="btn btn-primary btn-sm" type="button" onclick="openPromotionReview('${APP.escape(e.id)}')">評価・判断</button><a class="btn btn-secondary btn-sm" href="employee_detail.html?id=${encodeURIComponent(e.id)}">社員詳細</a></td>
+    <td>${APP.escape(ev?.rating||'未評価')}</td><td>${APP.badge(rv?.decision_status||'未判断','gray')}${rv?.result_hr_history_id?'<div class="cell-sub">正式発令済み</div>':''}</td>
+    <td class="promo-actions"><button class="btn btn-primary btn-sm" type="button" onclick="openPromotionReview('${APP.escape(e.id)}')">評価・判断</button>${canFinalizePromotion(e)?`<button class="btn btn-success btn-sm" type="button" onclick="openPromotionFinalize('${APP.escape(e.id)}')">正式発令</button>`:''}<a class="btn btn-secondary btn-sm" href="employee_detail.html?id=${encodeURIComponent(e.id)}">社員詳細</a></td>
   </tr>`}).join(''):`<tr><td colspan="9" class="empty">条件に一致する社員はありません</td></tr>`;
 }
 function exportPromotionCSV(){
   const rows=filteredPromotionRows();
-  const columns=[['employee_code','社員コード'],['name','氏名'],['center','所属センター'],['division','部門'],['position','職種'],['employment_type','雇用形態'],['current_grade','現在等級'],['last_grade_change_date','最終資格変更日'],['grade_tenure_label','資格滞留期間'],['promotion_status','候補状態']];
-  const quote=v=>`"${String(v??'').replace(/"/g,'""')}"`;const lines=[columns.map(([,label])=>quote(label)).join(',')];
-  rows.forEach(e=>{const row={...e,last_grade_change_date:e.last_grade_change_date||(e.last_grade_change_label||''),promotion_status:isPromotionCandidate(e)?'昇格候補':'通常'};lines.push(columns.map(([key])=>quote(row[key])).join(','));});
+  const headers=['社員コード','氏名','所属センター','職種','現在等級','最終資格変更日','資格滞留期間','年度','年度評価','評価状態','昇格判断','判断メモ','正式発令'];
+  const quote=v=>`"${String(v??'').replace(/"/g,'""')}"`;const lines=[headers.map(quote).join(',')];
+  rows.forEach(e=>{const ev=evaluationFor(e),rv=reviewFor(e);lines.push([
+    e.employee_code,e.name,e.center,e.position,e.current_grade,e.last_grade_change_date||(e.last_grade_change_label||''),e.grade_tenure_label,
+    PROMO_ACTIVE_CYCLE?.fiscal_year||'',ev?.rating||'',ev?.status||'未評価',rv?.decision_status||'未判断',rv?.decision_note||'',rv?.result_hr_history_id?'発令済み':''
+  ].map(quote).join(','));});
   const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');
-  const stamp=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}).replaceAll('-','');a.href=URL.createObjectURL(blob);a.download=`人事評価昇格一覧_${stamp}.csv`;a.click();URL.revokeObjectURL(a.href);
+  const stamp=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}).replaceAll('-','');a.href=URL.createObjectURL(blob);a.download=`人事評価昇格一覧_${PROMO_ACTIVE_CYCLE?.fiscal_year||''}_${stamp}.csv`;a.click();URL.revokeObjectURL(a.href);
 }
-window.initPromotion=initPromotion;window.exportPromotionCSV=exportPromotionCSV;window.openPromotionReview=openPromotionReview;
+window.initPromotion=initPromotion;window.exportPromotionCSV=exportPromotionCSV;window.openPromotionReview=openPromotionReview;window.openPromotionFinalize=openPromotionFinalize;
