@@ -212,3 +212,19 @@
 .employee-profile #emp-hr-timeline .hr-history-actions{justify-content:flex-start;gap:6px;white-space:nowrap}
 @media(max-width:1050px){.employee-profile .employee-hr-history-card{margin-top:22px}}
 @media(max-width:760px){.employee-profile #emp-hr-timeline .hr-history-table{min-width:920px}}
+
+/* Phase26N-69 — HR history long-text integrity */
+.employee-profile #emp-hr-timeline .hr-history-table{min-width:1120px}
+.employee-profile #emp-hr-timeline .hr-col-before,
+.employee-profile #emp-hr-timeline .hr-col-after{width:calc((100% - 494px)/2)}
+.employee-profile #emp-hr-timeline .hr-history-table td:nth-child(4),
+.employee-profile #emp-hr-timeline .hr-history-table td:nth-child(6),
+.employee-profile #emp-hr-timeline .hr-history-table td:nth-child(4) strong,
+.employee-profile #emp-hr-timeline .hr-history-table td:nth-child(6) strong{
+  max-width:none;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  overflow-wrap:break-word;
+  word-break:normal;
+}

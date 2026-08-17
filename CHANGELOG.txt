@@ -9,3 +9,9 @@ Phase26N-68 (2026-08-17)
 - Added an explicit HR history column model and wider minimum table width.
 - Long affiliation, assignment, role, and concurrent-assignment text now wraps without clipping.
 - Preserved existing HR history data loading, correction, cancellation, and business logic.
+
+Phase26N-69 (2026-08-17)
+- Strengthened HR history long-text layout so affiliation/assignment text is not visually clipped.
+- Added the formal "懲戒・降格" event type to the HR history entry form.
+- Kept demotion as an auditable official HR-history event; existing correction/cancellation RPC flow is unchanged.
+- Confirmed the missing closing parenthesis in the Mikawa-resident wording is source data, not CSS clipping; database correction is supplied separately from GitHub code.
