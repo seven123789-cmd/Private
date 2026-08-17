@@ -157,7 +157,7 @@ async function initDataOperations(){
     const sb=APP.client();
     if(sb&&user){
       const [versionRes,manifestRes,naturalKeyRes,baselineRes,verifyRes,auditCountRes,importBatchRes,promoReviewsRes,officialPromoRes,
-        assignmentRes,licenseLinkRes,licenseMasterRes,centerRes,positionRes]=await Promise.all([
+        assignmentRes,licenseLinkRes,licenseMasterRes,centerRes,positionRes,officialHrRes]=await Promise.all([
         sb.from('schema_versions').select('version_code,phase,applied_at').order('applied_at',{ascending:false}).limit(1),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('backup_required',true),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('schema_name','public').or('natural_key_hint.is.null,natural_key_hint.eq.'),
@@ -171,7 +171,8 @@ async function initDataOperations(){
         sb.from('employee_licenses').select('id,employee_id,license_id'),
         sb.from('license_master').select('id'),
         sb.from('centers').select('id'),
-        sb.from('positions').select('id')
+        sb.from('positions').select('id'),
+        sb.from('employee_hr_history_official').select('id,employee_id,effective_date,effective_label,event_type,from_grade,to_grade,status').eq('status','active')
       ]);
       const latest=versionRes.data?.[0];
       checks.push(['DBスキーマ版',latest?.version_code||'取得不可',!versionRes.error&&!!latest]);
@@ -287,6 +288,52 @@ async function initDataOperations(){
         }
         if(duplicateRows.length)setOpsIssue('資格免許・同一社員同一資格重複',duplicateRows,[
           {label:'社員',type:'employee'},{label:'資格登録ID',value:'id'},{label:'資格ID',value:'license_id'}
+        ]);
+      }
+      if(officialHrRes.error){
+        checks.push(['現在等級・正式履歴整合','取得エラー',false]);
+      }else{
+        const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+        const employeeById=new Map(employees.map(e=>[String(e.id),e]));
+        const gradeTypes=['資格昇格','入社時等級','正社員登用時等級','懲戒・降格','資格等級確認'];
+        const isGradeRow=r=>{
+          const before=String(r.from_grade||'').trim(),after=String(r.to_grade||'').trim();
+          if(!after||before===after)return false;
+          return gradeTypes.some(t=>String(r.event_type||'').includes(t));
+        };
+        const datedRows=(officialHrRes.data||[]).filter(r=>isGradeRow(r)&&r.effective_date&&r.effective_date<=today);
+        const byEmployee=new Map();
+        datedRows.forEach(r=>{
+          const k=String(r.employee_id);
+          if(!byEmployee.has(k))byEmployee.set(k,[]);
+          byEmployee.get(k).push(r);
+        });
+        const mismatches=[];
+        for(const [eid,rows] of byEmployee.entries()){
+          const e=employeeById.get(eid);
+          if(!e)continue;
+          rows.sort((a,b)=>String(a.effective_date).localeCompare(String(b.effective_date)));
+          const latest=rows.at(-1);
+          const current=String(e.current_grade||'').trim(),official=String(latest.to_grade||'').trim();
+          if(current!==official)mismatches.push({
+            employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,
+            current_grade:current||'未設定',official_grade:official||'未設定',
+            effective_date:latest.effective_date,event_type:latest.event_type,history_id:latest.id
+          });
+        }
+        const undatedGrade=(officialHrRes.data||[]).filter(r=>isGradeRow(r)&&!r.effective_date);
+        checks.push(['現在等級・正式履歴不一致',`${mismatches.length}名`,mismatches.length===0]);
+        checks.push(['等級履歴・日付不明',`${undatedGrade.length}件`,true]);
+        if(mismatches.length)setOpsIssue('現在等級・正式履歴不一致',mismatches,[
+          {label:'社員',type:'employee'},{label:'現在等級',value:'current_grade'},{label:'正式履歴の最新等級',value:'official_grade'},
+          {label:'発令日',value:'effective_date',type:'date'},{label:'種別',value:'event_type'},{label:'正式履歴ID',value:'history_id'}
+        ]);
+        if(undatedGrade.length)setOpsIssue('等級履歴・日付不明',undatedGrade.map(r=>{const e=employeeById.get(String(r.employee_id))||{};return {
+          employee_id:r.employee_id,employee_name:e.name,employee_code:e.employee_code,event_type:r.event_type,
+          from_grade:r.from_grade,to_grade:r.to_grade,effective_label:r.effective_label,history_id:r.id
+        };}),[
+          {label:'社員',type:'employee'},{label:'種別',value:'event_type'},{label:'変更前',value:'from_grade'},
+          {label:'変更後',value:'to_grade'},{label:'日付表示',value:'effective_label'},{label:'正式履歴ID',value:'history_id'}
         ]);
       }
       const retired=employees.filter(e=>e.is_active===false||e.status==='retired'||e.status==='past'||!!e.retirement_date);
