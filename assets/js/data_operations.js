@@ -337,15 +337,32 @@ async function initDataOperations(){
         ]);
       }
       const retired=employees.filter(e=>e.is_active===false||e.status==='retired'||e.status==='past'||!!e.retirement_date);
-      const retiredMissingDate=retired.filter(e=>e.status!=='past'&&!e.retirement_date).length;
-      const activeWithRetirement=employees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!!e.retirement_date).length;
-      checks.push(['退職者・退職日未設定',`${retiredMissingDate}名`,retiredMissingDate===0]);
-      checks.push(['在籍状態・退職日矛盾',`${activeWithRetirement}名`,activeWithRetirement===0]);
-      if(retiredMissingDate)setOpsIssue('退職者・退職日未設定',retired.filter(e=>e.status!=='past'&&!e.retirement_date).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,status:e.status})),[
-        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'状態',value:'status'}
+      const normalRetiredUnknown=retired.filter(e=>e.status!=='past'&&!e.retirement_date&&e.retirement_handling_type!=='administrative_retired');
+      const administrativeRetired=retired.filter(e=>e.retirement_handling_type==='administrative_retired');
+      const activeWithRetirement=employees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!!e.retirement_date);
+      checks.push(['退職日未確認',`${normalRetiredUnknown.length}名`,true]);
+      checks.push(['マスタ上退職扱い',`${administrativeRetired.length}名`,true]);
+      checks.push(['在籍状態・退職日矛盾',`${activeWithRetirement.length}名`,activeWithRetirement.length===0]);
+      if(normalRetiredUnknown.length)setOpsIssue('退職日未確認',normalRetiredUnknown.map(e=>({
+        employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,status:e.status,
+        retirement_date_status:e.retirement_date_status,retirement_note:e.retirement_note
+      })),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'状態',value:'status'},
+        {label:'退職日状態',value:'retirement_date_status'},{label:'備考',value:'retirement_note'}
       ]);
-      if(activeWithRetirement)setOpsIssue('在籍状態・退職日矛盾',employees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!!e.retirement_date).map(e=>({employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,retirement_date:e.retirement_date,status:e.status})),[
-        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'退職日',value:'retirement_date',type:'date'},{label:'状態',value:'status'}
+      if(administrativeRetired.length)setOpsIssue('マスタ上退職扱い',administrativeRetired.map(e=>({
+        employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,status:e.status,
+        retirement_handling_type:e.retirement_handling_type,retirement_note:e.retirement_note
+      })),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'},{label:'状態',value:'status'},
+        {label:'扱い',value:'retirement_handling_type'},{label:'備考',value:'retirement_note'}
+      ]);
+      if(activeWithRetirement.length)setOpsIssue('在籍状態・退職日矛盾',activeWithRetirement.map(e=>({
+        employee_id:e.id,employee_name:e.name,employee_code:e.employee_code,center:e.center,
+        retirement_date:e.retirement_date,status:e.status
+      })),[
+        {label:'社員',type:'employee'},{label:'所属',value:'center'},
+        {label:'退職日',value:'retirement_date',type:'date'},{label:'状態',value:'status'}
       ]);
     }else{
       checks.push(['長期運用DB監査','ログイン後に確認',false]);
