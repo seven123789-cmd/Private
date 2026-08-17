@@ -40,7 +40,7 @@
       <div><strong>社員検索・昇格管理</strong><div class="text-muted text-sm">候補状態・等級・資格滞留期間などから絞り込みます。</div></div>
       <button class="btn btn-secondary btn-sm" id="btn-clear-promo-filter" type="button">条件をクリア</button>
     </div>
-    <div class="filter-grid promotion-filter-grid">
+    <div class="promotion-cycle-bar"><div class="form-group"><label class="form-label">評価年度</label><select class="form-control" id="promo-cycle"></select></div><div class="promotion-cycle-status" id="promo-cycle-status">年度別管理を読み込み中…</div></div><div class="filter-grid promotion-filter-grid">
       <div class="form-group"><label class="form-label">表示対象</label><select class="form-control" id="promo-scope"><option value="candidate">昇格候補のみ</option><option value="all">全社員</option></select></div>
       <div class="form-group"><label class="form-label">社員</label><input class="form-control" id="promo-keyword" placeholder="氏名・社員コード"></div>
       <div class="form-group"><label class="form-label">所属センター</label><select class="form-control" id="promo-center"></select></div>
@@ -57,7 +57,7 @@
       <div><div class="table-count">該当 <strong id="promo-filtered-count">—</strong> 名</div><div class="text-muted text-sm" id="promo-table-note">候補者フラグが有効な社員のみ表示</div></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>雇用形態</th><th>現在等級</th><th>最終資格変更日</th><th>資格滞留期間</th><th>状態</th><th></th></tr></thead>
+      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>現在等級</th><th>最終資格変更日</th><th>資格滞留期間</th><th>年度評価</th><th>昇格判断</th><th>操作</th></tr></thead>
       <tbody id="promo-tbody"></tbody>
     </table></div>
   </div>
@@ -71,7 +71,7 @@
   </section>
 
 </main></div></div>
-<div id="toast-container"></div>
+<div class="modal-backdrop hidden" id="promo-review-modal"><div class="modal promotion-review-modal"><div class="modal-header"><div><strong id="promo-review-title">年度評価・昇格判断</strong><div class="text-muted text-sm" id="promo-review-context"></div></div><button class="btn btn-secondary btn-sm" type="button" data-modal-close="promo-review-modal">閉じる</button></div><div class="modal-body"><input type="hidden" id="promo-review-employee-id"><div class="form-grid"><div class="form-group"><label class="form-label">年度評価</label><input class="form-control" id="promo-review-rating"></div><div class="form-group"><label class="form-label">評価状態</label><select class="form-control" id="promo-review-eval-status"><option>未評価</option><option>評価中</option><option>確定</option></select></div><div class="form-group form-full"><label class="form-label">評価コメント</label><textarea id="promo-review-comment" rows="4"></textarea></div><div class="form-group"><label class="form-label">昇格判断</label><select class="form-control" id="promo-review-decision"><option>確認中</option><option>昇格候補</option><option>見送り</option><option>対象外</option><option>昇格決定</option></select></div><div class="form-group form-full"><label class="form-label">判断メモ</label><textarea id="promo-review-note" rows="4"></textarea></div></div></div><div class="modal-footer"><button class="btn btn-secondary" type="button" data-modal-close="promo-review-modal">キャンセル</button><button class="btn btn-primary" type="button" id="btn-save-promo-review">保存</button></div></div></div><div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script>
 <script>
