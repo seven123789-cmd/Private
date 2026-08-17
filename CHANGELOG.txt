@@ -1,7 +1,5 @@
-Phase26M-53～72 (2026-08-17)
-- Added dry-run-first backup retention planning.
-- Added weekly/monthly/yearly generation policy defaults.
-- Added backup/PITR operational checklist.
-- Added restore test history ledger without secrets or personal data.
-- Added Phase26M completion/status document.
-- No production data or credentials included.
+Phase26M-73～88 (2026-08-17)
+- Reframed operations for a single-operator personal management system.
+- Recorded Supabase Free and Supabase-only normal storage assumptions.
+- Removed multi-admin approval and mandatory off-site/PITR assumptions from current operations.
+- Retained audit, baseline, manifest, logical backup and restore tooling for long-term safety and future migration.
