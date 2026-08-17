@@ -142,14 +142,22 @@ const APP = (() => {
     return ['資格昇格','入社時等級','正社員登用時等級','懲戒・降格','資格等級確認']
       .some(type => String(row?.event_type || '').includes(type));
   }
+  function elapsedMonths(dateValue) {
+    if (!dateValue) return null;
+    const start = new Date(`${dateValue}T00:00:00+09:00`);
+    const now = new Date();
+    if (Number.isNaN(start.getTime()) || start > now) return null;
+    let months = (now.getFullYear()-start.getFullYear())*12 + (now.getMonth()-start.getMonth());
+    if (now.getDate() < start.getDate()) months -= 1;
+    return Math.max(0, months);
+  }
   function elapsedLabel(dateValue) {
     if (!dateValue) return '—';
     const start = new Date(`${dateValue}T00:00:00+09:00`);
     const now = new Date();
     if (Number.isNaN(start.getTime()) || start > now) return '—';
-    let months = (now.getFullYear()-start.getFullYear())*12 + (now.getMonth()-start.getMonth());
-    if (now.getDate() < start.getDate()) months -= 1;
-    months = Math.max(0, months);
+    const months = elapsedMonths(dateValue);
+    if (months === null) return '—';
     const years = Math.floor(months/12), rest = months%12;
     return years ? `${years}年${rest}ヶ月` : `${rest}ヶ月`;
   }
@@ -181,6 +189,7 @@ const APP = (() => {
         last_promotion_date: latestPromotion ? gradeHistoryDate(latestPromotion) : (emp.last_promotion_date || null),
         last_grade_change_date: lastGradeDate,
         last_grade_change_label: lastGradeDate ? null : (unknownGradeDate ? '日付不明' : null),
+        grade_tenure_months: lastGradeDate ? elapsedMonths(lastGradeDate) : null,
         grade_tenure_label: lastGradeDate ? elapsedLabel(lastGradeDate) : (unknownGradeDate ? '日付不明' : '—')
       };
     });

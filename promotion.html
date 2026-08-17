@@ -37,20 +37,24 @@
 
   <div class="filter-panel">
     <div class="filter-panel-head">
-      <div><strong>候補者検索</strong><div class="text-muted text-sm">氏名・社員コード・所属・職種・等級から絞り込みます。</div></div>
+      <div><strong>社員検索・昇格管理</strong><div class="text-muted text-sm">候補状態・等級・資格滞留期間などから絞り込みます。</div></div>
       <button class="btn btn-secondary btn-sm" id="btn-clear-promo-filter" type="button">条件をクリア</button>
     </div>
     <div class="filter-grid promotion-filter-grid">
+      <div class="form-group"><label class="form-label">表示対象</label><select class="form-control" id="promo-scope"><option value="candidate">昇格候補のみ</option><option value="all">全社員</option></select></div>
       <div class="form-group"><label class="form-label">社員</label><input class="form-control" id="promo-keyword" placeholder="氏名・社員コード"></div>
       <div class="form-group"><label class="form-label">所属センター</label><select class="form-control" id="promo-center"></select></div>
       <div class="form-group"><label class="form-label">職種</label><select class="form-control" id="promo-position"></select></div>
       <div class="form-group"><label class="form-label">等級</label><select class="form-control" id="promo-grade"></select></div>
+      <div class="form-group"><label class="form-label">資格滞留期間</label><select class="form-control" id="promo-tenure"><option value="">指定なし</option><option value="24">2年以上</option><option value="36">3年以上</option><option value="48">4年以上</option><option value="60">5年以上</option></select></div>
+      <div class="form-group"><label class="form-label">資格変更日</label><select class="form-control" id="promo-date-status"><option value="">すべて</option><option value="known">日付確定</option><option value="unknown">日付不明で確定</option><option value="missing">未設定</option></select></div>
+      <div class="form-group"><label class="form-label">並び順</label><select class="form-control" id="promo-sort"><option value="tenure-desc">滞留期間が長い順</option><option value="tenure-asc">滞留期間が短い順</option><option value="date-desc">資格変更日が新しい順</option><option value="grade-desc">等級が高い順</option><option value="code">社員コード順</option></select></div>
     </div>
   </div>
 
   <div class="table-card">
     <div class="table-tools">
-      <div><div class="table-count">該当 <strong id="promo-filtered-count">—</strong> 名</div><div class="text-muted text-sm">候補者フラグが有効な社員のみ表示</div></div>
+      <div><div class="table-count">該当 <strong id="promo-filtered-count">—</strong> 名</div><div class="text-muted text-sm" id="promo-table-note">候補者フラグが有効な社員のみ表示</div></div>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>雇用形態</th><th>現在等級</th><th>最終資格変更日</th><th>資格滞留期間</th><th>状態</th><th></th></tr></thead>

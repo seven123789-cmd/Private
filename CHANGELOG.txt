@@ -21,3 +21,11 @@ Phase26N-69 (2026-08-17)
 - Added the formal "懲戒・降格" event type to the HR history entry form.
 - Kept demotion as an auditable official HR-history event; existing correction/cancellation RPC flow is unchanged.
 - Confirmed the missing closing parenthesis in the Mikawa-resident wording is source data, not CSS clipping; database correction is supplied separately from GitHub code.
+
+Phase26N-71 2026-08-17
+- 人事評価・昇格画面に「昇格候補のみ／全社員」切替を追加。既存の昇格候補フラグ自体は変更せず維持。
+- 現在等級、資格滞留期間（2/3/4/5年以上）、資格変更日の確定状態で絞り込み可能にした。
+- 資格滞留期間が長い順を既定とし、短い順・資格変更日・等級・社員コード順のソートを追加。
+- 正式人事履歴から算出した資格滞留月数を共通社員データへ追加し、表示文字列ではなく数値で正確に比較。
+- CSV出力は現在の表示対象・フィルター・並び順と一致し、全社員表示時は通常社員も正しく出力。
+- 日付不明で確定した社員と、資格変更日が未設定の社員を別条件として扱う。
