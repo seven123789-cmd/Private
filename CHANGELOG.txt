@@ -90,4 +90,12 @@ Phase26N-81 2026-08-17
 - 出向等により統合管理システム上だけ退職扱いとする社員を通常退職と区別。
 - 上記2分類は異常扱いせず、詳細確認・CSV出力のみ可能とした。
 - 在籍状態と退職日の実矛盾のみ要確認を維持。
-- Phase26N-81で追加済みの employees.retirement_date_status / retirement_handling_type / retirement_note を参照。
+- employees.retirement_date_status / retirement_handling_type / retirement_note を参照。
+
+Phase26N-82 2026-08-17
+- GitHub Pages配信物から実社員マスタJSONを読み込むフォールバックを廃止。
+- Supabase未接続時は安全なデモ社員データのみ使用し、実社員情報を静的配信へ依存しない構造へ変更。
+- デモ社員データを実在社員名・実運用コードから分離。
+- .gitignore を追加し、Supabase SQL結果CSVおよび employee_master_*.json の再コミットを防止。
+- 社員取込画面のユーザー操作によるJSONダウンロード機能は維持し、静的配信ファイルとは分離。
+- 既にGitHub mainに存在する不要な実データファイルの削除は別途実施する。

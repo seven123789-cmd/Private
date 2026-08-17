@@ -55,9 +55,9 @@ const APP = (() => {
 
   const sample = {
     employees:[
-      {id:'e1',employee_code:'203',name:'三浦 浩一', center:'北埼玉',division:'家電物流事業部',position:'職員',  employment_type:'正社員',current_grade:'管理職',promotion_target_flag:true, last_promotion_date:'2020-04-01'},
-      {id:'e2',employee_code:'204',name:'山田 太郎', center:'戸田',  division:'家電物流事業部',position:'外商員',employment_type:'正社員',current_grade:'3級',  promotion_target_flag:false,last_promotion_date:'2021-07-01'},
-      {id:'e3',employee_code:'205',name:'佐藤 花子', center:'さいたま',division:'家電物流事業部',position:'職員', employment_type:'正社員',current_grade:'2級',  promotion_target_flag:false,last_promotion_date:'2023-04-01'},
+      {id:'demo-e1',employee_code:'DEMO001',name:'サンプル 太郎', center:'サンプルセンター',division:'サンプル事業部',position:'職員',employment_type:'正社員',current_grade:'3級',promotion_target_flag:false,last_promotion_date:null},
+      {id:'demo-e2',employee_code:'DEMO002',name:'サンプル 花子', center:'サンプルセンター',division:'サンプル事業部',position:'外商員',employment_type:'正社員',current_grade:'2級',promotion_target_flag:false,last_promotion_date:null},
+      {id:'demo-e3',employee_code:'DEMO003',name:'サンプル 次郎', center:'サンプルセンター',division:'サンプル事業部',position:'内務員',employment_type:'正社員',current_grade:'1級',promotion_target_flag:false,last_promotion_date:null},
     ],
     licenses:[
       {id:'l1',license_name:'運行管理者（貨物）',        category_name:'国家資格・免許',need_expiration:false,enabled:true},
@@ -115,20 +115,11 @@ const APP = (() => {
     });
   }
 
-  // JSONファイルから社員マスタを読み込む（Supabase未接続時のフォールバック）
-  let _employeeCache = null;
+  // Supabase未接続時は実社員データを静的ファイルから読み込まない。
+  // GitHub Pages配信物に社員マスタを置かず、安全なデモデータのみ使用する。
   async function loadEmployeesFromJson() {
-    if (_employeeCache) return _employeeCache;
-    try {
-      const res = await fetch('assets/data/employee_master_2026_04.json');
-      if (!res.ok) throw new Error('fetch failed');
-      const json = await res.json();
-      _employeeCache = (json.employees || []).sort((a,b) => a.employee_code.localeCompare(b.employee_code));
-      return _employeeCache;
-    } catch(e) {
-      console.warn('社員JSONの読み込みに失敗、サンプルデータを使用:', e);
-      return getLocal().employees;
-    }
+    console.warn('Supabase未接続のため、安全なデモ社員データを使用します。');
+    return sample.employees.map(x => ({...x}));
   }
   function gradeHistoryDate(row) {
     const value = String(row?.effective_date || '').slice(0,10);
