@@ -13,7 +13,8 @@
 </div>
 <div class="card"><div class="card-header"><div><div class="card-title">運用チェック</div><div class="card-sub">ブラウザから確認可能な範囲</div></div></div><div class="card-body" id="health-checks"><div class="empty">確認中…</div></div></div>
 <div class="card">
-<div class="card-header"><div><div class="card-title">変更監査ログ</div><div class="card-sub">直近200件。変更前後を含む監査記録です。</div></div><div><button id="btn-audit-export" class="btn btn-secondary btn-sm" type="button">CSV出力</button></div></div>
+<div class="card-header"><div><div class="card-title">変更監査ログ</div><div class="card-sub">直近200件。変更前後を含む監査記録です。</div></div><div><button id="btn-audit-probe" class="btn btn-secondary btn-sm" type="button">監査テスト</button>
+<button id="btn-audit-export" class="btn btn-secondary btn-sm" type="button">CSV出力</button></div></div>
 <div class="card-body" style="overflow:auto">
 <table class="table"><thead><tr><th>変更日時</th><th>テーブル</th><th>操作</th><th>レコードID</th><th>変更者UID</th><th>変更内容</th></tr></thead>
 <tbody id="audit-log-body"><tr><td colspan="6" class="empty">確認中…</td></tr></tbody></table>

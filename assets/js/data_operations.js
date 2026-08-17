@@ -47,6 +47,21 @@ function exportAuditCSV(){
   ],OPS_AUDIT_ROWS);
 }
 
+
+async function runAuditProbe(){
+  const btn=document.getElementById('btn-audit-probe');
+  const sb=APP.client(), user=await Auth.currentUser();
+  if(!sb||!user){APP.toast('監査テストにはログインが必要です','warning');return;}
+  if(btn){btn.disabled=true;btn.textContent='実行中…';}
+  try{
+    const r=await sb.rpc('audit_e2e_probe');
+    if(r.error) throw r.error;
+    APP.toast(`監査テストを記録しました（ID: ${r.data}）`,'success');
+    await loadAuditLog();
+  }catch(e){console.error(e);APP.toast('監査テストに失敗しました','error');}
+  finally{if(btn){btn.disabled=false;btn.textContent='監査テスト';}}
+}
+
 async function initDataOperations(){
   const btn=document.getElementById('btn-health-refresh');
   if(btn){btn.disabled=true;btn.textContent='確認中…';}
@@ -76,8 +91,8 @@ async function initDataOperations(){
         sb.from('schema_versions').select('version_code,phase,applied_at').order('applied_at',{ascending:false}).limit(1),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('backup_required',true),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('schema_name','public').or('natural_key_hint.is.null,natural_key_hint.eq.'),
-        sb.from('restore_verification_snapshots').select('table_name',{count:'exact',head:true}).eq('snapshot_code','baseline-20260816-phase26i'),
-        sb.rpc('verify_restore_baseline',{p_snapshot_code:'baseline-20260816-phase26i'}),
+        sb.from('restore_verification_snapshots').select('table_name',{count:'exact',head:true}).eq('snapshot_code','baseline-20260817-phase26l'),
+        sb.rpc('verify_restore_baseline',{p_snapshot_code:'baseline-20260817-phase26l'}),
         sb.from('audit_log').select('id',{count:'exact',head:true}),
         sb.from('employee_import_batches').select('id',{count:'exact',head:true})
       ]);
@@ -88,8 +103,10 @@ async function initDataOperations(){
       checks.push(['復元基準',`${baselineRes.count??0}テーブル`,!baselineRes.error&&(baselineRes.count??0)>0]);
       if(verifyRes.error) checks.push(['復元整合チェック','実行エラー',false]);
       else{
-        const bad=(verifyRes.data||[]).filter(r=>['NG','DIFF'].includes(r.result)&&!['public.schema_versions','public.backup_restore_manifest','public.restore_verification_snapshots'].includes(r.object_name));
-        checks.push(['復元整合チェック',bad.length===0?'業務データ差異 0件':`業務データ差異 ${bad.length}件`,bad.length===0]);
+        const infraNames=new Set(['public.schema_versions','public.backup_restore_manifest','public.restore_verification_snapshots','schema_versions']);
+        const businessBad=(verifyRes.data||[]).filter(r=>['NG','DIFF'].includes(r.result)&&!infraNames.has(r.object_name));
+        const infraBad=(verifyRes.data||[]).filter(r=>['NG','DIFF'].includes(r.result)&&infraNames.has(r.object_name));
+        checks.push(['復元整合チェック',`業務差異 ${businessBad.length}件 / 基盤差異 ${infraBad.length}件`,businessBad.length===0&&infraBad.length===0]);
       }
       checks.push(['監査ログ',auditCountRes.error?'取得エラー':`${auditCountRes.count??0}件`,!auditCountRes.error]);
       checks.push(['社員取込バッチ',importBatchRes.error?'取得エラー':`${importBatchRes.count??0}件`,!importBatchRes.error]);
@@ -103,5 +120,7 @@ async function initDataOperations(){
 }
 document.getElementById('btn-health-refresh')?.addEventListener('click',initDataOperations);
 document.getElementById('btn-audit-export')?.addEventListener('click',exportAuditCSV);
+document.getElementById('btn-audit-probe')?.addEventListener('click',runAuditProbe);
 window.initDataOperations=initDataOperations;
 window.exportAuditCSV=exportAuditCSV;
+window.runAuditProbe=runAuditProbe;

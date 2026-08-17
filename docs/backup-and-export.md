@@ -19,3 +19,5 @@
 - ブラウザ画面からDB全体の復元や完全ダンプは実行しない。誤操作・権限集中を避けるため、完全バックアップ/復元はSupabase管理側または管理者用論理バックアップ手順で行う。
 - Supabase管理側のBackup/PITRの有効状態・保持日数、Supabase外バックアップの実在・暗号化・アクセス権・保持期間はDB内SQLだけでは確認できないため、別途運用確認する。
 - `backup_restore_manifest.natural_key_hint` は移行・重複判定の補助情報。実復元ではPK/FKとSchema Versionを保持し、復元後に `verify_restore_baseline()` を必ず実行する。
+
+- 2026-08-17: 運用画面の復元検証基準を `baseline-20260817-phase26l` へ更新。業務差異と基盤差異を分離表示。authenticated専用 `audit_e2e_probe()` により業務データを変更せず監査表示/CSV経路を検証する。
