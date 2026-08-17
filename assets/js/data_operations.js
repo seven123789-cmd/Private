@@ -87,7 +87,8 @@ async function initDataOperations(){
 
     const sb=APP.client();
     if(sb&&user){
-      const [versionRes,manifestRes,naturalKeyRes,baselineRes,verifyRes,auditCountRes,importBatchRes,promoReviewsRes,officialPromoRes]=await Promise.all([
+      const [versionRes,manifestRes,naturalKeyRes,baselineRes,verifyRes,auditCountRes,importBatchRes,promoReviewsRes,officialPromoRes,
+        assignmentRes,licenseLinkRes,licenseMasterRes,centerRes,positionRes]=await Promise.all([
         sb.from('schema_versions').select('version_code,phase,applied_at').order('applied_at',{ascending:false}).limit(1),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('backup_required',true),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('schema_name','public').or('natural_key_hint.is.null,natural_key_hint.eq.'),
@@ -96,7 +97,12 @@ async function initDataOperations(){
         sb.from('audit_log').select('id',{count:'exact',head:true}),
         sb.from('employee_import_batches').select('id',{count:'exact',head:true}),
         sb.from('employee_promotion_reviews').select('id,employee_id,decision_status,result_hr_history_id'),
-        sb.from('employee_hr_history_official').select('id,employee_id,effective_date,to_grade,status').eq('event_type','資格昇格')
+        sb.from('employee_hr_history_official').select('id,employee_id,effective_date,to_grade,status').eq('event_type','資格昇格'),
+        sb.from('employee_assignment_history').select('id,employee_id,effective_from,effective_to,center_id,position_id'),
+        sb.from('employee_licenses').select('id,employee_id,license_id'),
+        sb.from('license_master').select('id'),
+        sb.from('centers').select('id'),
+        sb.from('positions').select('id')
       ]);
       const latest=versionRes.data?.[0];
       checks.push(['DBスキーマ版',latest?.version_code||'取得不可',!versionRes.error&&!!latest]);
@@ -125,6 +131,46 @@ async function initDataOperations(){
         checks.push(['正式発令社員不一致',`${wrongEmployee.length}件`,wrongEmployee.length===0]);
         checks.push(['昇格決定・発令待ち',`${decidedNotIssued.length}件`,true]);
       }
+      if(assignmentRes.error){
+        checks.push(['所属履歴整合','取得エラー',false]);
+      }else{
+        const employeeIds=new Set(employees.map(e=>String(e.id)));
+        const centerIds=new Set((centerRes.data||[]).map(x=>String(x.id)));
+        const positionIds=new Set((positionRes.data||[]).map(x=>String(x.id)));
+        const orphanAssignments=(assignmentRes.data||[]).filter(x=>!employeeIds.has(String(x.employee_id)));
+        const badCenter=(assignmentRes.data||[]).filter(x=>x.center_id&&!centerIds.has(String(x.center_id)));
+        const badPosition=(assignmentRes.data||[]).filter(x=>x.position_id&&!positionIds.has(String(x.position_id)));
+        const activeByEmployee=new Map();
+        (assignmentRes.data||[]).filter(x=>!x.effective_to).forEach(x=>{
+          const k=String(x.employee_id); activeByEmployee.set(k,(activeByEmployee.get(k)||0)+1);
+        });
+        const multiActive=[...activeByEmployee.values()].filter(n=>n>1).length;
+        checks.push(['所属履歴・社員参照切れ',`${orphanAssignments.length}件`,orphanAssignments.length===0]);
+        checks.push(['所属履歴・センター参照切れ',`${badCenter.length}件`,badCenter.length===0]);
+        checks.push(['所属履歴・役職参照切れ',`${badPosition.length}件`,badPosition.length===0]);
+        checks.push(['所属履歴・現行レコード重複',`${multiActive}名`,multiActive===0]);
+      }
+      if(licenseLinkRes.error||licenseMasterRes.error){
+        checks.push(['資格免許参照整合','取得エラー',false]);
+      }else{
+        const employeeIds=new Set(employees.map(e=>String(e.id)));
+        const licenseIds=new Set((licenseMasterRes.data||[]).map(x=>String(x.id)));
+        const orphanEmployee=(licenseLinkRes.data||[]).filter(x=>!employeeIds.has(String(x.employee_id)));
+        const orphanMaster=(licenseLinkRes.data||[]).filter(x=>!licenseIds.has(String(x.license_id)));
+        const duplicateLicenseKeys=new Map();
+        (licenseLinkRes.data||[]).forEach(x=>{
+          const k=`${x.employee_id}::${x.license_id}`; duplicateLicenseKeys.set(k,(duplicateLicenseKeys.get(k)||0)+1);
+        });
+        const duplicatePairs=[...duplicateLicenseKeys.values()].filter(n=>n>1).length;
+        checks.push(['資格免許・社員参照切れ',`${orphanEmployee.length}件`,orphanEmployee.length===0]);
+        checks.push(['資格免許・マスタ参照切れ',`${orphanMaster.length}件`,orphanMaster.length===0]);
+        checks.push(['資格免許・同一社員同一資格重複',`${duplicatePairs}組`,duplicatePairs===0]);
+      }
+      const retired=employees.filter(e=>e.is_active===false||e.status==='retired'||e.status==='past'||!!e.retirement_date);
+      const retiredMissingDate=retired.filter(e=>e.status!=='past'&&!e.retirement_date).length;
+      const activeWithRetirement=employees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!!e.retirement_date).length;
+      checks.push(['退職者・退職日未設定',`${retiredMissingDate}名`,retiredMissingDate===0]);
+      checks.push(['在籍状態・退職日矛盾',`${activeWithRetirement}名`,activeWithRetirement===0]);
     }else{
       checks.push(['長期運用DB監査','ログイン後に確認',false]);
     }
