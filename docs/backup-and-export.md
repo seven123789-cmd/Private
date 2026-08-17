@@ -21,3 +21,7 @@
 - `backup_restore_manifest.natural_key_hint` は移行・重複判定の補助情報。実復元ではPK/FKとSchema Versionを保持し、復元後に `verify_restore_baseline()` を必ず実行する。
 
 - 2026-08-17: 運用画面の復元検証基準を `baseline-20260817-phase26l` へ更新。業務差異と基盤差異を分離表示。authenticated専用 `audit_e2e_probe()` により業務データを変更せず監査表示/CSV経路を検証する。
+
+- 2026-08-17 Phase26L final: 復元検証の標準参照先を `baseline-20260817-phase26l-final` に確定。
+  POSTCHECK実測: Manifest 29表 / Baseline 29表 / NG 0 / DIFF 0 / CHECK 0 / 監査E2E Probe 1件保持 / Schema Version `2026.08.17-phase26l-124`。
+  監査Probeは検証証跡として削除しない。

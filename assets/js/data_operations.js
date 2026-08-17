@@ -91,8 +91,8 @@ async function initDataOperations(){
         sb.from('schema_versions').select('version_code,phase,applied_at').order('applied_at',{ascending:false}).limit(1),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('backup_required',true),
         sb.from('backup_restore_manifest').select('id',{count:'exact',head:true}).eq('schema_name','public').or('natural_key_hint.is.null,natural_key_hint.eq.'),
-        sb.from('restore_verification_snapshots').select('table_name',{count:'exact',head:true}).eq('snapshot_code','baseline-20260817-phase26l'),
-        sb.rpc('verify_restore_baseline',{p_snapshot_code:'baseline-20260817-phase26l'}),
+        sb.from('restore_verification_snapshots').select('table_name',{count:'exact',head:true}).eq('snapshot_code','baseline-20260817-phase26l-final'),
+        sb.rpc('verify_restore_baseline',{p_snapshot_code:'baseline-20260817-phase26l-final'}),
         sb.from('audit_log').select('id',{count:'exact',head:true}),
         sb.from('employee_import_batches').select('id',{count:'exact',head:true})
       ]);
