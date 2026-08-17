@@ -16,7 +16,7 @@
     <div class="page-heading"><div class="page-title-block">
       <div class="page-title">人事評価・昇格</div>
       <div class="page-title-en">PERFORMANCE &amp; PROMOTION</div>
-      <div class="page-description">現在の昇格候補者を確認し、社員詳細・将来の年度別評価管理へつなげます。</div>
+      <div class="page-description">年度別の評価進捗・昇格判断・正式発令までを一画面で管理します。</div>
     </div></div>
     <div class="page-header-actions">
       <button type="button" class="btn btn-secondary btn-sm" id="btn-export-promotion">CSV出力</button>
@@ -24,9 +24,7 @@
     </div>
   </div>
 
-  <div class="alert-box gold promotion-data-note">
-    候補判定は現行の社員マスタ「昇格候補フラグ」を維持し、最終資格変更日・資格滞留期間は正式人事履歴から取得します。
-  </div>
+  <div class="alert-box gold promotion-data-note">候補判定は既存の昇格候補フラグを維持します。年度評価・昇格判断は年度別履歴、正式発令は正式人事履歴を正本として扱います。</div>
 
   <div class="stats promotion-stats">
     <div class="stat-card sakura"><div class="stat-top"><span>昇格候補</span></div><div class="stat-value" id="promo-count">—</div><div class="stat-sub">現在の候補フラグ</div></div>
@@ -34,6 +32,16 @@
     <div class="stat-card info"><div class="stat-top"><span>等級未設定</span></div><div class="stat-value" id="promo-grade-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
     <div class="stat-card warning"><div class="stat-top"><span>資格変更日未設定</span></div><div class="stat-value" id="promo-date-missing">—</div><div class="stat-sub">候補者の要確認項目</div></div>
   </div>
+
+  <section class="promotion-progress-panel">
+    <div class="promotion-progress-head"><div><strong>選択年度の進捗</strong><div class="text-muted text-sm">現在の表示対象（候補者のみ／全社員）を母数に集計</div></div></div>
+    <div class="promotion-progress-grid">
+      <div class="progress-metric"><span>評価確定</span><strong id="promo-evaluated-count">0</strong><small id="promo-evaluation-rate">0%</small></div>
+      <div class="progress-metric"><span>判断完了</span><strong id="promo-decided-count">0</strong><small id="promo-decision-rate">0%</small></div>
+      <div class="progress-metric"><span>発令済み・予定</span><strong id="promo-issued-count">0</strong><small>正式履歴接続済み</small></div>
+      <div class="progress-metric attention"><span>要確認</span><strong id="promo-attention-count">0</strong><small>正式履歴との不整合</small></div>
+    </div>
+  </section>
 
   <div class="filter-panel">
     <div class="filter-panel-head">
@@ -47,7 +55,7 @@
       <div class="form-group"><label class="form-label">職種</label><select class="form-control" id="promo-position"></select></div>
       <div class="form-group"><label class="form-label">等級</label><select class="form-control" id="promo-grade"></select></div>
       <div class="form-group"><label class="form-label">資格滞留期間</label><select class="form-control" id="promo-tenure"><option value="">指定なし</option><option value="24">2年以上</option><option value="36">3年以上</option><option value="48">4年以上</option><option value="60">5年以上</option></select></div>
-      <div class="form-group"><label class="form-label">資格変更日</label><select class="form-control" id="promo-date-status"><option value="">すべて</option><option value="known">日付確定</option><option value="unknown">日付不明で確定</option><option value="missing">未設定</option></select></div><div class="form-group"><label class="form-label">年度昇格判断</label><select class="form-control" id="promo-decision"><option value="">すべて</option><option value="未判断">未判断</option><option value="確認中">確認中</option><option value="昇格候補">昇格候補</option><option value="見送り">見送り</option><option value="対象外">対象外</option><option value="昇格決定">昇格決定</option></select></div>
+      <div class="form-group"><label class="form-label">資格変更日</label><select class="form-control" id="promo-date-status"><option value="">すべて</option><option value="known">日付確定</option><option value="unknown">日付不明で確定</option><option value="missing">未設定</option></select></div><div class="form-group"><label class="form-label">年度昇格判断</label><select class="form-control" id="promo-decision"><option value="">すべて</option><option value="未判断">未判断</option><option value="確認中">確認中</option><option value="昇格候補">昇格候補</option><option value="見送り">見送り</option><option value="対象外">対象外</option><option value="昇格決定">昇格決定</option></select></div><div class="form-group"><label class="form-label">進捗状態</label><select class="form-control" id="promo-workflow"><option value="">すべて</option><option>未処理</option><option>未評価</option><option>評価中</option><option>判断待ち</option><option>発令待ち</option><option>将来発令</option><option>発令済み</option><option>要確認</option><option>昇格候補</option><option>見送り</option><option>対象外</option></select></div>
       <div class="form-group"><label class="form-label">並び順</label><select class="form-control" id="promo-sort"><option value="tenure-desc">滞留期間が長い順</option><option value="tenure-asc">滞留期間が短い順</option><option value="date-desc">資格変更日が新しい順</option><option value="grade-desc">等級が高い順</option><option value="code">社員コード順</option></select></div>
     </div>
   </div>
@@ -57,17 +65,14 @@
       <div><div class="table-count">該当 <strong id="promo-filtered-count">—</strong> 名</div><div class="text-muted text-sm" id="promo-table-note">候補者フラグが有効な社員のみ表示</div></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>現在等級</th><th>最終資格変更日</th><th>資格滞留期間</th><th>年度評価</th><th>昇格判断</th><th>操作</th></tr></thead>
+      <thead><tr><th>社員</th><th>所属センター</th><th>職種</th><th>現在等級</th><th>最終資格変更日</th><th>資格滞留期間</th><th>年度評価</th><th>昇格判断</th><th>進捗</th><th>操作</th></tr></thead>
       <tbody id="promo-tbody"></tbody>
     </table></div>
   </div>
 
-  <section class="card promotion-future-card">
-    <div class="card-header"><div><div class="card-title">長期運用に向けた評価・昇格履歴</div><div class="card-sub">DB整備後にこの画面へ統合する項目</div></div></div>
-    <div class="card-body">
-      <div class="future-list"><span>評価年度・期間</span><span>一次評価</span><span>最終評価</span><span>評価者</span><span>昇格決定日</span><span>昇格前後等級</span><span>承認者</span><span>変更履歴</span></div>
-      <p class="text-muted text-sm future-note">既存の社員マスタ値を上書きして履歴を失う方式にはせず、年度別評価と昇格履歴を別レコードで蓄積する設計とします。</p>
-    </div>
+  <section class="card promotion-operation-card">
+    <div class="card-header"><div><div class="card-title">運用上の扱い</div><div class="card-sub">年度判断と正式人事履歴を分離して保持</div></div></div>
+    <div class="card-body"><p class="text-muted text-sm future-note">「発令待ち」は昇格決定済み・正式発令未登録、「将来発令」は正式履歴登録済み・発令日前、「要確認」は正式履歴が取消済み・見つからない・発令済み等級と現在等級が一致しない状態です。</p></div>
   </section>
 
 </main></div></div>
