@@ -24,10 +24,10 @@ window.getSupabaseClient = function getSupabaseClient() {
 window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';
 
-/* Phase26N-85C — employee document module
-   Phase26N-85Bではsupabase.js実行中にdocuments.jsをheadへ追加していたため、
-   common.jsによるwindow.APP初期化より先にdocuments.jsが実行される可能性があった。
-   DOMContentLoaded後に読み込むことで、既存APPと社員詳細DOMの初期化後に確実にマウントする。
+/* Phase26N-85D — employee document module
+   85CでDOMContentLoaded後の読込に変更したが、documents.js自身のautoMountが
+   window.load待ちのため、動的読込完了とload発火の競合が残っていた。
+   documents.jsのload完了時に公開API mount()を明示実行し、社員詳細へ確実に接続する。
 */
 (() => {
   const path = String(location.pathname || '').split('/').pop();
@@ -46,6 +46,11 @@ window.AUTH_LOGIN_URL = 'login.html';
       const js = document.createElement('script');
       js.src = 'assets/js/documents.js';
       js.dataset.employeeDocuments = '1';
+      js.addEventListener('load', () => {
+        const id = new URLSearchParams(location.search).get('id');
+        if (!id || !window.EmployeeDocuments?.mount) return;
+        window.EmployeeDocuments.mount({ type: 'employee', id }).catch(console.error);
+      }, { once: true });
       document.body.appendChild(js);
     }
   };

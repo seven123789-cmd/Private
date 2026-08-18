@@ -1,0 +1,6 @@
+Phase26N-85D 2026-08-18
+- Phase26N-85C後も社員詳細の「添付書類」カードが表示されない事象を実コードから再調査。
+- employee_detail.htmlには .employee-hr-history-card が静的に存在し、カード挿入先セレクタは正常であることを確認。
+- documents.jsは動的読込後もautoMountをwindow.loadへ依存しており、スクリプト読込完了とload発火の競合が残っていた。
+- supabase.js側でdocuments.jsのload完了を受け、URLの社員IDを用いてEmployeeDocuments.mount()を明示実行するよう修正。
+- documents / document_links / Storage処理、人事履歴、資格・免許等の既存業務ロジックは変更しない。
