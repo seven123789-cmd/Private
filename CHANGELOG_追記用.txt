@@ -1,0 +1,5 @@
+Phase26N-86B 2026-08-18
+- 86Aで資格・免許の「証明書」列／「書類管理」が表示されない問題を修正。
+- 原因は社員詳細の書類モジュール読込経路が documents.js の既存状態に依存し、employee-license-documents.js が読み込まれないケースがあったこと。
+- documents.js と employee-license-documents.js のローダーを分離し、既存有無に関係なく資格添付モジュールを冪等に読み込む。
+- 既存の社員添付書類、資格データ、人事履歴、DB構造、Storage構造は変更しない。

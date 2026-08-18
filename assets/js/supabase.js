@@ -24,14 +24,38 @@ window.getSupabaseClient = function getSupabaseClient() {
 window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';
 
-/* Phase26N-86A — employee document module
-   85CでDOMContentLoaded後の読込に変更したが、documents.js自身のautoMountが
-   window.load待ちのため、動的読込完了とload発火の競合が残っていた。
-   documents.jsのload完了時に公開API mount()を明示実行し、社員詳細へ確実に接続する。
+/* Phase26N-86B — employee / license document modules
+   社員詳細では documents.js の既存有無に関係なく、資格・免許証明書モジュールまで
+   必ず読み込む。86Aで documents.js が先に存在する場合に license module の読込経路が
+   実行されないケースがあったため、ローダーを分離して冪等化した。
 */
 (() => {
   const path = String(location.pathname || '').split('/').pop();
   if (path !== 'employee_detail.html') return;
+
+  const getEmployeeId = () => new URLSearchParams(location.search).get('id');
+
+  const ensureLicenseDocuments = () => {
+    if (window.EmployeeLicenseDocuments) {
+      const id = getEmployeeId();
+      if (id) window.EmployeeLicenseDocuments.enhance(id).catch(console.error);
+      return;
+    }
+    if (document.querySelector('script[data-employee-license-documents]')) return;
+
+    const licenseJs = document.createElement('script');
+    licenseJs.src = 'assets/js/employee-license-documents.js';
+    licenseJs.dataset.employeeLicenseDocuments = '1';
+    document.body.appendChild(licenseJs);
+  };
+
+  const mountEmployeeDocuments = () => {
+    const id = getEmployeeId();
+    if (id && window.EmployeeDocuments?.mount) {
+      window.EmployeeDocuments.mount({ type: 'employee', id }).catch(console.error);
+    }
+    ensureLicenseDocuments();
+  };
 
   const loadEmployeeDocuments = () => {
     if (!document.querySelector('link[data-employee-documents]')) {
@@ -42,24 +66,27 @@ window.AUTH_LOGIN_URL = 'login.html';
       document.head.appendChild(css);
     }
 
-    if (!document.querySelector('script[data-employee-documents]')) {
-      const js = document.createElement('script');
-      js.src = 'assets/js/documents.js';
-      js.dataset.employeeDocuments = '1';
-      js.addEventListener('load', () => {
-        const id = new URLSearchParams(location.search).get('id');
-        if (id && window.EmployeeDocuments?.mount) {
-          window.EmployeeDocuments.mount({ type: 'employee', id }).catch(console.error);
-        }
-        if (!document.querySelector('script[data-employee-license-documents]')) {
-          const licenseJs = document.createElement('script');
-          licenseJs.src = 'assets/js/employee-license-documents.js';
-          licenseJs.dataset.employeeLicenseDocuments = '1';
-          document.body.appendChild(licenseJs);
-        }
-      }, { once: true });
-      document.body.appendChild(js);
+    if (window.EmployeeDocuments) {
+      mountEmployeeDocuments();
+      return;
     }
+
+    const existing = document.querySelector('script[data-employee-documents]');
+    if (existing) {
+      existing.addEventListener('load', mountEmployeeDocuments, { once: true });
+      /* 既にload済みだが公開API生成直前/直後のケースも吸収 */
+      setTimeout(() => {
+        if (window.EmployeeDocuments) mountEmployeeDocuments();
+        else ensureLicenseDocuments();
+      }, 0);
+      return;
+    }
+
+    const js = document.createElement('script');
+    js.src = 'assets/js/documents.js';
+    js.dataset.employeeDocuments = '1';
+    js.addEventListener('load', mountEmployeeDocuments, { once: true });
+    document.body.appendChild(js);
   };
 
   if (document.readyState === 'loading') {
