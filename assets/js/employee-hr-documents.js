@@ -1,4 +1,4 @@
-/* Phase26N-87A — 正式人事履歴レコード単位の添付書類 */
+/* Phase26N-88A — 正式人事履歴レコード単位の添付書類 */
 window.EmployeeHrDocuments = (() => {
   function labelForRow(r) {
     const date = r?.effective_date ? APP.fmtDate(r.effective_date) : (r?.effective_label || '日付未設定');
@@ -39,9 +39,9 @@ window.EmployeeHrDocuments = (() => {
         window.EmployeeDocuments.openEntityDialog(
           {type:'employee_hr_history_official', id:r.id},
           {
-            title:'正式人事履歴の添付書類',
+            title:'人事履歴の書類',
             subtitle:labelForRow(r),
-            defaultDocumentType:'人事発令・辞令'
+            defaultDocumentType:'辞令・人事通知'
           }
         );
       });

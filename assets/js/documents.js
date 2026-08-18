@@ -1,4 +1,4 @@
-/* Phase26N-87B — 添付書類共通基盤
+/* Phase26N-88A — 書類導線整理
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
@@ -16,6 +16,7 @@ window.EmployeeDocuments = (() => {
   let mounted = false;
   let currentEntity = null;
   let rows = [];
+  let returnToEntityDialog = false;
 
   const esc = v => (typeof APP !== 'undefined' ? APP.escape(v ?? '') : String(v ?? ''));
   const fmtBytes = n => {
@@ -53,8 +54,8 @@ window.EmployeeDocuments = (() => {
     section.innerHTML = `
       <div class="card-header">
         <div>
-          <div class="card-title">添付書類</div>
-          <div class="card-sub">資格証・免許証・辞令・社員関連資料を非公開Storageで管理</div>
+          <div class="card-title">社員書類</div>
+          <div class="card-sub">雇用・契約・教育など、この社員本人に直接紐づく書類を管理</div>
         </div>
         <button type="button" class="btn btn-secondary btn-sm" id="btn-document-add">書類を追加</button>
       </div>
@@ -73,8 +74,8 @@ window.EmployeeDocuments = (() => {
       <div class="modal document-upload-modal">
         <div class="modal-header">
           <div>
-            <div class="card-title">添付書類を追加</div>
-            <div class="card-sub">PDF / JPEG / PNG / WebP、20MB以下</div>
+            <div class="card-title" id="document-upload-title">社員書類を追加</div>
+            <div class="card-sub" id="document-upload-subtitle">PDF / JPEG / PNG / WebP、20MB以下</div>
           </div>
           <button type="button" class="modal-close" id="btn-document-close" aria-label="閉じる">×</button>
         </div>
@@ -84,10 +85,6 @@ window.EmployeeDocuments = (() => {
               <div class="form-group">
                 <label class="form-label">書類区分 <span class="required-mark">必須</span></label>
                 <select id="document-type" class="form-control" required>
-                  <option value="資格証・免許証">資格証・免許証</option>
-                  <option value="辞令・人事通知">辞令・人事通知</option>
-                  <option value="雇用・契約書類">雇用・契約書類</option>
-                  <option value="教育・受講記録">教育・受講記録</option>
                   <option value="その他">その他</option>
                 </select>
               </div>
@@ -169,11 +166,9 @@ window.EmployeeDocuments = (() => {
       document.getElementById('btn-entity-document-done')?.addEventListener('click', close);
       modal.addEventListener('click', e => { if (e.target === modal) close(); });
       document.getElementById('btn-entity-document-add')?.addEventListener('click', () => {
-        const form = document.getElementById('document-upload-form');
-        if (form) form.reset();
-        const typeEl = document.getElementById('document-type');
-        if (typeEl) typeEl.value = modal.dataset.defaultDocumentType || 'その他';
-        document.getElementById('document-upload-modal')?.classList.remove('hidden');
+        returnToEntityDialog = true;
+        modal.classList.add('hidden');
+        openUploadModal();
       });
     }
 
@@ -193,7 +188,7 @@ window.EmployeeDocuments = (() => {
     try {
       const entityRows = await loadRows();
       if (!entityRows.length) {
-        state.textContent = '登録済みの証明書はありません';
+        state.textContent = '登録済みの社員書類はありません';
         list.innerHTML = '';
         return;
       }
@@ -236,13 +231,68 @@ window.EmployeeDocuments = (() => {
     }
   }
 
-  function openModal() {
+  function documentTypeOptions(entityType) {
+    if (entityType === 'employee_license') {
+      return [{value:'資格証・免許証', label:'資格証・免許証'}];
+    }
+    if (entityType === 'employee_hr_history_official') {
+      return [
+        {value:'辞令・人事通知', label:'辞令・人事通知'},
+        {value:'その他人事書類', label:'その他人事書類'}
+      ];
+    }
+    return [
+      {value:'雇用・契約書類', label:'雇用・契約書類'},
+      {value:'教育・受講記録', label:'教育・受講記録'},
+      {value:'その他', label:'その他'}
+    ];
+  }
+
+  function configureUploadContext() {
+    const type = currentEntity?.type || 'employee';
+    const title = document.getElementById('document-upload-title');
+    const subtitle = document.getElementById('document-upload-subtitle');
+    const typeEl = document.getElementById('document-type');
+    const options = documentTypeOptions(type);
+
+    if (title) {
+      title.textContent =
+        type === 'employee_license' ? '資格・免許の書類を追加' :
+        type === 'employee_hr_history_official' ? '人事履歴の書類を追加' :
+        '社員書類を追加';
+    }
+    if (subtitle) {
+      subtitle.textContent =
+        type === 'employee_license' ? 'この資格・免許に直接紐づけて保存します' :
+        type === 'employee_hr_history_official' ? 'この人事履歴に直接紐づけて保存します' :
+        'この社員本人に直接紐づく書類を保存します';
+    }
+    if (typeEl) {
+      typeEl.innerHTML = options.map(x =>
+        `<option value="${esc(x.value)}">${esc(x.label)}</option>`
+      ).join('');
+      typeEl.disabled = options.length === 1;
+    }
+  }
+
+  function openUploadModal() {
     const form = document.getElementById('document-upload-form');
     if (form) form.reset();
+    configureUploadContext();
     document.getElementById('document-upload-modal')?.classList.remove('hidden');
   }
+
+  function openModal() {
+    returnToEntityDialog = false;
+    openUploadModal();
+  }
+
   function closeModal() {
     document.getElementById('document-upload-modal')?.classList.add('hidden');
+    if (returnToEntityDialog) {
+      document.getElementById('entity-document-modal')?.classList.remove('hidden');
+      returnToEntityDialog = false;
+    }
   }
 
   async function loadRows() {
@@ -320,7 +370,7 @@ window.EmployeeDocuments = (() => {
       render();
     } catch (e) {
       console.error(e);
-      if (state) state.textContent = '添付書類を取得できませんでした';
+      if (state) state.textContent = '社員書類を取得できませんでした';
     }
   }
 
@@ -360,7 +410,7 @@ window.EmployeeDocuments = (() => {
 
       const title = document.getElementById('document-title')?.value?.trim() || file.name;
       const docInsert = await sb.from('documents').insert({
-        document_type: document.getElementById('document-type')?.value || 'その他',
+        document_type: document.getElementById('document-type')?.value || documentTypeOptions(currentEntity.type)[0]?.value || 'その他',
         title,
         original_file_name: file.name,
         storage_bucket: BUCKET,

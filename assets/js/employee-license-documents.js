@@ -1,4 +1,4 @@
-/* Phase26N-86C — 社員詳細の資格・免許レコードへ証明書を紐付ける */
+/* Phase26N-88A — 社員詳細の資格・免許レコードへ証明書を紐付ける */
 window.EmployeeLicenseDocuments = (() => {
   async function enhance(employeeId) {
     if (typeof APP === 'undefined' || !window.EmployeeDocuments) return;
@@ -34,7 +34,7 @@ window.EmployeeLicenseDocuments = (() => {
       btn.addEventListener('click', () => EmployeeDocuments.openEntityDialog(
         {type:'employee_license', id:lic.id},
         {
-          title:'資格・免許の証明書',
+          title:'資格・免許の書類',
           subtitle: lic.license_name || '',
           defaultDocumentType:'資格証・免許証'
         }
