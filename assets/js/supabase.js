@@ -23,3 +23,28 @@ window.getSupabaseClient = function getSupabaseClient() {
 */
 window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';
+
+/* Phase26N-85B — employee document module
+   社員詳細だけで必要な共通書類モジュールを遅延読込する。
+   他画面の初期化順・既存業務ロジックには影響させない。
+*/
+(() => {
+  const path = String(location.pathname || '').split('/').pop();
+  if (path !== 'employee_detail.html') return;
+
+  if (!document.querySelector('link[data-employee-documents]')) {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'assets/css/documents.css';
+    css.dataset.employeeDocuments = '1';
+    document.head.appendChild(css);
+  }
+
+  if (!document.querySelector('script[data-employee-documents]')) {
+    const js = document.createElement('script');
+    js.src = 'assets/js/documents.js';
+    js.defer = true;
+    js.dataset.employeeDocuments = '1';
+    document.head.appendChild(js);
+  }
+})();

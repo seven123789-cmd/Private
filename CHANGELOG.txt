@@ -23,7 +23,7 @@ Phase26N-69 (2026-08-17)
 - Confirmed the missing closing parenthesis in the Mikawa-resident wording is source data, not CSS clipping; database correction is supplied separately from GitHub code.
 
 Phase26N-71 2026-08-17
-- 人事評価・昇格画面に「昇格候補のみ／全社員」切替を追加。既存の昇格候補フラグ自体は変更せず維持。
+- 年度別評価・昇格画面に「昇格候補のみ／全社員」切替を追加。既存の昇格候補フラグ自体は変更せず維持。
 - 現在等級、資格滞留期間（2/3/4/5年以上）、資格変更日の確定状態で絞り込み可能にした。
 - 資格滞留期間が長い順を既定とし、短い順・資格変更日・等級・社員コード順のソートを追加。
 - 正式人事履歴から算出した資格滞留月数を共通社員データへ追加し、表示文字列ではなく数値で正確に比較。
@@ -99,3 +99,13 @@ Phase26N-82 2026-08-17
 - .gitignore を追加し、Supabase SQL結果CSVおよび employee_master_*.json の再コミットを防止。
 - 社員取込画面のユーザー操作によるJSONダウンロード機能は維持し、静的配信ファイルとは分離。
 - 既にGitHub mainに存在する不要な実データファイルの削除は別途実施する。
+
+Phase26N-85B 2026-08-18
+- Phase26N-85Aで追加した documents / document_links / private Storage bucket を社員詳細へ接続。
+- 添付書類機能を assets/js/documents.js の共通モジュールとして新設し、将来 employee_license / employee_hr_history_official へ拡張可能な entity_type / entity_id 構造を維持。
+- 社員詳細では既存HTMLや人事履歴ロジックを直接変更せず、supabase.jsから社員詳細時だけ書類モジュールと専用CSSを遅延読込。
+- PDF / JPEG / PNG / WebP、20MB以下を非公開 employee-documents bucketへ保存。
+- 元ファイル名、MIME、容量、SHA-256、書類日付、備考、登録者を documents に保存し、社員との関連を document_links に保存。
+- 閲覧時は60秒の署名付きURLを発行し、公開URLを使用しない。
+- 無効化はStorage実体を即時削除せず documents.status='deleted' として履歴保持し、監査・復元性を優先。
+- DB登録失敗時はStorage孤児化を避けるためアップロード済みオブジェクトをベストエフォートで削除。

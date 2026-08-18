@@ -1,0 +1,20 @@
+/* Phase26N-85B — 添付書類 */
+.employee-documents-card{margin-top:28px}
+.document-state{min-height:92px;display:grid;place-items:center;color:var(--faint);font-size:12px;text-align:center}
+.document-list{display:grid}
+.document-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid #eee9e0}
+.document-row:first-child{padding-top:0}
+.document-row:last-child{padding-bottom:0;border-bottom:0}
+.document-row__main{min-width:0}
+.document-row__top{display:flex;align-items:center;gap:9px;min-width:0}
+.document-row__top strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.document-row__meta{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;color:var(--faint);font-size:10px}
+.document-row__note{margin-top:6px;color:var(--muted);font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+.document-row__actions{display:flex;gap:7px;align-items:center}
+.document-upload-modal{width:min(680px,100%)}
+@media(max-width:700px){
+  .document-row{grid-template-columns:1fr}
+  .document-row__actions{justify-content:flex-end}
+  .document-row__top{align-items:flex-start;flex-direction:column;gap:5px}
+  .document-row__top strong{white-space:normal;overflow-wrap:anywhere}
+}
