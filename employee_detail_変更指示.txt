@@ -1,0 +1,9 @@
+Phase26N-87A employee_detail.html 追加位置
+
+現在:
+<script src="assets/js/employee-hr-timeline.js"></script>
+
+変更後:
+<script src="assets/js/employee-hr-timeline.js"></script>
+<script src="assets/js/employee-hr-documents.js"></script>
+<script src="assets/js/employee-hr-documents-bridge.js"></script>

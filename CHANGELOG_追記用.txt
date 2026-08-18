@@ -1,16 +1,7 @@
-Phase26N-86D 2026-08-18
-基準 main: 2cf2ec3f3cb22750273b38f7853094a9ea5c2a2e
-
-【GitHub実コードで確認した原因】
-- 資格ダイアログは loadRows() の結果(entityRows)を表示している。
-- 一方、openDocument/downloadDocument は社員全体カード用の rows だけから document id を検索していた。
-- 資格ダイアログのファイルは rows に存在しないため、`if (!sb || !doc) return;` で無反応終了していた。
-
-【修正】
-- document id からDBを再取得できる resolveDocument() を追加し、社員添付・資格添付で開く/保存を共通化。
-- 「開く」はクリック直後に空タブを確保し、非同期処理後に署名URLへ遷移。ポップアップブロック時も画面通知。
-- 開く/保存/削除に、処理中・成功・失敗のユーザー通知を追加。
-- not found / 権限 / 通信系を可能な範囲で利用者向けメッセージに分類し、詳細はconsole.errorへ残す。
-- 「無効化」を「削除」へ変更。
-- 削除時は現在のdocument_linkを削除し、他リンクが0件ならStorage実ファイルとdocuments行も削除。
-- 他の社員/資格から同じdocumentを参照中の場合は実ファイルを保持し、現在の紐付けだけ削除。
+Phase26N-87A 2026-08-18
+基準 main: 330d3a99d0811aebe610221cc45d9fef85561e60
+- GitHub実コードで、正式人事履歴は get_employee_hr_history_official_v1 の各 r.id を保持して描画していることを確認。
+- 正式人事履歴各行へ「書類」列／「書類管理」を追加。
+- document_links.entity_type='employee_hr_history_official' / entity_id=正式履歴r.id で履歴1件単位に紐付け。
+- 86Dの共通基盤（private Storage、登録、開く、保存、実削除、エラー通知）を再利用。
+- 人事履歴の追加・訂正・取消RPCおよび正式履歴データ自体は変更しない。
