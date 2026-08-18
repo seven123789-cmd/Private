@@ -1,4 +1,4 @@
-/* Phase26N-86C — 添付書類共通基盤
+/* Phase26N-86D — 添付書類共通基盤
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
@@ -215,7 +215,7 @@ window.EmployeeDocuments = (() => {
           <div class="document-row__actions">
             <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-open="${esc(r.id)}">開く</button>
             <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-download="${esc(r.id)}">保存</button>
-            <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-retire="${esc(r.id)}">無効化</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-delete="${esc(r.id)}">削除</button>
           </div>
         </div>`).join('')}</div>`;
       list.querySelectorAll('[data-entity-doc-open]').forEach(btn=>{
@@ -224,9 +224,9 @@ window.EmployeeDocuments = (() => {
       list.querySelectorAll('[data-entity-doc-download]').forEach(btn=>{
         btn.addEventListener('click',()=>downloadDocument(btn.dataset.entityDocDownload));
       });
-      list.querySelectorAll('[data-entity-doc-retire]').forEach(btn=>{
+      list.querySelectorAll('[data-entity-doc-delete]').forEach(btn=>{
         btn.addEventListener('click',async()=>{
-          await retireDocument(btn.dataset.entityDocRetire);
+          await deleteDocument(btn.dataset.entityDocDelete);
           await refreshEntityDialog();
         });
       });
@@ -297,7 +297,7 @@ window.EmployeeDocuments = (() => {
         <div class="document-row__actions">
           <button type="button" class="btn btn-secondary btn-sm" data-doc-open="${esc(r.id)}">開く</button>
           <button type="button" class="btn btn-secondary btn-sm" data-doc-download="${esc(r.id)}">保存</button>
-          <button type="button" class="btn btn-secondary btn-sm" data-doc-retire="${esc(r.id)}">無効化</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-doc-delete="${esc(r.id)}">削除</button>
         </div>
       </div>`).join('')}</div>`;
 
@@ -307,8 +307,8 @@ window.EmployeeDocuments = (() => {
     list.querySelectorAll('[data-doc-download]').forEach(btn=>{
       btn.addEventListener('click',()=>downloadDocument(btn.dataset.docDownload));
     });
-    list.querySelectorAll('[data-doc-retire]').forEach(btn=>{
-      btn.addEventListener('click',()=>retireDocument(btn.dataset.docRetire));
+    list.querySelectorAll('[data-doc-delete]').forEach(btn=>{
+      btn.addEventListener('click',()=>deleteDocument(btn.dataset.docDelete));
     });
   }
 
@@ -404,28 +404,84 @@ window.EmployeeDocuments = (() => {
     }
   }
 
-  async function openDocument(id) {
+  async function resolveDocument(id) {
     const sb = APP.client();
-    const doc = rows.find(x=>String(x.id)===String(id));
-    if (!sb || !doc) return;
+    if (!sb) throw new Error('DB_CLIENT_UNAVAILABLE');
+    const cached = rows.find(x=>String(x.id)===String(id));
+    if (cached) return cached;
+
+    const result = await sb.from('documents')
+      .select('id,document_type,title,original_file_name,storage_bucket,storage_path,mime_type,file_size_bytes,status')
+      .eq('id', id)
+      .neq('status','deleted')
+      .maybeSingle();
+    if (result.error) throw result.error;
+    if (!result.data) throw new Error('DOCUMENT_NOT_FOUND');
+    return result.data;
+  }
+
+  function fileErrorMessage(action, error) {
+    const raw = `${error?.message || ''} ${error?.error || ''}`.toLowerCase();
+    if (String(error?.message || '') === 'DOCUMENT_NOT_FOUND' || raw.includes('not found') || raw.includes('object not found')) {
+      return '保存ファイルが見つかりません。管理者へお問い合わせください。';
+    }
+    if (raw.includes('permission') || raw.includes('not authorized') || raw.includes('unauthorized') || raw.includes('forbidden') || raw.includes('row-level security')) {
+      return 'このファイルを操作する権限がありません。';
+    }
+    if (raw.includes('network') || raw.includes('failed to fetch') || raw.includes('load failed')) {
+      return '通信エラーが発生しました。時間をおいて再度お試しください。';
+    }
+    return `ファイルを${action}ませんでした。管理者へお問い合わせください。`;
+  }
+
+  async function openDocument(id) {
+    if (!id) {
+      APP.toast('対象ファイルを特定できませんでした。管理者へお問い合わせください。','error');
+      return;
+    }
+    const popup = window.open('about:blank','_blank');
+    if (!popup) {
+      APP.toast('ブラウザでポップアップがブロックされています。このサイトのポップアップを許可して再度お試しください。','error');
+      return;
+    }
     try {
+      popup.document.title = 'ファイルを開いています…';
+      APP.toast('ファイルを開いています…','info');
+      const sb = APP.client();
+      if (!sb) throw new Error('DB_CLIENT_UNAVAILABLE');
+      const doc = await resolveDocument(id);
+      if (!doc.storage_path) throw new Error('DOCUMENT_NOT_FOUND');
+
       const signed = await sb.storage.from(doc.storage_bucket || BUCKET)
         .createSignedUrl(doc.storage_path, 60);
       if (signed.error) throw signed.error;
-      window.open(signed.data.signedUrl,'_blank','noopener,noreferrer');
+      if (!signed.data?.signedUrl) throw new Error('SIGNED_URL_NOT_CREATED');
+
+      popup.location.replace(signed.data.signedUrl);
+      APP.toast('ファイルを開きました','success');
     } catch (e) {
-      console.error(e);
-      APP.toast('書類を開けませんでした','error');
+      try { popup.close(); } catch (_) {}
+      console.error('[documents] open failed', {documentId:id, entity:currentEntity, error:e});
+      APP.toast(fileErrorMessage('開け', e),'error');
     }
   }
 
   async function downloadDocument(id) {
-    const sb = APP.client();
-    const doc = rows.find(x=>String(x.id)===String(id));
-    if (!sb || !doc) return;
+    if (!id) {
+      APP.toast('対象ファイルを特定できませんでした。管理者へお問い合わせください。','error');
+      return;
+    }
     try {
+      APP.toast('保存の準備をしています…','info');
+      const sb = APP.client();
+      if (!sb) throw new Error('DB_CLIENT_UNAVAILABLE');
+      const doc = await resolveDocument(id);
+      if (!doc.storage_path) throw new Error('DOCUMENT_NOT_FOUND');
+
       const result = await sb.storage.from(doc.storage_bucket || BUCKET).download(doc.storage_path);
       if (result.error) throw result.error;
+      if (!result.data) throw new Error('DOCUMENT_NOT_FOUND');
+
       const blobUrl = URL.createObjectURL(result.data);
       const a = document.createElement('a');
       a.href = blobUrl;
@@ -434,32 +490,102 @@ window.EmployeeDocuments = (() => {
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(()=>URL.revokeObjectURL(blobUrl), 1000);
+      setTimeout(()=>URL.revokeObjectURL(blobUrl), 3000);
+      APP.toast('保存を開始しました','success');
     } catch (e) {
-      console.error(e);
-      APP.toast('書類を保存できませんでした','error');
+      console.error('[documents] download failed', {documentId:id, entity:currentEntity, error:e});
+      APP.toast(fileErrorMessage('保存でき', e),'error');
     }
   }
 
-  async function retireDocument(id) {
+  async function deleteDocument(id) {
+    if (!id || !currentEntity?.type || !currentEntity?.id) {
+      APP.toast('削除対象を特定できませんでした。管理者へお問い合わせください。','error');
+      return;
+    }
+
+    let doc;
+    try {
+      doc = await resolveDocument(id);
+    } catch (e) {
+      console.error('[documents] delete resolve failed', {documentId:id, entity:currentEntity, error:e});
+      APP.toast(fileErrorMessage('削除でき', e),'error');
+      return;
+    }
+
+    if (!confirm(`「${doc.title || doc.original_file_name}」を削除しますか？\nこの操作は元に戻せません。`)) return;
+
     const sb = APP.client();
-    const doc = rows.find(x=>String(x.id)===String(id));
-    if (!sb || !doc) return;
-    if (!confirm(`「${doc.title || doc.original_file_name}」を無効化しますか？\nファイル本体は監査・復元のため即時削除しません。`)) return;
+    if (!sb) {
+      APP.toast('DB接続を確認できません。削除していません。','error');
+      return;
+    }
 
     try {
-      const { data:{ user } } = await sb.auth.getUser();
-      const r = await sb.from('documents').update({
-        status:'deleted',
-        deleted_at:new Date().toISOString(),
-        deleted_by:user?.id || null
-      }).eq('id',id);
-      if (r.error) throw r.error;
-      APP.toast('添付書類を無効化しました','success');
-      if (currentEntity?.type === 'employee') await refresh();
+      APP.toast('ファイルを削除しています…','info');
+
+      const linksResult = await sb.from('document_links')
+        .select('document_id,entity_type,entity_id')
+        .eq('document_id', id);
+      if (linksResult.error) throw linksResult.error;
+
+      const allLinks = linksResult.data || [];
+      const targetLinks = allLinks.filter(link =>
+        String(link.entity_type) === String(currentEntity.type) &&
+        String(link.entity_id) === String(currentEntity.id)
+      );
+      if (!targetLinks.length) throw new Error('DOCUMENT_LINK_NOT_FOUND');
+
+      const unlink = await sb.from('document_links')
+        .delete()
+        .eq('document_id', id)
+        .eq('entity_type', currentEntity.type)
+        .eq('entity_id', currentEntity.id);
+      if (unlink.error) throw unlink.error;
+
+      const remainingLinks = allLinks.length - targetLinks.length;
+      if (remainingLinks <= 0) {
+        if (doc.storage_path) {
+          const storageDelete = await sb.storage
+            .from(doc.storage_bucket || BUCKET)
+            .remove([doc.storage_path]);
+          if (storageDelete.error) {
+            console.error('[documents] storage cleanup failed after unlink', {
+              documentId:id, storagePath:doc.storage_path, error:storageDelete.error
+            });
+            APP.toast('紐付けは削除しましたが、保存ファイルの削除に失敗しました。管理者による確認が必要です。','error');
+            if (currentEntity.type === 'employee') await refresh();
+            else await refreshEntityDialog();
+            return;
+          }
+        }
+
+        const deleteRow = await sb.from('documents').delete().eq('id', id);
+        if (deleteRow.error) {
+          console.error('[documents] document row cleanup failed', {documentId:id, error:deleteRow.error});
+          APP.toast('保存ファイルは削除しましたが、管理情報の削除に失敗しました。管理者による確認が必要です。','error');
+          if (currentEntity.type === 'employee') await refresh();
+          else await refreshEntityDialog();
+          return;
+        }
+      }
+
+      APP.toast(remainingLinks > 0
+        ? 'この資格・社員との添付を削除しました。ファイルは他の登録で使用中のため保持しています。'
+        : '添付書類を削除しました','success');
+
+      if (currentEntity.type === 'employee') await refresh();
+      else await refreshEntityDialog();
     } catch (e) {
-      console.error(e);
-      APP.toast('添付書類を無効化できませんでした','error');
+      console.error('[documents] delete failed', {documentId:id, entity:currentEntity, error:e});
+      const raw = `${e?.message || ''}`.toLowerCase();
+      if (raw.includes('permission') || raw.includes('authorized') || raw.includes('forbidden') || raw.includes('row-level security')) {
+        APP.toast('削除する権限がありません。','error');
+      } else if (raw.includes('network') || raw.includes('failed to fetch')) {
+        APP.toast('通信エラーが発生しました。削除結果を確認してから再度お試しください。','error');
+      } else {
+        APP.toast('添付書類を削除できませんでした。管理者へお問い合わせください。','error');
+      }
     }
   }
 
@@ -472,7 +598,7 @@ window.EmployeeDocuments = (() => {
   }
 
   async function autoMountEmployee() {
-    if (mounted || !window.APP) return;
+    if (mounted || typeof APP === 'undefined') return;
     const page = String(location.pathname || '').split('/').pop();
     if (page !== 'employee_detail.html') return;
     const id = new URLSearchParams(location.search).get('id');
@@ -485,5 +611,5 @@ window.EmployeeDocuments = (() => {
     setTimeout(()=>autoMountEmployee().catch(console.error),0);
   }
 
-  return { mount, refresh, openDocument, downloadDocument, openEntityDialog };
+  return { mount, refresh, openDocument, downloadDocument, deleteDocument, openEntityDialog };
 })();
