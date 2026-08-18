@@ -1,0 +1,6 @@
+Phase26N-85C 2026-08-18
+- Phase26N-85Bの社員詳細「添付書類」カードが表示されない初期化順不具合を修正。
+- 原因はsupabase.js実行中にdocuments.jsを動的読込し、common.jsのwindow.APP初期化より先にdocuments.jsが実行される可能性があったこと。
+- employee_detail.htmlだけを対象とする既存条件は維持。
+- documents.css / documents.js の読込をDOMContentLoaded後へ変更し、既存APPと社員詳細DOMが利用可能になってから添付書類モジュールを起動。
+- documents.js、documents.css、社員詳細、人事履歴、資格・免許等の既存業務ロジックは変更しない。

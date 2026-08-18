@@ -24,27 +24,35 @@ window.getSupabaseClient = function getSupabaseClient() {
 window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';
 
-/* Phase26N-85B — employee document module
-   社員詳細だけで必要な共通書類モジュールを遅延読込する。
-   他画面の初期化順・既存業務ロジックには影響させない。
+/* Phase26N-85C — employee document module
+   Phase26N-85Bではsupabase.js実行中にdocuments.jsをheadへ追加していたため、
+   common.jsによるwindow.APP初期化より先にdocuments.jsが実行される可能性があった。
+   DOMContentLoaded後に読み込むことで、既存APPと社員詳細DOMの初期化後に確実にマウントする。
 */
 (() => {
   const path = String(location.pathname || '').split('/').pop();
   if (path !== 'employee_detail.html') return;
 
-  if (!document.querySelector('link[data-employee-documents]')) {
-    const css = document.createElement('link');
-    css.rel = 'stylesheet';
-    css.href = 'assets/css/documents.css';
-    css.dataset.employeeDocuments = '1';
-    document.head.appendChild(css);
-  }
+  const loadEmployeeDocuments = () => {
+    if (!document.querySelector('link[data-employee-documents]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'assets/css/documents.css';
+      css.dataset.employeeDocuments = '1';
+      document.head.appendChild(css);
+    }
 
-  if (!document.querySelector('script[data-employee-documents]')) {
-    const js = document.createElement('script');
-    js.src = 'assets/js/documents.js';
-    js.defer = true;
-    js.dataset.employeeDocuments = '1';
-    document.head.appendChild(js);
+    if (!document.querySelector('script[data-employee-documents]')) {
+      const js = document.createElement('script');
+      js.src = 'assets/js/documents.js';
+      js.dataset.employeeDocuments = '1';
+      document.body.appendChild(js);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadEmployeeDocuments, { once: true });
+  } else {
+    loadEmployeeDocuments();
   }
 })();
