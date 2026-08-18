@@ -1,4 +1,4 @@
-/* Phase26N-85E — 添付書類共通基盤
+/* Phase26N-85F — 添付書類共通基盤
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
@@ -166,6 +166,7 @@ window.EmployeeDocuments = (() => {
       list.innerHTML = '';
       return;
     }
+    state.textContent = '';
     state.hidden = true;
     list.innerHTML = `<div class="document-list">${rows.map(r=>`
       <div class="document-row" data-document-id="${esc(r.id)}">
@@ -184,12 +185,16 @@ window.EmployeeDocuments = (() => {
         </div>
         <div class="document-row__actions">
           <button type="button" class="btn btn-secondary btn-sm" data-doc-open="${esc(r.id)}">開く</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-doc-download="${esc(r.id)}">保存</button>
           <button type="button" class="btn btn-secondary btn-sm" data-doc-retire="${esc(r.id)}">無効化</button>
         </div>
       </div>`).join('')}</div>`;
 
     list.querySelectorAll('[data-doc-open]').forEach(btn=>{
       btn.addEventListener('click',()=>openDocument(btn.dataset.docOpen));
+    });
+    list.querySelectorAll('[data-doc-download]').forEach(btn=>{
+      btn.addEventListener('click',()=>downloadDocument(btn.dataset.docDownload));
     });
     list.querySelectorAll('[data-doc-retire]').forEach(btn=>{
       btn.addEventListener('click',()=>retireDocument(btn.dataset.docRetire));
@@ -301,6 +306,28 @@ window.EmployeeDocuments = (() => {
     }
   }
 
+  async function downloadDocument(id) {
+    const sb = APP.client();
+    const doc = rows.find(x=>String(x.id)===String(id));
+    if (!sb || !doc) return;
+    try {
+      const result = await sb.storage.from(doc.storage_bucket || BUCKET).download(doc.storage_path);
+      if (result.error) throw result.error;
+      const blobUrl = URL.createObjectURL(result.data);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = doc.original_file_name || doc.title || 'document';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(blobUrl), 1000);
+    } catch (e) {
+      console.error(e);
+      APP.toast('書類を保存できませんでした','error');
+    }
+  }
+
   async function retireDocument(id) {
     const sb = APP.client();
     const doc = rows.find(x=>String(x.id)===String(id));
@@ -345,5 +372,5 @@ window.EmployeeDocuments = (() => {
     setTimeout(()=>autoMountEmployee().catch(console.error),0);
   }
 
-  return { mount, refresh, openDocument };
+  return { mount, refresh, openDocument, downloadDocument };
 })();
