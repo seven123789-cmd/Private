@@ -1,0 +1,6 @@
+Phase26N-85E 2026-08-18
+- 日本語ファイル名を含む添付書類登録でSupabase Storageが Invalid key を返す事象を修正。
+- Storage上のオブジェクトキーから元ファイル名を除外し、employee/{社員ID}/{日時}_{UUID}.{拡張子} のASCII構成へ変更。
+- PDF / JPEG / PNG / WebP はMIME typeから固定拡張子へ変換し、不正な拡張子・日本語・記号・長いファイル名に影響されないようにした。
+- 元ファイル名は documents.original_file_name に従来どおり保持し、画面表示・監査・利用者確認性は維持。
+- documents / document_links / 署名付きURL / 無効化 / ロールバック処理は変更しない。

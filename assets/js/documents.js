@@ -1,11 +1,18 @@
-/* Phase26N-85B — 添付書類共通基盤
+/* Phase26N-85E — 添付書類共通基盤
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
+   StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
 */
 window.EmployeeDocuments = (() => {
   const BUCKET = 'employee-documents';
   const MAX_BYTES = 20 * 1024 * 1024;
   const ACCEPT = new Set(['application/pdf','image/jpeg','image/png','image/webp']);
+  const EXT_BY_MIME = {
+    'application/pdf': 'pdf',
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp'
+  };
   let mounted = false;
   let currentEntity = null;
   let rows = [];
@@ -27,12 +34,6 @@ window.EmployeeDocuments = (() => {
       timeZone:'Asia/Tokyo'
     }).format(d);
   };
-  const safeName = name => String(name || 'file')
-    .normalize('NFKC')
-    .replace(/[\\/:*?"<>|]+/g,'_')
-    .replace(/\s+/g,' ')
-    .trim()
-    .slice(0,120) || 'file';
 
   async function sha256(file) {
     if (!crypto?.subtle) return null;
@@ -230,7 +231,9 @@ window.EmployeeDocuments = (() => {
       const hash = await sha256(file);
       const stamp = new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14);
       const random = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
-      storagePath = `${currentEntity.type}/${currentEntity.id}/${stamp}_${random}_${safeName(file.name)}`;
+      const ext = EXT_BY_MIME[file.type];
+      if (!ext) throw new Error('対応していないファイル形式です');
+      storagePath = `${currentEntity.type}/${currentEntity.id}/${stamp}_${random}.${ext}`;
 
       const up = await sb.storage.from(BUCKET).upload(storagePath,file,{
         cacheControl:'3600',
