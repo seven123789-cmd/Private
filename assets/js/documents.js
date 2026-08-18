@@ -1,4 +1,4 @@
-/* Phase26N-86A — 添付書類共通基盤
+/* Phase26N-86C — 添付書類共通基盤
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
@@ -17,7 +17,7 @@ window.EmployeeDocuments = (() => {
   let currentEntity = null;
   let rows = [];
 
-  const esc = v => (window.APP ? APP.escape(v ?? '') : String(v ?? ''));
+  const esc = v => (typeof APP !== 'undefined' ? APP.escape(v ?? '') : String(v ?? ''));
   const fmtBytes = n => {
     const v = Number(n || 0);
     if (!v) return '—';

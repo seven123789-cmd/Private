@@ -1,5 +1,6 @@
-Phase26N-86B 2026-08-18
-- 86Aで資格・免許の「証明書」列／「書類管理」が表示されない問題を修正。
-- 原因は社員詳細の書類モジュール読込経路が documents.js の既存状態に依存し、employee-license-documents.js が読み込まれないケースがあったこと。
-- documents.js と employee-license-documents.js のローダーを分離し、既存有無に関係なく資格添付モジュールを冪等に読み込む。
-- 既存の社員添付書類、資格データ、人事履歴、DB構造、Storage構造は変更しない。
+Phase26N-86C 2026-08-18
+- GitHub実コードを再確認し、common.js の APP が `const APP = ...` で定義され、window.APP には公開されていないことを確認。
+- employee-license-documents.js が `!window.APP` を条件に即returnしていたため、資格・免許の「証明書」列／「書類管理」が一度も追加されない原因を特定。
+- APPの存在確認を `typeof APP !== 'undefined'` に修正し、実際のグローバル lexical binding を参照するよう変更。
+- documents.js のHTMLエスケープ判定も同じ `window.APP` 前提だったため、APP.escape が確実に使用されるよう同時修正。
+- 資格データ、社員詳細描画、人事履歴、documents/document_links、Storage構造は変更しない。

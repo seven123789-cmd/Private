@@ -1,7 +1,7 @@
-/* Phase26N-86A — 社員詳細の資格・免許レコードへ証明書を紐付ける */
+/* Phase26N-86C — 社員詳細の資格・免許レコードへ証明書を紐付ける */
 window.EmployeeLicenseDocuments = (() => {
   async function enhance(employeeId) {
-    if (!window.APP || !window.EmployeeDocuments) return;
+    if (typeof APP === 'undefined' || !window.EmployeeDocuments) return;
     const body = document.getElementById('emp-licenses-body');
     if (!body) return;
 
