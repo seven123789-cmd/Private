@@ -1,4 +1,4 @@
-/* Phase26N-88A — 書類導線整理
+/* Phase26N-88B — 書類コンテキスト修正
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
@@ -15,6 +15,7 @@ window.EmployeeDocuments = (() => {
   };
   let mounted = false;
   let currentEntity = null;
+  let employeeEntity = null;
   let rows = [];
   let returnToEntityDialog = false;
 
@@ -188,7 +189,7 @@ window.EmployeeDocuments = (() => {
     try {
       const entityRows = await loadRows();
       if (!entityRows.length) {
-        state.textContent = '登録済みの社員書類はありません';
+        state.textContent = '登録済みの添付書類はありません';
         list.innerHTML = '';
         return;
       }
@@ -284,6 +285,11 @@ window.EmployeeDocuments = (() => {
 
   function openModal() {
     returnToEntityDialog = false;
+    if (!employeeEntity?.id) {
+      APP.toast('社員情報を確認できません。画面を再読み込みしてください。','error');
+      return;
+    }
+    currentEntity = {type:'employee', id:String(employeeEntity.id)};
     openUploadModal();
   }
 
@@ -322,7 +328,7 @@ window.EmployeeDocuments = (() => {
     if (!state || !list) return;
 
     if (!rows.length) {
-      state.textContent = '登録済みの添付書類はありません';
+      state.textContent = '登録済みの社員書類はありません';
       state.hidden = false;
       list.innerHTML = '';
       return;
@@ -366,7 +372,11 @@ window.EmployeeDocuments = (() => {
     const state = document.getElementById('employee-documents-state');
     if (state) { state.hidden = false; state.textContent = '読込中…'; }
     try {
+      if (!employeeEntity?.id) throw new Error('EMPLOYEE_ENTITY_NOT_SET');
+      const previousEntity = currentEntity;
+      currentEntity = {type:'employee', id:String(employeeEntity.id)};
       rows = await loadRows();
+      currentEntity = previousEntity;
       render();
     } catch (e) {
       console.error(e);
@@ -642,7 +652,10 @@ window.EmployeeDocuments = (() => {
   async function mount(entity) {
     if (!entity?.type || !entity?.id) return;
     currentEntity = {type:String(entity.type),id:String(entity.id)};
-    if (currentEntity.type === 'employee') injectEmployeeCard();
+    if (currentEntity.type === 'employee') {
+      employeeEntity = {type:'employee', id:String(entity.id)};
+      injectEmployeeCard();
+    }
     mounted = true;
     await refresh();
   }
