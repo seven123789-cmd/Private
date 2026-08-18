@@ -1,4 +1,4 @@
-/* Phase26N-87A — 添付書類共通基盤
+/* Phase26N-87B — 添付書類共通基盤
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。

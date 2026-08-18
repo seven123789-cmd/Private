@@ -24,7 +24,7 @@ window.getSupabaseClient = function getSupabaseClient() {
 window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';
 
-/* Phase26N-86B — employee / license document modules
+/* Phase26N-87B — employee / license / HR document modules
    社員詳細では documents.js の既存有無に関係なく、資格・免許証明書モジュールまで
    必ず読み込む。86Aで documents.js が先に存在する場合に license module の読込経路が
    実行されないケースがあったため、ローダーを分離して冪等化した。
@@ -49,12 +49,28 @@ window.AUTH_LOGIN_URL = 'login.html';
     document.body.appendChild(licenseJs);
   };
 
+  const ensureHrDocuments = () => {
+    if (document.querySelector('script[data-employee-hr-documents]')) return;
+    const hrJs = document.createElement('script');
+    hrJs.src = 'assets/js/employee-hr-documents.js';
+    hrJs.dataset.employeeHrDocuments = '1';
+    hrJs.addEventListener('load', () => {
+      if (document.querySelector('script[data-employee-hr-documents-bridge]')) return;
+      const bridgeJs = document.createElement('script');
+      bridgeJs.src = 'assets/js/employee-hr-documents-bridge.js';
+      bridgeJs.dataset.employeeHrDocumentsBridge = '1';
+      document.body.appendChild(bridgeJs);
+    }, { once: true });
+    document.body.appendChild(hrJs);
+  };
+
   const mountEmployeeDocuments = () => {
     const id = getEmployeeId();
     if (id && window.EmployeeDocuments?.mount) {
       window.EmployeeDocuments.mount({ type: 'employee', id }).catch(console.error);
     }
     ensureLicenseDocuments();
+    ensureHrDocuments();
   };
 
   const loadEmployeeDocuments = () => {

@@ -1,7 +1,6 @@
-Phase26N-87A 2026-08-18
-基準 main: 330d3a99d0811aebe610221cc45d9fef85561e60
-- GitHub実コードで、正式人事履歴は get_employee_hr_history_official_v1 の各 r.id を保持して描画していることを確認。
-- 正式人事履歴各行へ「書類」列／「書類管理」を追加。
-- document_links.entity_type='employee_hr_history_official' / entity_id=正式履歴r.id で履歴1件単位に紐付け。
-- 86Dの共通基盤（private Storage、登録、開く、保存、実削除、エラー通知）を再利用。
-- 人事履歴の追加・訂正・取消RPCおよび正式履歴データ自体は変更しない。
+Phase26N-87B 2026-08-18
+基準 main: 4340f7e0d5208a3b7bd362e462100ff757c46606
+- GitHub最新employee_detail.htmlを確認し、employee-hr-timeline.jsはあるが87Aの2本のHR添付JS読込が未反映であることを確認。
+- 手作業でemployee_detail.htmlを編集させないため、既に社員詳細で読み込まれているsupabase.jsの既存ドキュメントローダーからHR添付2モジュールを順次読み込む方式へ修正。
+- 87Aで作成した正式人事履歴ID単位の添付処理と86Dの登録/開く/保存/削除/エラー通知を維持。
+- employee_detail.html、人事履歴RPC、DB構造は変更しない。
