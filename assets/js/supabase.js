@@ -24,7 +24,7 @@ window.getSupabaseClient = function getSupabaseClient() {
 window.AUTH_REQUIRED = true;
 window.AUTH_LOGIN_URL = 'login.html';
 
-/* Phase26N-85D — employee document module
+/* Phase26N-86A — employee document module
    85CでDOMContentLoaded後の読込に変更したが、documents.js自身のautoMountが
    window.load待ちのため、動的読込完了とload発火の競合が残っていた。
    documents.jsのload完了時に公開API mount()を明示実行し、社員詳細へ確実に接続する。
@@ -48,8 +48,15 @@ window.AUTH_LOGIN_URL = 'login.html';
       js.dataset.employeeDocuments = '1';
       js.addEventListener('load', () => {
         const id = new URLSearchParams(location.search).get('id');
-        if (!id || !window.EmployeeDocuments?.mount) return;
-        window.EmployeeDocuments.mount({ type: 'employee', id }).catch(console.error);
+        if (id && window.EmployeeDocuments?.mount) {
+          window.EmployeeDocuments.mount({ type: 'employee', id }).catch(console.error);
+        }
+        if (!document.querySelector('script[data-employee-license-documents]')) {
+          const licenseJs = document.createElement('script');
+          licenseJs.src = 'assets/js/employee-license-documents.js';
+          licenseJs.dataset.employeeLicenseDocuments = '1';
+          document.body.appendChild(licenseJs);
+        }
       }, { once: true });
       document.body.appendChild(js);
     }

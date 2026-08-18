@@ -1,0 +1,6 @@
+Phase26N-86A 2026-08-18
+- 実DB確認により v_license_screen.id = employee_licenses.id が20/20件一致することを確認。
+- 社員詳細の資格・免許一覧に「証明書」列と「書類管理」を追加。
+- 資格証明書は document_links.entity_type='employee_license' / entity_id=employee_licenses.id で資格保有レコード単位に紐付ける。
+- 85Fのprivate Storage、ASCII Storageキー、documents/document_links、開く、保存、無効化を共通利用。
+- 既存employee_detail.htmlの資格表示ロジックは変更せず、描画後に拡張する方式として既存機能への影響を抑制。

@@ -1,4 +1,4 @@
-/* Phase26N-85F — 添付書類共通基盤
+/* Phase26N-86A — 添付書類共通基盤
    documents / document_links + private Supabase Storage を使用する。
    初期UIは社員詳細に実装。将来 employee_license / employee_hr_history_official へ同じAPIを展開する。
    StorageキーはASCIIのみで構成し、元ファイル名はDBへ保持する。
@@ -123,6 +123,117 @@ window.EmployeeDocuments = (() => {
     document.getElementById('btn-document-cancel')?.addEventListener('click', closeModal);
     document.getElementById('document-upload-form')?.addEventListener('submit', submitUpload);
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  }
+
+  async function openEntityDialog(entity, options = {}) {
+    if (!entity?.type || !entity?.id) return;
+    const sb = APP.client();
+    if (!sb) {
+      APP.toast('DB接続を確認できません','error');
+      return;
+    }
+    currentEntity = {type:String(entity.type),id:String(entity.id)};
+
+    const title = options.title || '添付書類';
+    const subtitle = options.subtitle || '';
+    const defaultType = options.defaultDocumentType || 'その他';
+
+    let modal = document.getElementById('entity-document-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal-backdrop hidden';
+      modal.id = 'entity-document-modal';
+      modal.setAttribute('role','dialog');
+      modal.setAttribute('aria-modal','true');
+      modal.innerHTML = `
+        <div class="modal document-upload-modal entity-document-modal">
+          <div class="modal-header">
+            <div>
+              <div class="card-title" id="entity-document-title">添付書類</div>
+              <div class="card-sub" id="entity-document-subtitle"></div>
+            </div>
+            <button type="button" class="modal-close" id="btn-entity-document-close" aria-label="閉じる">×</button>
+          </div>
+          <div class="modal-body">
+            <div id="entity-document-state" class="document-state">読込中…</div>
+            <div id="entity-document-list"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="btn-entity-document-add">書類を追加</button>
+            <button type="button" class="btn btn-secondary" id="btn-entity-document-done">閉じる</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      const close = () => modal.classList.add('hidden');
+      document.getElementById('btn-entity-document-close')?.addEventListener('click', close);
+      document.getElementById('btn-entity-document-done')?.addEventListener('click', close);
+      modal.addEventListener('click', e => { if (e.target === modal) close(); });
+      document.getElementById('btn-entity-document-add')?.addEventListener('click', () => {
+        const form = document.getElementById('document-upload-form');
+        if (form) form.reset();
+        const typeEl = document.getElementById('document-type');
+        if (typeEl) typeEl.value = modal.dataset.defaultDocumentType || 'その他';
+        document.getElementById('document-upload-modal')?.classList.remove('hidden');
+      });
+    }
+
+    document.getElementById('entity-document-title').textContent = title;
+    document.getElementById('entity-document-subtitle').textContent = subtitle;
+    modal.dataset.defaultDocumentType = defaultType;
+    modal.classList.remove('hidden');
+    await refreshEntityDialog();
+  }
+
+  async function refreshEntityDialog() {
+    const state = document.getElementById('entity-document-state');
+    const list = document.getElementById('entity-document-list');
+    if (!state || !list) return;
+    state.hidden = false;
+    state.textContent = '読込中…';
+    try {
+      const entityRows = await loadRows();
+      if (!entityRows.length) {
+        state.textContent = '登録済みの証明書はありません';
+        list.innerHTML = '';
+        return;
+      }
+      state.textContent = '';
+      state.hidden = true;
+      list.innerHTML = `<div class="document-list">${entityRows.map(r=>`
+        <div class="document-row" data-document-id="${esc(r.id)}">
+          <div class="document-row__main">
+            <div class="document-row__top">
+              <span class="badge badge-gray">${esc(r.document_type || 'その他')}</span>
+              <strong>${esc(r.title || r.original_file_name)}</strong>
+            </div>
+            <div class="document-row__meta">
+              <span>${r.document_date ? `書類日付 ${esc(APP.fmtDate(r.document_date))}` : '書類日付 —'}</span>
+              <span>${esc(r.original_file_name)}</span>
+              <span>${esc(fmtBytes(r.file_size_bytes))}</span>
+            </div>
+          </div>
+          <div class="document-row__actions">
+            <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-open="${esc(r.id)}">開く</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-download="${esc(r.id)}">保存</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-entity-doc-retire="${esc(r.id)}">無効化</button>
+          </div>
+        </div>`).join('')}</div>`;
+      list.querySelectorAll('[data-entity-doc-open]').forEach(btn=>{
+        btn.addEventListener('click',()=>openDocument(btn.dataset.entityDocOpen));
+      });
+      list.querySelectorAll('[data-entity-doc-download]').forEach(btn=>{
+        btn.addEventListener('click',()=>downloadDocument(btn.dataset.entityDocDownload));
+      });
+      list.querySelectorAll('[data-entity-doc-retire]').forEach(btn=>{
+        btn.addEventListener('click',async()=>{
+          await retireDocument(btn.dataset.entityDocRetire);
+          await refreshEntityDialog();
+        });
+      });
+    } catch (e) {
+      console.error(e);
+      state.textContent = '添付書類を取得できませんでした';
+    }
   }
 
   function openModal() {
@@ -279,7 +390,9 @@ window.EmployeeDocuments = (() => {
 
       closeModal();
       APP.toast('添付書類を登録しました','success');
-      await refresh();
+      if (currentEntity.type === 'employee') await refresh();
+      const entityModal = document.getElementById('entity-document-modal');
+      if (entityModal && !entityModal.classList.contains('hidden')) await refreshEntityDialog();
     } catch (e) {
       console.error(e);
       if (storagePath) {
@@ -343,7 +456,7 @@ window.EmployeeDocuments = (() => {
       }).eq('id',id);
       if (r.error) throw r.error;
       APP.toast('添付書類を無効化しました','success');
-      await refresh();
+      if (currentEntity?.type === 'employee') await refresh();
     } catch (e) {
       console.error(e);
       APP.toast('添付書類を無効化できませんでした','error');
@@ -372,5 +485,5 @@ window.EmployeeDocuments = (() => {
     setTimeout(()=>autoMountEmployee().catch(console.error),0);
   }
 
-  return { mount, refresh, openDocument, downloadDocument };
+  return { mount, refresh, openDocument, downloadDocument, openEntityDialog };
 })();
