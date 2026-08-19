@@ -1,0 +1,26 @@
+/* Phase26N-89B — employee employment contracts */
+(() => {
+  const path = String(location.pathname || '').split('/').pop();
+  if (path !== 'employee_detail.html') return;
+
+  const loadEmploymentContracts = () => {
+    if (!document.querySelector('link[data-employment-contracts]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'assets/css/employee-employment-contracts.css';
+      css.dataset.employmentContracts = '1';
+      document.head.appendChild(css);
+    }
+    if (window.EmployeeEmploymentContracts || document.querySelector('script[data-employment-contracts]')) return;
+    const js = document.createElement('script');
+    js.src = 'assets/js/employee-employment-contracts.js';
+    js.dataset.employmentContracts = '1';
+    document.body.appendChild(js);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadEmploymentContracts, { once:true });
+  } else {
+    loadEmploymentContracts();
+  }
+})();

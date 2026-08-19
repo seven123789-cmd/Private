@@ -1,0 +1,12 @@
+/* Phase26N-89B — 雇用・契約 */
+.employment-contract-card{margin-top:28px}
+.employment-contract-table{width:100%;border-collapse:collapse}
+.employment-contract-table th,.employment-contract-table td{padding:12px 10px;border-bottom:1px solid #eee9e0;text-align:left;vertical-align:middle;font-size:12px}
+.employment-contract-table th{background:#f7f4ee;color:var(--muted);font-size:11px}
+.employment-contract-table tbody tr:last-child td{border-bottom:0}
+.contract-note{margin-top:5px;color:var(--muted);font-size:10px;line-height:1.5}
+.contract-actions{white-space:nowrap}
+.contract-actions .btn+.btn{margin-left:5px}
+.employment-contract-modal{width:min(760px,100%)}
+.employment-contract-memo{grid-column:1/-1}
+@media(max-width:800px){.employment-contract-table{min-width:820px}.employment-contract-card .table-wrap{overflow-x:auto}}
