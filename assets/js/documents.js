@@ -685,5 +685,95 @@ window.EmployeeDocuments = (() => {
     setTimeout(()=>autoMountEmployee().catch(console.error),0);
   }
 
+  async function enhanceEmployeeLicenseDocuments() {
+    const root = document.getElementById('emp-licenses-body');
+    if (!root || typeof APP === 'undefined') return;
+
+    const table = root.querySelector('table');
+    if (!table) return;
+
+    const employeeId = new URLSearchParams(location.search).get('id');
+    if (!employeeId) return;
+
+    let rows;
+    try {
+      const all = await APP.loadLicenseRows();
+      rows = (all || []).filter(r => String(r.employee_id) === String(employeeId));
+    } catch (e) {
+      console.error('[documents] 資格・免許書類管理の初期化に失敗', e);
+      return;
+    }
+
+    const head = table.querySelector('thead tr');
+    const trs = [...table.querySelectorAll('tbody tr')];
+    if (!head || trs.length !== rows.length) {
+      console.error('[documents] 資格・免許の表示行とDB行数が一致しません', {
+        domRows: trs.length,
+        dataRows: rows.length
+      });
+      return;
+    }
+
+    if (!head.querySelector('[data-license-doc-head]')) {
+      const th = document.createElement('th');
+      th.dataset.licenseDocHead = '1';
+      th.textContent = '書類';
+      head.appendChild(th);
+    }
+
+    trs.forEach((tr, index) => {
+      if (tr.querySelector('[data-license-doc-cell]')) return;
+      const row = rows[index];
+      if (!row?.id) return;
+
+      const td = document.createElement('td');
+      td.dataset.licenseDocCell = '1';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-secondary btn-sm';
+      btn.textContent = '書類管理';
+      btn.addEventListener('click', () => {
+        openEntityDialog(
+          {type:'employee_license', id:row.id},
+          {
+            title:'資格・免許の書類',
+            subtitle:row.license_name || row.category_name || '資格・免許',
+            defaultDocumentType:'資格証・免許証'
+          }
+        );
+      });
+
+      td.appendChild(btn);
+      tr.appendChild(td);
+    });
+  }
+
+  function setupEmployeeLicenseDocuments() {
+    const root = document.getElementById('emp-licenses-body');
+    if (!root) return;
+
+    let running = false;
+    const run = async () => {
+      if (running) return;
+      running = true;
+      try {
+        await enhanceEmployeeLicenseDocuments();
+      } finally {
+        running = false;
+      }
+    };
+
+    const observer = new MutationObserver(() => { run(); });
+    observer.observe(root, {childList:true, subtree:true});
+    run();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupEmployeeLicenseDocuments, {once:true});
+  } else {
+    setupEmployeeLicenseDocuments();
+  }
+
   return { mount, refresh, openDocument, downloadDocument, deleteDocument, openEntityDialog };
 })();
