@@ -36,7 +36,13 @@ window.EmployeeEmploymentContracts = (() => {
           <div class="form-group"><label class="form-label">契約終了日</label>
             <input type="date" class="form-control" id="contract-end-date"></div>
           <div class="form-group"><label class="form-label">更新状況</label>
-            <input class="form-control" id="contract-renewal-status" maxlength="100" placeholder="例：更新予定、更新済、更新なし"></div>
+            <select class="form-control" id="contract-renewal-status">
+              <option value="">未設定</option>
+              <option value="更新予定">更新予定</option>
+              <option value="更新済">更新済</option>
+              <option value="終了予定">終了予定</option>
+              <option value="終了">終了</option>
+            </select></div>
           <div class="form-group employment-contract-memo"><label class="form-label">備考</label>
             <textarea class="form-control" id="contract-memo" rows="3" maxlength="500"></textarea></div>
         </div></div>
@@ -106,6 +112,19 @@ window.EmployeeEmploymentContracts = (() => {
     body.querySelectorAll('[data-contract-doc]').forEach(b=>b.addEventListener('click',()=>openDocuments(rows.find(r=>String(r.id)===b.dataset.contractDoc))));
   }
 
+  function saveErrorMessage(error){
+    const msg=String(error?.message||'');
+    const details=String(error?.details||'');
+    const code=String(error?.code||'');
+    const all=`${msg} ${details}`;
+    if(code==='23514' && all.includes('renewal_status')) return '更新状況の値が正しくありません。選択肢から選び直してください。';
+    if(code==='23514' && all.includes('date_check')) return '契約終了日は契約開始日以降を指定してください。';
+    if(code==='23505') return '同じ契約開始日・契約区分の雇用契約が既に登録されています。';
+    if(code==='23503') return '対象社員を確認できないため登録できませんでした。画面を再読み込みしてからやり直してください。';
+    if(code==='42501') return '雇用契約を登録する権限を確認できませんでした。ログイン状態を確認してください。';
+    return '雇用契約を登録できませんでした。入力内容を確認して再度お試しください。改善しない場合は管理者へお問い合わせください。';
+  }
+
   async function save(e){
     e.preventDefault();
     const sb=client(); if(!sb){toast('DB接続を確認できません。登録していません。','error');return;}
@@ -114,15 +133,18 @@ window.EmployeeEmploymentContracts = (() => {
     const end=document.getElementById('contract-end-date').value || null;
     if(isFixed && !end){toast('有期契約は契約終了日を入力してください。','error');return;}
     if(end && end < start){toast('契約終了日は契約開始日以降を指定してください。','error');return;}
+    const renewal=document.getElementById('contract-renewal-status').value || null;
+    const allowedRenewal=[null,'更新予定','更新済','終了予定','終了'];
+    if(!allowedRenewal.includes(renewal)){toast('更新状況は選択肢から選んでください。','error');return;}
     const payload={employee_id:employeeId,contract_type:document.getElementById('contract-type').value.trim(),
       start_date:start,end_date:isFixed?end:null,is_fixed_term:isFixed,
-      renewal_status:document.getElementById('contract-renewal-status').value.trim()||null,
+      renewal_status:renewal,
       memo:document.getElementById('contract-memo').value.trim()||null,updated_at:new Date().toISOString()};
     let q;
     if(editingId) q=sb.from(TABLE).update(payload).eq('id',editingId);
     else { delete payload.updated_at; q=sb.from(TABLE).insert(payload); }
     const {error}=await q;
-    if(error){console.error('[employment-contracts] save failed',error);toast('雇用契約を登録できませんでした。管理者へお問い合わせください。','error');return;}
+    if(error){console.error('[employment-contracts] save failed',error);toast(saveErrorMessage(error),'error');return;}
     toast(editingId?'雇用契約を更新しました':'雇用契約を登録しました','success'); closeForm(); await load();
   }
 
