@@ -283,6 +283,7 @@ window.EmployeeDocuments = (() => {
     }
     if (typeGroup) {
       typeGroup.hidden = isEmploymentContract;
+      typeGroup.style.display = isEmploymentContract ? 'none' : '';
     }
   }
 
