@@ -111,3 +111,39 @@ window.AUTH_LOGIN_URL = 'login.html';
     loadEmployeeDocuments();
   }
 })();
+
+/* Phase26N-89B-FIX — employee employment contracts
+   最新mainのsupabase.jsへ統合。社員詳細で雇用・契約モジュールを確実に読み込む。
+*/
+(() => {
+  const path = String(location.pathname || '').split('/').pop();
+  if (path !== 'employee_detail.html') return;
+
+  const loadEmploymentContracts = () => {
+    if (!document.querySelector('link[data-employment-contracts]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'assets/css/employee-employment-contracts.css';
+      css.dataset.employmentContracts = '1';
+      document.head.appendChild(css);
+    }
+
+    const id = new URLSearchParams(location.search).get('id');
+    if (window.EmployeeEmploymentContracts) {
+      if (id) window.EmployeeEmploymentContracts.mount(id).catch(console.error);
+      return;
+    }
+
+    if (document.querySelector('script[data-employment-contracts]')) return;
+    const js = document.createElement('script');
+    js.src = 'assets/js/employee-employment-contracts.js';
+    js.dataset.employmentContracts = '1';
+    document.body.appendChild(js);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadEmploymentContracts, { once: true });
+  } else {
+    loadEmploymentContracts();
+  }
+})();
