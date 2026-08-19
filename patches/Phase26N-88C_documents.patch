@@ -1,0 +1,50 @@
+diff --git a/assets/js/documents.js b/assets/js/documents.js
+--- a/assets/js/documents.js
++++ b/assets/js/documents.js
+@@
+   function documentTypeOptions(entityType) {
+     if (entityType === 'employee_license') {
+       return [{value:'資格証・免許証', label:'資格証・免許証'}];
+     }
++    if (entityType === 'employee_employment_contract') {
++      return [{value:'雇用・契約書類', label:'雇用・契約書類'}];
++    }
+     if (entityType === 'employee_hr_history_official') {
+       return [
+         {value:'辞令・人事通知', label:'辞令・人事通知'},
+         {value:'その他人事書類', label:'その他人事書類'}
+       ];
+@@
+   function configureUploadContext() {
+     const type = currentEntity?.type || 'employee';
+     const title = document.getElementById('document-upload-title');
+     const subtitle = document.getElementById('document-upload-subtitle');
+     const typeEl = document.getElementById('document-type');
++    const typeGroup = typeEl?.closest('.form-group');
+     const options = documentTypeOptions(type);
++    const isEmploymentContract = type === 'employee_employment_contract';
+
+     if (title) {
+       title.textContent =
+         type === 'employee_license' ? '資格・免許の書類を追加' :
++        isEmploymentContract ? '雇用契約の書類を追加' :
+         type === 'employee_hr_history_official' ? '人事履歴の書類を追加' :
+         '社員書類を追加';
+     }
+     if (subtitle) {
+       subtitle.textContent =
+         type === 'employee_license' ? 'この資格・免許に直接紐づけて保存します' :
++        isEmploymentContract ? 'この雇用契約に直接紐づけて保存します' :
+         type === 'employee_hr_history_official' ? 'この人事履歴に直接紐づけて保存します' :
+         'この社員本人に直接紐づく書類を保存します';
+     }
+     if (typeEl) {
+       typeEl.innerHTML = options.map(x =>
+         `<option value="${esc(x.value)}">${esc(x.label)}</option>`
+       ).join('');
+       typeEl.disabled = options.length === 1;
+     }
++    if (typeGroup) {
++      typeGroup.hidden = isEmploymentContract;
++    }
+   }
