@@ -26,3 +26,12 @@ employee_code 重複確認: 0件。
 ファイルにない社員を削除・退職化しない。
 DB書込はSupabase認証済みセッションが存在する場合のみ許可する。
 認証画面が未整備のため、全ページのrequireAuth強制化とanon SELECT削除はまだ行わない。
+
+
+## Phase26N-90 解消（2026-08-21）
+- Phase10時点で併存していた `promotion_last_date` は旧補助列として廃止することを確定。
+- 正規列は `employees.last_promotion_date`。
+- `employee_hr_history_official` の `status='active'` かつ「資格昇格」の最新 `effective_date` を正式な最終資格昇格日の正本とする。
+- 旧 `promotion_last_date` の値を根拠として正式履歴を新規確定しない。
+- 根拠を確認できない旧補助値は「保留データ」として残さず、正式データとして採用しないことを確定した上で廃止する。
+- アプリケーション・SQL・今後の改修で `promotion_last_date` を再作成・再利用しない。
