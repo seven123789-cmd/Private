@@ -131,7 +131,8 @@ async function loadEmployeeEvaluationHistory(employeeId){
   let official=new Map();
   if(historyIds.length){
     const r=await sb.from('employee_hr_history_official').select('id,effective_date,to_grade,status').in('id',historyIds);
-    if(!r.error)(r.data||[]).forEach(x=>official.set(x.id,x));
+    if(r.error){console.error('正式発令履歴の取得に失敗:',r.error);body.innerHTML='<div class="empty" role="alert">正式発令履歴を取得できませんでした。再読み込みしてください。</div>';return;}
+    (r.data||[]).filter(x=>historyIds.includes(x.id)).forEach(x=>official.set(x.id,x));
   }
   const rows=cycleIds.map(id=>{
     const c=cycleMap.get(id)||{},e=evalMap.get(id),r=reviewMap.get(id),o=official.get(r?.result_hr_history_id);
