@@ -436,31 +436,27 @@ window.EmployeeHrTimeline = (() => {
       return;
     }
 
-    const sb = APP.client();
-    let result;
-
-    if (id) {
-      if (!reason) {
-        APP.toast('訂正理由は必須です', 'warning');
-        return;
-      }
-      result = await sb.rpc('correct_employee_hr_history_official_v1', {
-        p_id: id,
-        ...payload,
-        p_reason: reason
-      });
-    } else {
-      result = await sb.rpc('add_employee_hr_history_official_v1', {
-        p_employee_id: employee.id,
-        ...payload
-      });
-    }
-
-    if (result.error) {
-      APP.toast(result.error.message, 'error');
+    if (id && !reason) {
+      APP.toast('訂正理由は必須です', 'warning');
       return;
     }
-    location.reload();
+    const submitButton = ev.submitter || field('hr-event-form')?.querySelector('[type="submit"]');
+    if (submitButton?.disabled) return;
+    if (submitButton) submitButton.disabled = true;
+    try {
+      const sb = APP.client();
+      if (!sb) throw new Error('データベースに接続できません');
+      const result = id
+        ? await sb.rpc('correct_employee_hr_history_official_v1', { p_id: id, ...payload, p_reason: reason })
+        : await sb.rpc('add_employee_hr_history_official_v1', { p_employee_id: employee.id, ...payload });
+      if (result.error) throw result.error;
+      location.reload();
+    } catch (error) {
+      console.error('正式人事履歴の保存に失敗:', error);
+      APP.toast(error?.message || '人事履歴を保存できませんでした', 'error');
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
   }
 
   function syncDateInputs() {
