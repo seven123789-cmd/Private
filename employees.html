@@ -61,5 +61,5 @@
 })();
 </script>
 <script src="assets/js/employees.js"></script>
-<script>(async()=>{await Auth.requireAuth();renderSidebar('employees');Modal.setup();APP.initHeader();await initEmployees();})();</script>
+<script>(async()=>{try{await Auth.requireAuth();renderSidebar('employees');Modal.setup();APP.initHeader();await initEmployees();}catch(error){console.error('社員一覧の表示に失敗:',error);const tbody=document.getElementById('emp-tbody');if(tbody)tbody.innerHTML=`<tr><td colspan="8" class="empty" role="alert">${APP.escape(error?.message||'社員一覧を読み込めませんでした。再読み込みしてください。')}</td></tr>`;APP.toast(error?.message||'社員一覧を読み込めませんでした','error');}})();</script>
 </body></html>
