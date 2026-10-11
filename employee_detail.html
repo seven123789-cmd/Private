@@ -136,11 +136,11 @@ async function loadEmployeeEvaluationHistory(employeeId){
   }
   const rows=cycleIds.map(id=>{
     const c=cycleMap.get(id)||{},e=evalMap.get(id),r=reviewMap.get(id),o=official.get(r?.result_hr_history_id);
-    return {year:c.fiscal_year??'',name:c.name||`${c.fiscal_year||'—'}年度`,rating:e?.rating||'—',evalStatus:e?.status||'未評価',decision:r?.decision_status||'未判断',official:o};
+    return {year:c.fiscal_year??'',name:c.name||`${c.fiscal_year||'—'}年度`,rating:e?.rating||'—',evalStatus:e?.status||'未評価',decision:r?.decision_status||'未判断',official:o,officialLinked:!!r?.result_hr_history_id};
   }).sort((a,b)=>Number(b.year||0)-Number(a.year||0));
   body.innerHTML=`<div class="evaluation-history-list">${rows.map(x=>`<div class="evaluation-history-item">
     <div class="evaluation-history-year"><strong>${APP.escape(x.name)}</strong><span>${APP.escape(x.evalStatus)}</span></div>
-    <div class="evaluation-history-grid"><div><span>評価</span><strong>${APP.escape(x.rating)}</strong></div><div><span>昇格判断</span><strong>${APP.escape(x.decision)}</strong></div><div><span>正式発令</span><strong>${x.official?(x.official.status==='active'?`${APP.fmtDate(x.official.effective_date)} / ${APP.escape(x.official.to_grade||'—')}`:'取消・無効'):'—'}</strong></div></div>
+    <div class="evaluation-history-grid"><div><span>評価</span><strong>${APP.escape(x.rating)}</strong></div><div><span>昇格判断</span><strong>${APP.escape(x.decision)}</strong></div><div><span>正式発令</span><strong>${x.official?(x.official.status==='active'?`${APP.fmtDate(x.official.effective_date)} / ${APP.escape(x.official.to_grade||'—')}`:'取消・無効'):(x.officialLinked?'要確認':'—')}</strong></div></div>
   </div>`).join('')}</div>`;
 }
 
