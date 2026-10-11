@@ -373,16 +373,25 @@ window.EmployeeHrTimeline = (() => {
   async function cancelEvent(id) {
     const reason = prompt('取消理由を入力してください。');
     if (!reason || !reason.trim()) return;
-
-    const result = await APP.client().rpc('cancel_employee_hr_history_official_v1', {
-      p_id: id,
-      p_reason: reason.trim()
-    });
-    if (result.error) {
-      APP.toast(result.error.message, 'error');
-      return;
+    if (!confirm('この正式人事履歴を取り消します。取消履歴は残ります。よろしいですか？')) return;
+    const buttons = [...document.querySelectorAll('[data-hr-cancel]')];
+    if (buttons.some(btn => btn.dataset.hrCancel === id && btn.disabled)) return;
+    buttons.forEach(btn => { btn.disabled = true; });
+    try {
+      const sb = APP.client();
+      if (!sb) throw new Error('データベースに接続できません');
+      const result = await sb.rpc('cancel_employee_hr_history_official_v1', {
+        p_id: id,
+        p_reason: reason.trim()
+      });
+      if (result.error) throw result.error;
+      location.reload();
+    } catch (error) {
+      console.error('正式人事履歴の取消に失敗:', error);
+      APP.toast(error?.message || '人事履歴を取り消せませんでした', 'error');
+    } finally {
+      buttons.forEach(btn => { btn.disabled = false; });
     }
-    location.reload();
   }
 
   function collectPayload() {
