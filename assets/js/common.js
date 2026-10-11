@@ -159,8 +159,8 @@ const APP = (() => {
       .select('employee_id,effective_date,effective_label,event_type,from_grade,to_grade,status')
       .eq('status','active');
     if (error) {
-      console.warn('正式人事履歴の社員一覧連携に失敗:', error);
-      return employees;
+      console.error('正式人事履歴の社員一覧連携に失敗:', error);
+      throw new Error('正式人事履歴を取得できませんでした。再読み込みするか管理者に確認してください。');
     }
     const byEmployee = new Map();
     (data || []).filter(isGradeHistory).forEach(row => {
@@ -177,7 +177,7 @@ const APP = (() => {
       const unknownGradeDate = !lastGradeDate && history.some(r => !gradeHistoryDate(r));
       return {
         ...emp,
-        last_promotion_date: latestPromotion ? gradeHistoryDate(latestPromotion) : (emp.last_promotion_date || null),
+        last_promotion_date: latestPromotion ? gradeHistoryDate(latestPromotion) : null,
         last_grade_change_date: lastGradeDate,
         last_grade_change_label: lastGradeDate ? null : (unknownGradeDate ? '日付不明' : null),
         grade_tenure_months: lastGradeDate ? elapsedMonths(lastGradeDate) : null,
@@ -187,8 +187,12 @@ const APP = (() => {
   }
   async function loadEmployees() {
     const r = await query('employees','*',{order:'employee_code'});
-    if (!r.demo && !r.error && r.data?.length > 0) return await enrichEmployeesWithHrHistory(r.data);
-    return loadEmployeesFromJson();
+    if (r.demo) throw new Error('Supabaseに接続できません。社員情報は表示できません。');
+    if (r.error) {
+      console.error('社員情報の取得に失敗:', r.error);
+      throw new Error('社員情報を取得できませんでした。再読み込みするか管理者に確認してください。');
+    }
+    return await enrichEmployeesWithHrHistory(r.data || []);
   }
   async function loadLicenseRows() {
     const r = await query('v_license_screen','*',{order:'employee_name'});
