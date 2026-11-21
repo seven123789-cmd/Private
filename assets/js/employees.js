@@ -2,9 +2,17 @@ const CENTER_ORDER = ['本部','群馬センター','さいたまセンター','
 const CENTER_RANK = new Map(CENTER_ORDER.map((name,index)=>[name,index]));
 function centerRank(name){ return CENTER_RANK.has(name) ? CENTER_RANK.get(name) : 999; }
 function employeeJobRank(p){ const s=String(p||'');return /外商|ドライバー/.test(s)?1:/内務/.test(s)?2:/職員|管理|正管|S管|課長|次長|副長|部長/.test(s)?0:3; }
-function employeeEmploymentConflict(e){const grade=employeeGradeRank(e.current_grade);const type=String(e.employment_type||'');return grade>=1&&/副社員|準社員/.test(type);}
 function employeeGradeRank(g){ const m=String(g||'').match(/(\d+)/);return m?Number(m[1]):-1; }
-function employeeListSort(a,b){const top=e=>String(e.center||'').includes('本部')&&String(e.name||'').replace(/[\\s　]/g,'')==='寒河江伸治'?0:1;return top(a)-top(b)||employeeJobRank(a.position)-employeeJobRank(b.position)||employeeGradeRank(b.current_grade)-employeeGradeRank(a.current_grade)||String(a.name||'').localeCompare(String(b.name||''),'ja')||String(a.employee_code||'').localeCompare(String(b.employee_code||''),'ja',{numeric:true});}
+function employeeEmploymentConflict(e){const grade=employeeGradeRank(e.current_grade);const type=String(e.employment_type||'');return grade>=1&&/副社員|準社員/.test(type);}
+function employeeListSort(a,b){
+  const ga=employeeGradeRank(a.current_grade),gb=employeeGradeRank(b.current_grade);
+  // 数字の等級を上位から。管理職・等級なしは数字等級の後に表示する。
+  const rankA=ga>=0?0:String(a.current_grade||'').includes('管理職')?1:2;
+  const rankB=gb>=0?0:String(b.current_grade||'').includes('管理職')?1:2;
+  return rankA-rankB||(rankA===0?gb-ga:0)
+    ||String(a.employee_code||'').localeCompare(String(b.employee_code||''),'ja',{numeric:true})
+    ||String(a.name||'').localeCompare(String(b.name||''),'ja');
+}
 let EMP_ROWS = [];
 let EMP_FILTERED = [];
 let empPage = 1;
