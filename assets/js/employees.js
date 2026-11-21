@@ -1,11 +1,9 @@
 const CENTER_ORDER = ['本部','群馬センター','さいたまセンター','北埼玉センター','東松山センター','南埼玉センター','練馬センター','東北センター','船橋センター','福島センター','戸田センター','三河センター','静岡センター'];
 const CENTER_RANK = new Map(CENTER_ORDER.map((name,index)=>[name,index]));
 function centerRank(name){ return CENTER_RANK.has(name) ? CENTER_RANK.get(name) : 999; }
-function employeeListSort(a,b){
-  return centerRank(a.center)-centerRank(b.center)
-    || String(a.center||'').localeCompare(String(b.center||''),'ja')
-    || String(a.employee_code||'').localeCompare(String(b.employee_code||''),'ja',{numeric:true});
-}
+function employeeJobRank(p){ const s=String(p||'');return /外商|ドライバー/.test(s)?1:/内務/.test(s)?2:/職員|管理|正管|S管|課長|次長|副長|部長/.test(s)?0:3; }
+function employeeGradeRank(g){ const m=String(g||'').match(/(\d+)/);return m?Number(m[1]):-1; }
+function employeeListSort(a,b){return employeeJobRank(a.position)-employeeJobRank(b.position)||employeeGradeRank(b.current_grade)-employeeGradeRank(a.current_grade)||String(a.name||'').localeCompare(String(b.name||''),'ja')||String(a.employee_code||'').localeCompare(String(b.employee_code||''),'ja',{numeric:true});}
 let EMP_ROWS = [];
 let EMP_FILTERED = [];
 let empPage = 1;
@@ -14,9 +12,11 @@ async function initEmployees() {
   APP.initHeader();
   EMP_ROWS = (await APP.loadEmployees()).sort(employeeListSort);
   fillEmployeeFilters();
+  renderEmployeeCenterCards();
   bindEmployeeFilters();
   renderEmployees();
 }
+function renderEmployeeCenterCards(){const el=document.getElementById('employee-center-cards');if(!el)return;const counts=new Map();for(const e of EMP_ROWS){if(e.is_active===false||e.status==='retired'||e.status==='past'||e.retirement_date)continue;const c=e.center||'所属未設定';counts.set(c,(counts.get(c)||0)+1)}const centers=[...counts.keys()].sort((a,b)=>centerRank(a)-centerRank(b)||a.localeCompare(b,'ja'));el.innerHTML='<button class="emp-center-card" data-center=""><strong>すべてのセンター</strong><span>全社員</span></button>'+centers.map(c=>'<button class="emp-center-card" data-center="'+APP.escape(c)+'"><strong>'+APP.escape(c)+'</strong><span>'+counts.get(c)+'名（マスタ在籍）</span></button>').join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>{document.getElementById('filter-center').value=b.dataset.center;empPage=1;renderEmployees()})}
 function fillEmployeeFilters() {
   const centers = [...new Set(EMP_ROWS.map(e => e.center).filter(Boolean))]
     .sort((a,b)=>centerRank(a)-centerRank(b)||a.localeCompare(b,'ja'));
@@ -48,6 +48,8 @@ function renderEmployees() {
       && (employmentStatus==='all' || (employmentStatus==='retired'
         ? (e.is_active===false || e.status==='retired' || e.status==='past' || !!e.retirement_date)
         : !(e.is_active===false || e.status==='retired' || e.status==='past' || !!e.retirement_date))));
+  EMP_FILTERED.sort(employeeListSort);
+  document.querySelectorAll('.emp-center-card').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.center===center)));
   const cnt = document.getElementById('emp-count'); if (cnt) cnt.textContent = EMP_FILTERED.length;
   const tbody = document.getElementById('emp-tbody'); if (!tbody) return;
   const start = (empPage - 1) * empPerPage;
