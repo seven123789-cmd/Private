@@ -266,6 +266,7 @@ const APP = (() => {
   /* ナビ定義：人事業務の情報設計に合わせて整理 */
   const NAV = [
     { id:'index',          group:'overview', label:'ダッシュボード',         sub:'状況と要対応の確認', href:'index.html',             badge:false },
+    { id:'monthly_management', group:'people', label:'月次管理', sub:'年休・時間外', href:'monthly_management.html', badge:false },
     { id:'employees',      group:'people',   label:'社員管理',     sub:'社員一覧・検索',     href:'employees.html',         badge:false },
     { id:'promotion',      group:'people',   label:'人事評価・昇格',     sub:'昇格・人事評価',     href:'promotion.html',         badge:false },
     { id:'licenses',       group:'license',  label:'資格・免許管理',     sub:'資格・免許管理',     href:'licenses.html',          badge:false },
