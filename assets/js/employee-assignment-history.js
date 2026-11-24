@@ -281,9 +281,9 @@ window.EmployeeAssignmentHistory = (() => {
     const today=todayJst();
     const dateEl=document.getElementById('assignment-effective-from');
     dateEl.removeAttribute('min');
-    dateEl.max=today;
+    dateEl.removeAttribute('max');
     dateEl.value=today >= minDate ? today : minDate;
-    document.getElementById('assignment-date-help').textContent=`本日付・同日変更可。過去の役職訂正は登録時に確認します。所属等の変更は既存履歴開始日以降。`;
+    document.getElementById('assignment-date-help').textContent=`本日付は即時変更、未来日は予約登録（自動反映は検証中）。過去の役職訂正は登録時に確認します。`;
     document.getElementById('assignment-memo').value='';
     renderPreview();
     document.getElementById('assignment-change-modal').classList.remove('hidden');
@@ -297,10 +297,7 @@ window.EmployeeAssignmentHistory = (() => {
       APP.toast('適用日・センター・部門・職種は必須です','warning');
       return;
     }
-    if(values.effective_from > todayJst()){
-      APP.toast('未来日の予約異動はこの画面では登録できません','warning');
-      return;
-    }
+    const scheduled=values.effective_from > todayJst();
     const diffs=diffItems(values);
     if(!diffs.length){
       APP.toast('変更内容がありません','warning');
@@ -309,6 +306,7 @@ window.EmployeeAssignmentHistory = (() => {
 
     const summary=diffs.map(x=>`${x.label}: ${x.oldVal} → ${x.newVal}`).join('\n');
     const employmentChanged=diffs.some(x=>x.label==='雇用区分');
+    if(scheduled){await submitSchedule(values,diffs);return;}
     if(employmentChanged && (values.effective_from!==todayJst() || !values.memo?.trim())){APP.toast('雇用区分変更は本日付と変更理由の入力が必要です','warning');return;}
     const titleOnly=diffs.every(x=>x.label==='役職');
     const correction=titleOnly && confirm('役職定年・登録漏れ・誤登録の訂正として、指定日以降の役職履歴を置き換えますか？\nOK：役職履歴訂正／キャンセル：通常の人事変更');
@@ -366,9 +364,51 @@ window.EmployeeAssignmentHistory = (() => {
     setTimeout(()=>location.reload(),450);
   }
 
+  async function submitSchedule(values,diffs){
+    if(!values.memo?.trim()){APP.toast('予約理由をメモに入力してください','warning');return;}
+    if(values.job_title_ids.length && !values.job_title_ids.includes(values.primary_job_title_id)){APP.toast('代表役職を指定してください','warning');return;}
+    if(!confirm('予約登録（自動反映は検証中）\n発令日：'+values.effective_from+'\n'+diffs.map(x=>x.label+'：'+x.oldVal+' → '+x.newVal).join('\n')))return;
+    const btn=document.getElementById('btn-submit-assignment-change');
+    btn.disabled=true;
+    try{
+      const payload={center_id:values.center_id,division_id:values.division_id,position_id:values.position_id,grade_id:values.grade_id||null,job_title_ids:values.job_title_ids,primary_job_title_id:values.primary_job_title_id||null,employment_type:values.employment_type||null,change_type:detectChangeType(values),assignment_changed:diffs.some(x=>!['役職','雇用区分'].includes(x.label)),title_changed:diffs.some(x=>x.label==='役職'),employment_changed:diffs.some(x=>x.label==='雇用区分'),changes:diffs};
+      const r=await APP.client().rpc('schedule_employee_hr_change_v1',{p_employee_id:currentEmployee.id,p_effective_date:values.effective_from,p_change_payload:payload,p_change_reason:values.memo,p_memo:values.memo});
+      if(r.error)throw r.error;
+      if(!r.data)throw Error('予約結果を確認できません');
+      APP.toast('予約を登録しました（自動反映は検証中）');closeModal();await renderSchedules();
+    }catch(e){APP.toast('予約登録失敗：'+(e.message||e),'error');}
+    finally{btn.disabled=false;}
+  }
+
+  async function renderSchedules(){
+    const actions=document.getElementById('employee-action-group');
+    if(!actions||!currentEmployee)return;
+    let panel=document.getElementById('employee-hr-schedules');
+    if(!panel){panel=document.createElement('section');panel.id='employee-hr-schedules';actions.after(panel);}
+    panel.replaceChildren();
+    const heading=document.createElement('h3');heading.textContent='人事変更予約';panel.append(heading);
+    const note=document.createElement('p');note.textContent='自動反映は検証中です。予約登録だけでは現在の人事情報は変更されません。';panel.append(note);
+    const r=await APP.client().rpc('list_employee_hr_schedules_v1',{p_employee_id:currentEmployee.id});
+    if(r.error){const p=document.createElement('p');p.textContent='予約一覧を取得できません：'+r.error.message;panel.append(p);return;}
+    const labels={pending:'反映待ち',processing:'処理中',applied:'反映済み',cancelled:'取消済み',conflict:'競合',failed:'エラー'};
+    if(!r.data?.length){const p=document.createElement('p');p.textContent='予約なし';panel.append(p);}
+    for(const item of r.data||[]){
+      const row=document.createElement('div');row.style.marginBottom='12px';
+      const line=document.createElement('p');line.textContent=item.effective_date+'　'+(labels[item.status]||item.status)+'　'+(item.memo||'');row.append(line);
+      const changes=document.createElement('p');changes.textContent=(Array.isArray(item.change_payload?.changes)?item.change_payload.changes:[]).map(x=>x.label+'：'+x.oldVal+' → '+x.newVal).join(' / ');row.append(changes);
+      if(item.error_message){const p=document.createElement('p');p.textContent=item.error_message;row.append(p);}
+      if(['pending','conflict','failed'].includes(item.status)){
+        const b=document.createElement('button');b.type='button';b.className='btn btn-secondary btn-sm';b.textContent='予約取消';
+        b.onclick=async()=>{if(!confirm('この予約を取り消しますか？'))return;b.disabled=true;try{const c=await APP.client().rpc('cancel_employee_hr_schedule_v1',{p_schedule_id:item.id});if(c.error)throw c.error;await renderSchedules();}catch(e){APP.toast(e.message||String(e),'error');b.disabled=false;}};
+        row.append(b);
+      }panel.append(row);
+    }
+  }
+
   async function setupChangeUI(employee) {
     currentEmployee=employee;
     renderEmployeeStateAndActions(employee);
+    renderSchedules().catch(e=>console.error('schedule list',e));
     document.getElementById('btn-open-assignment-change')?.addEventListener('click',openModal);
     document.getElementById('btn-close-assignment-change')?.addEventListener('click',closeModal);
     document.getElementById('btn-cancel-assignment-change')?.addEventListener('click',closeModal);
