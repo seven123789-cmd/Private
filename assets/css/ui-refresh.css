@@ -315,7 +315,7 @@ body .page-header>.page-title+.month-note{flex:1 1 320px;margin:0 0 4px;color:va
 }
 
 /* =====================================================================
-   17. テーマ（配色）— html[data-theme] で切替。既定は imperial
+   17. テーマ（配色）— html[data-theme] で切替。既定は forest
    ---------------------------------------------------------------------
    imperial : 帝劇モダン（ワイン×ゴールド・明朝見出し）
    navy     : ネイビー×スカイ（落ち着いた業務向け）
@@ -372,7 +372,8 @@ html[data-theme="wine"]{
   --hero-bg:radial-gradient(circle at 88% 15%,rgba(214,170,90,.38),transparent 38%),linear-gradient(120deg,#5e1220,#8a1c2d 55%,#a8384a);
 }
 
-html[data-theme="forest"]{
+/* 既定テーマ：JSが動かない場合も forest を表示 */
+:root:not([data-theme]),html[data-theme="forest"]{
   --accent:#1e5b40; --accent-hover:#164631; --accent-2:#e3782f; --accent-soft:#edf5f0; --accent-line:#c6ddcf;
   --wine:var(--accent); --wine-dark:var(--accent-hover); --gold:#2f7a55; --gold-dark:#1e5b40; --focus:0 0 0 3px rgba(30,91,64,.24);
   --bg:#f4f6f3; --surface-soft:#f9fbf8; --surface-muted:#eff3ee; --line:#e0e6df; --line-strong:#c3cec3; --row-line:#ebefea;

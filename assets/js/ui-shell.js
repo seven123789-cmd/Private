@@ -9,6 +9,7 @@
 
   /* ① 配色テーマ ------------------------------------------------------ */
   const THEME_KEY = 'ui_theme_v1';
+  const DEFAULT_THEME = 'forest'; // 既定の配色（2026-11-24：グリーン×オレンジに変更）
   const THEMES = [
     { id: 'imperial', label: '帝劇モダン' },
     { id: 'navy', label: 'ネイビー' },
@@ -17,8 +18,8 @@
     { id: 'forest', label: 'グリーン×オレンジ' }
   ];
   const readTheme = () => {
-    try { const v = localStorage.getItem(THEME_KEY); return THEMES.some(t => t.id === v) ? v : 'imperial'; }
-    catch { return 'imperial'; }
+    try { const v = localStorage.getItem(THEME_KEY); return THEMES.some(t => t.id === v) ? v : DEFAULT_THEME; }
+    catch { return DEFAULT_THEME; }
   };
   const applyTheme = (id) => {
     document.documentElement.setAttribute('data-theme', id);
