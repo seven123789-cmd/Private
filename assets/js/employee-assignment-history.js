@@ -309,53 +309,22 @@ window.EmployeeAssignmentHistory = (() => {
       p_change_type:detectChangeType(values),
       p_memo:values.memo
     };
-    const assignmentChanged=diffs.some(x=>x.label!=='役職');
-    let r={error:null};
-    if(assignmentChanged) r=await sb.rpc('change_employee_assignment_v2',payload);
-    if(r.error){
-      console.error('assignment change failed',r.error);
-      APP.toast(`人事変更を登録できませんでした：${r.error.message}`,'error');
-      btn.disabled=false; btn.textContent='変更を登録';
-      return;
-    }
-    const titleChanged=diffs.some(x=>x.label==='役職');
-    if(titleChanged){
-      const tr=await sb.rpc('change_employee_job_titles_v1',{
-        p_employee_id:currentEmployee.id,
-        p_effective_from:values.effective_from,
+    try {
+      const result=await sb.rpc('change_employee_hr_atomic_v1',{
+        ...payload,
         p_job_title_ids:values.job_title_ids||[],
         p_primary_job_title_id:values.primary_job_title_id||null,
-        p_memo:values.memo
+        p_assignment_changed:diffs.some(x=>x.label!=='役職'),
+        p_title_changed:diffs.some(x=>x.label==='役職'),
+        p_details:{changes:diffs,center_id:values.center_id,division_id:values.division_id,position_id:values.position_id,grade_id:values.grade_id||null,job_title_ids:values.job_title_ids||[],primary_job_title_id:values.primary_job_title_id||null,memo:values.memo}
       });
-      if(tr.error){
-        console.error('job title change failed',tr.error);
-        APP.toast(`所属等は更新されましたが、役職変更に失敗しました：${tr.error.message}`,'error');
-        btn.disabled=false; btn.textContent='変更を登録';
-        return;
-      }
+      if(result.error)throw result.error;
+      if(result.data?.success!==true)throw Error('登録結果を確認できません');
+    } catch(error) {
+      const msg=String(error.message||error);
+      APP.toast('人事変更を登録できませんでした：'+(/effective_from.*later/.test(msg)?'発令日が既存履歴の開始日以前です。同日訂正は準備中です。':msg),'error');
+      btn.disabled=false;btn.textContent='変更を登録';return;
     }
-    // Phase20: 今後の手入力も復元履歴と同じ人事イベント台帳へ記録する。
-    // 現在値の更新RPCが正本、イベント台帳は監査・時系列表示用。失敗しても現在値更新は巻き戻さない。
-    try{
-      const eventDetails={
-        changes:diffs,
-        center_id:values.center_id,
-        division_id:values.division_id,
-        position_id:values.position_id,
-        grade_id:values.grade_id||null,
-        job_title_ids:values.job_title_ids||[],
-        primary_job_title_id:values.primary_job_title_id||null,
-        memo:values.memo
-      };
-      const er=await sb.rpc('add_employee_hr_event_v1',{
-        p_employee_id:currentEmployee.id,
-        p_effective_date:values.effective_from,
-        p_event_type:detectChangeType(values),
-        p_details:eventDetails,
-        p_memo:values.memo
-      });
-      if(er.error) console.error('Phase20 HR event append failed',er.error);
-    }catch(eventError){ console.error('Phase20 HR event append failed',eventError); }
     APP.toast('人事変更を登録しました');
     closeModal();
     setTimeout(()=>location.reload(),450);
