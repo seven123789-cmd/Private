@@ -7,9 +7,9 @@ function employeeEmploymentConflict(e){const grade=employeeGradeRank(e.current_g
 function employeeListSort(a,b){
   const ga=employeeGradeRank(a.current_grade),gb=employeeGradeRank(b.current_grade);
   // 数字の等級を上位から。管理職・等級なしは数字等級の後に表示する。
-  const rankA=ga>=0?0:String(a.current_grade||'').includes('管理職')?1:2;
-  const rankB=gb>=0?0:String(b.current_grade||'').includes('管理職')?1:2;
-  return rankA-rankB||(rankA===0?gb-ga:0)
+  const rankA=String(a.current_grade||'').trim()==='管理職'?0:ga>=0?1:2;
+  const rankB=String(b.current_grade||'').trim()==='管理職'?0:gb>=0?1:2;
+  return rankA-rankB||(rankA===1?gb-ga:0)
     ||String(a.employee_code||'').localeCompare(String(b.employee_code||''),'ja',{numeric:true})
     ||String(a.name||'').localeCompare(String(b.name||''),'ja');
 }
