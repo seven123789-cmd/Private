@@ -12,7 +12,8 @@
   const THEMES = [
     { id: 'imperial', label: '帝劇モダン' },
     { id: 'navy', label: 'ネイビー' },
-    { id: 'violet', label: 'バイオレット' }
+    { id: 'violet', label: 'バイオレット' },
+    { id: 'wine', label: 'ホワイト×ワイン' }
   ];
   const readTheme = () => {
     try { const v = localStorage.getItem(THEME_KEY); return THEMES.some(t => t.id === v) ? v : 'imperial'; }

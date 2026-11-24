@@ -320,6 +320,7 @@ body .page-header>.page-title+.month-note{flex:1 1 320px;margin:0 0 4px;color:va
    imperial : 帝劇モダン（ワイン×ゴールド・明朝見出し）
    navy     : ネイビー×スカイ（落ち着いた業務向け）
    violet   : ホワイト×バイオレット（明るいサイドバー）
+   wine     : ホワイト×ワイン（明るいサイドバー・ブランド色）
    ===================================================================== */
 :root,html[data-theme="imperial"]{
   --accent:#8c1d2c; --accent-hover:#6f1622; --accent-2:#c0923a; --accent-soft:#f8eef0; --accent-line:#e7c7cd;
@@ -357,9 +358,23 @@ html[data-theme="violet"]{
   --hero-bg:radial-gradient(circle at 90% 10%,rgba(255,255,255,.25),transparent 35%),linear-gradient(120deg,#5a3fb8,#d76a95);
 }
 
+html[data-theme="wine"]{
+  --accent:#8a1c2d; --accent-hover:#6e1523; --accent-2:#c39a4a; --accent-soft:#f9eff1; --accent-line:#ebcbd1;
+  --wine:var(--accent); --wine-dark:var(--accent-hover); --gold:#b8862b; --gold-dark:#8f681b; --focus:0 0 0 3px rgba(138,28,45,.22);
+  --bg:#f7f5f2; --surface-soft:#fbfaf8; --surface-muted:#f4f0eb; --line:#e8e2da; --line-strong:#cfc5b8; --row-line:#f0ebe5;
+  --ink:#261f1b; --muted:#5d544c; --faint:#7f766c;
+  --nav-bg:#ffffff;
+  --nav-ink:#3b302b; --nav-muted:#9a8f84; --nav-hover:#f8f3f1; --nav-line:#eee8e1;
+  --nav-active-bg:#f8ecee; --nav-active-ink:#7a1726; --nav-active-bar:#8a1c2d;
+  --brand-bg:linear-gradient(135deg,#7a1726,#a8384a); --brand-ink:#fff4d6; --brand-sub:rgba(255,240,210,.82); --brand-line:transparent;
+  --title-font:'Shippori Mincho',serif; --title-ink:#2c201a;
+  --hero-bg:radial-gradient(circle at 88% 15%,rgba(214,170,90,.38),transparent 38%),linear-gradient(120deg,#5e1220,#8a1c2d 55%,#a8384a);
+}
+
 /* --- 共通：テーマ変数を各部品へ反映 --------------------------------- */
 body{background:var(--bg)}
 .sidebar{background:var(--nav-bg);border-right:1px solid var(--nav-line);color:var(--nav-ink)}
+html[data-theme="wine"] .sidebar,html[data-theme="violet"] .sidebar{box-shadow:1px 0 0 var(--nav-line),4px 0 18px rgba(40,25,20,.04)}
 .imperial-brand-card{background:var(--brand-bg);border-color:var(--brand-line);box-shadow:0 6px 16px rgba(0,0,0,.12)}
 .imperial-brand-title{color:var(--brand-ink);font-family:var(--title-font)}
 .imperial-brand-sub{color:var(--brand-sub)}
@@ -387,6 +402,8 @@ body{background:var(--bg)}
 .ui-theme-chip[data-theme-value="imperial"]{background:linear-gradient(135deg,#8c1d2c 50%,#c0923a 50%)}
 .ui-theme-chip[data-theme-value="navy"]{background:linear-gradient(135deg,#132a52 50%,#2f86e6 50%)}
 .ui-theme-chip[data-theme-value="violet"]{background:linear-gradient(135deg,#6a4bc4 50%,#e2709a 50%)}
+.ui-theme-chip[data-theme-value="wine"]{background:linear-gradient(135deg,#ffffff 50%,#8a1c2d 50%);border-color:#e3d9d0}
+.ui-theme-chip[data-theme-value="wine"][aria-pressed="true"]{border-color:var(--nav-active-bar)}
 
 /* 見出し */
 .page-title{font-family:var(--title-font);color:var(--title-ink)}
@@ -435,11 +452,11 @@ a.stat-card:hover,button.stat-card:hover{border-color:color-mix(in srgb,var(--to
 
 /* ダッシュボードのヘッダー：imperialは画像、その他はテーマのグラデーション */
 .page-header.page-header-v2{background:var(--hero-bg)}
-html[data-theme="navy"] .page-header-v2 .page-header-bg-img,html[data-theme="violet"] .page-header-v2 .page-header-bg-img{display:none}
-html[data-theme="navy"] .page-header.page-header-v2:after,html[data-theme="violet"] .page-header.page-header-v2:after{background:radial-gradient(circle at 70% 120%,rgba(255,255,255,.12),transparent 45%)}
-html[data-theme="navy"] .page-header-v2 .page-title,html[data-theme="violet"] .page-header-v2 .page-title{color:#fff;text-shadow:none}
-html[data-theme="navy"] .page-header-v2 .page-title-en,html[data-theme="violet"] .page-header-v2 .page-title-en{color:rgba(255,255,255,.75);text-shadow:none}
-html[data-theme="navy"] .dashboard-hero-copy,html[data-theme="violet"] .dashboard-hero-copy{color:rgba(255,255,255,.85);text-shadow:none}
+html[data-theme="navy"] .page-header-v2 .page-header-bg-img,html[data-theme="violet"] .page-header-v2 .page-header-bg-img,html[data-theme="wine"] .page-header-v2 .page-header-bg-img{display:none}
+html[data-theme="navy"] .page-header.page-header-v2:after,html[data-theme="violet"] .page-header.page-header-v2:after,html[data-theme="wine"] .page-header.page-header-v2:after{background:radial-gradient(circle at 70% 120%,rgba(255,255,255,.12),transparent 45%)}
+html[data-theme="navy"] .page-header-v2 .page-title,html[data-theme="violet"] .page-header-v2 .page-title,html[data-theme="wine"] .page-header-v2 .page-title{color:#fff;text-shadow:none}
+html[data-theme="navy"] .page-header-v2 .page-title-en,html[data-theme="violet"] .page-header-v2 .page-title-en,html[data-theme="wine"] .page-header-v2 .page-title-en{color:rgba(255,255,255,.75);text-shadow:none}
+html[data-theme="navy"] .dashboard-hero-copy,html[data-theme="violet"] .dashboard-hero-copy,html[data-theme="wine"] .dashboard-hero-copy{color:rgba(255,255,255,.85);text-shadow:none}
 .dashboard-section:has(>.section-heading-row:only-child){border-left-color:var(--accent-2)}
 
 /* 明るいサイドバー（violet）のときのスマホ用トップバー */
