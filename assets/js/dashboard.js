@@ -2,9 +2,10 @@ async function initDashboard() {
   APP.initHeader();
   setDashboardLoading(true);
   try {
-    const [employees, alerts, licenses] = await Promise.all([
+    const [masterEmployees, alerts, licenses] = await Promise.all([
       APP.loadEmployees(), APP.loadAlertRows(), APP.loadLicenseRows()
     ]);
+    const employees=masterEmployees.filter(e=>e.is_active!==false&&e.status!=='retired'&&e.status!=='past'&&!e.retirement_date);
     const statusOf=r=>APP.normStatus(r.alert_status,r.expiration_date);
     const expired=alerts.filter(r=>statusOf(r)==='期限切れ').length;
     const critical=alerts.filter(r=>statusOf(r)==='30日以内').length;
@@ -18,7 +19,7 @@ async function initDashboard() {
     renderWorkforce(employees);
     renderCoverage(employees,licenses);
     renderMonthly(alerts);
-    renderDataHealth(employees,licenses,alerts);
+    renderDataHealth(masterEmployees,licenses,alerts);
     const stamp=document.getElementById('dashboard-updated');
     if(stamp)stamp.textContent=`最終更新 ${new Intl.DateTimeFormat('ja-JP',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Tokyo'}).format(new Date())}`;
   } catch(err) {
@@ -51,7 +52,7 @@ function renderWorkforce(employees){
   const counts=new Map();employees.forEach(e=>counts.set(e.center||'未設定',(counts.get(e.center||'未設定')||0)+1));
   const rows=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ja'));
   const max=Math.max(1,...rows.map(r=>r[1]));
-  el.innerHTML=rows.length?`<div class="bars">${rows.slice(0,10).map(([name,count])=>`<div class="bar-row"><div class="bar-head"><span>${APP.escape(name)}</span><span>${count}名</span></div><div class="bar"><span style="width:${Math.max(4,count/max*100)}%"></span></div></div>`).join('')}</div>`:`<div class="empty">社員データがありません</div>`;
+  el.innerHTML=rows.length?`<div class="bars">${rows.map(([name,count])=>`<div class="bar-row"><div class="bar-head"><span>${APP.escape(name)}</span><span>${count}名</span></div><div class="bar"><span style="width:${Math.max(4,count/max*100)}%"></span></div></div>`).join('')}</div>`:`<div class="empty">社員データがありません</div>`;
 }
 function renderCoverage(employees,licenses){
   const el=document.getElementById('coverage-list');if(!el)return;
