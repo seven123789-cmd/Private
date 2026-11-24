@@ -138,6 +138,7 @@ window.EmployeeAssignmentHistory = (() => {
       division_id:document.getElementById('assignment-division')?.value||'',
       position_id:document.getElementById('assignment-position')?.value||'',
       grade_id:document.getElementById('assignment-grade')?.value||null,
+      employment_type:document.getElementById('assignment-employment-type')?.value||'',
       memo:document.getElementById('assignment-memo')?.value?.trim()||null,
       job_title_ids:[...document.querySelectorAll('input[name="assignment-job-title"]:checked')].map(x=>x.value),
       primary_job_title_id:document.querySelector('input[name="assignment-primary-job-title"]:checked')?.value||null
@@ -155,6 +156,7 @@ window.EmployeeAssignmentHistory = (() => {
     push('職種',currentHistory.position_name,optionLabel('assignment-position'),currentHistory.position_id,values.position_id);
     const newGrade=values.grade_id?optionLabel('assignment-grade'):'未設定';
     push('等級',currentHistory.grade_name||'未設定',newGrade,currentHistory.grade_id,values.grade_id);
+    push('雇用区分',currentEmployee.employment_type,values.employment_type,currentEmployee.employment_type,values.employment_type);
     const oldIds=currentJobTitles.map(x=>strId(x.job_title_id)).sort();
     const newIds=(values.job_title_ids||[]).map(strId).sort();
     const titleChanged=oldIds.join('|')!==newIds.join('|') || strId(currentPrimaryJobTitleId)!==strId(values.primary_job_title_id);
@@ -248,6 +250,18 @@ window.EmployeeAssignmentHistory = (() => {
     fillSelect('assignment-position',masterOptions.positions,'position_name',null);
     fillSelect('assignment-grade',masterOptions.grades,'grade_name','未設定');
     renderJobTitleChoices();
+    let employment=document.getElementById('assignment-employment-type');
+    if(!employment){
+      const field=document.createElement('div');
+      const label=document.createElement('label');label.htmlFor='assignment-employment-type';label.textContent='雇用区分（本日付のみ）';
+      employment=document.createElement('select');employment.id='assignment-employment-type';employment.className=document.getElementById('assignment-grade').className;
+      field.append(label,employment);document.getElementById('assignment-grade').parentElement.after(field);
+      employment.addEventListener('change',renderPreview);
+    }
+    employment.replaceChildren();
+    const currentType=currentEmployee.employment_type||'';
+    for(const type of [...new Set([currentType,'正社員','準社員S','準社員A','準社員B','副社員'])]){const o=document.createElement('option');o.value=type;o.textContent=type||'未設定';employment.append(o);}
+    employment.value=currentType;
 
     document.getElementById('assignment-center').value=strId(currentHistory.center_id);
     document.getElementById('assignment-division').value=strId(currentHistory.division_id);
@@ -294,6 +308,8 @@ window.EmployeeAssignmentHistory = (() => {
     }
 
     const summary=diffs.map(x=>`${x.label}: ${x.oldVal} → ${x.newVal}`).join('\n');
+    const employmentChanged=diffs.some(x=>x.label==='雇用区分');
+    if(employmentChanged && (values.effective_from!==todayJst() || !values.memo?.trim())){APP.toast('雇用区分変更は本日付と変更理由の入力が必要です','warning');return;}
     const titleOnly=diffs.every(x=>x.label==='役職');
     const correction=titleOnly && confirm('役職定年・登録漏れ・誤登録の訂正として、指定日以降の役職履歴を置き換えますか？\nOK：役職履歴訂正／キャンセル：通常の人事変更');
     if(!correction && values.effective_from < currentHistory.effective_from){
@@ -328,11 +344,13 @@ window.EmployeeAssignmentHistory = (() => {
         result=await sb.rpc('correct_employee_job_titles_v2',{
           p_employee_id:currentEmployee.id,p_effective_from:values.effective_from,p_job_title_ids:values.job_title_ids||[],p_primary_job_title_id:values.primary_job_title_id||null,p_reason:reason,p_memo:values.memo,p_expected_history:h.data||[]
         });
-      }else result=await sb.rpc('change_employee_hr_atomic_v1',{
+      }else result=await sb.rpc('change_employee_hr_atomic_v2',{
         ...payload,
         p_job_title_ids:values.job_title_ids||[],
         p_primary_job_title_id:values.primary_job_title_id||null,
-        p_assignment_changed:diffs.some(x=>x.label!=='役職'),
+        p_assignment_changed:diffs.some(x=>!['役職','雇用区分'].includes(x.label)),
+        p_employment_type:values.employment_type||null,
+        p_employment_changed:employmentChanged,
         p_title_changed:diffs.some(x=>x.label==='役職'),
         p_details:{changes:diffs,center_id:values.center_id,division_id:values.division_id,position_id:values.position_id,grade_id:values.grade_id||null,job_title_ids:values.job_title_ids||[],primary_job_title_id:values.primary_job_title_id||null,memo:values.memo}
       });
