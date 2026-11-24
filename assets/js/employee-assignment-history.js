@@ -263,13 +263,13 @@ window.EmployeeAssignmentHistory = (() => {
     }
     syncPrimaryChoices();
 
-    const minDate=addDays(currentHistory.effective_from,1);
+    const minDate=currentHistory.effective_from;
     const today=todayJst();
     const dateEl=document.getElementById('assignment-effective-from');
     dateEl.min=minDate;
     dateEl.max=today;
     dateEl.value=today >= minDate ? today : minDate;
-    document.getElementById('assignment-date-help').textContent=`登録可能日：${fmt(minDate)} ～ ${fmt(today)}（未来日の予約異動は未対応）`;
+    document.getElementById('assignment-date-help').textContent=`登録可能日：${fmt(minDate)} ～ ${fmt(today)}（本日付・同日変更可／未来日の予約異動は未対応）`;
     document.getElementById('assignment-memo').value='';
     renderPreview();
     document.getElementById('assignment-change-modal').classList.remove('hidden');
@@ -322,7 +322,7 @@ window.EmployeeAssignmentHistory = (() => {
       if(result.data?.success!==true)throw Error('登録結果を確認できません');
     } catch(error) {
       const msg=String(error.message||error);
-      APP.toast('人事変更を登録できませんでした：'+(/effective_from.*later/.test(msg)?'発令日が既存履歴の開始日以前です。同日訂正は準備中です。':msg),'error');
+      APP.toast('人事変更を登録できませんでした：'+(/effective_from.*later/.test(msg)?'発令日と既存履歴の開始日が整合しません。履歴を確認してください。':msg),'error');
       btn.disabled=false;btn.textContent='変更を登録';return;
     }
     APP.toast('人事変更を登録しました');
