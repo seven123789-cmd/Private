@@ -246,18 +246,8 @@ tbody tr[onclick]:hover td:first-child,.promo-row:hover td:first-child{box-shado
 .flow-step{font-size:var(--fs-xs)}
 .step-badge,.rs-label,.drop-sub,.external-link-count,.external-link-url{font-size:var(--fs-xs)}
 .login-card-head p,.login-error,.login-mode-note{font-size:var(--fs-sm)}
-/* 月次管理：独自スタイル（ページ内<style>）をテーマ色に合わせる */
+/* 月次管理の見出し（タイトル横の説明文） */
 body .page-header>.page-title+.month-note{flex:1 1 320px;margin:0 0 4px;color:var(--muted);font-size:var(--fs-sm)}
-body .month-tabs{gap:10px;margin:0 0 16px}
-body .month-tab{padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);font:inherit;color:var(--ink);transition:border-color .12s}
-body .month-tab:hover{border-color:var(--line-strong)}
-body .month-tab strong{font-size:var(--fs-lg);margin-bottom:2px}
-body .month-tab span{font-size:var(--fs-xs);color:var(--faint)}
-body .month-tab[aria-pressed="true"]{border-color:var(--wine);background:#fbf1f2;box-shadow:inset 4px 0 0 var(--wine)}
-body .month-report-table th{background:var(--surface-muted);color:var(--muted);font-size:var(--fs-xs)}
-body .month-report-table tfoot{background:var(--surface-muted)}
-body .month-report-table th,body .month-report-table td{padding:9px 12px;border-bottom-color:var(--row-line)}
-body .month-alert{border-color:var(--warning-line);background:var(--warning-bg);border-radius:var(--radius-sm);font-size:var(--fs-sm)}
 
 /* 15. レスポンシブ --------------------------------------------------- */
 @media(max-width:1280px){
@@ -323,3 +313,180 @@ body .month-alert{border-color:var(--warning-line);background:var(--warning-bg);
   .table-wrap{overflow:visible}
   th{position:static}
 }
+
+/* =====================================================================
+   17. テーマ（配色）— html[data-theme] で切替。既定は imperial
+   ---------------------------------------------------------------------
+   imperial : 帝劇モダン（ワイン×ゴールド・明朝見出し）
+   navy     : ネイビー×スカイ（落ち着いた業務向け）
+   violet   : ホワイト×バイオレット（明るいサイドバー）
+   ===================================================================== */
+:root,html[data-theme="imperial"]{
+  --accent:#8c1d2c; --accent-hover:#6f1622; --accent-2:#c0923a; --accent-soft:#f8eef0; --accent-line:#e7c7cd;
+  --wine:var(--accent); --wine-dark:var(--accent-hover); --gold:#b8862b; --gold-dark:#8f681b;
+  --bg:#f6f3ee; --surface-muted:#f3efe8; --line:#e6dfd4; --row-line:#efeae2;
+  --nav-bg:radial-gradient(circle at 15% 0%,rgba(140,29,44,.35),transparent 35%),linear-gradient(180deg,#0e1524,#151a2a 50%,#1b1119);
+  --nav-ink:#ece4d4; --nav-muted:#a99d88; --nav-hover:rgba(255,255,255,.07); --nav-line:rgba(230,189,98,.22);
+  --nav-active-bg:linear-gradient(90deg,rgba(140,29,44,.95),rgba(140,29,44,.6)); --nav-active-ink:#fff6dc; --nav-active-bar:#e6bd62;
+  --brand-bg:linear-gradient(145deg,rgba(140,29,44,.75),rgba(70,14,24,.6)); --brand-ink:#fff1c6; --brand-sub:#d9c79c; --brand-line:rgba(233,213,164,.4);
+  --title-font:'Shippori Mincho',serif; --title-ink:#2f2318;
+  --hero-bg:linear-gradient(120deg,#151a2b,#3b1424);
+}
+html[data-theme="navy"]{
+  --accent:#2457c5; --accent-hover:#1c459f; --accent-2:#22b3c9; --accent-soft:#edf3fd; --accent-line:#c3d4f3;
+  --gold:#2f7fe0; --gold-dark:#2457c5; --focus:0 0 0 3px rgba(36,87,197,.25);
+  --bg:#f2f5f9; --surface-soft:#f8fafc; --surface-muted:#eef2f7; --line:#dfe5ee; --line-strong:#c4cedb; --row-line:#ebeff5;
+  --ink:#1b2433; --muted:#4f5b6d; --faint:#738096;
+  --nav-bg:linear-gradient(180deg,#0d1a2f,#122440 60%,#0f1d33);
+  --nav-ink:#dde6f3; --nav-muted:#8395b2; --nav-hover:rgba(255,255,255,.06); --nav-line:rgba(148,178,224,.18);
+  --nav-active-bg:rgba(90,150,255,.18); --nav-active-ink:#ffffff; --nav-active-bar:#5fb7ff;
+  --brand-bg:linear-gradient(135deg,#1f4fb5,#1a8aa8); --brand-ink:#fff; --brand-sub:#cfe3ff; --brand-line:rgba(255,255,255,.18);
+  --title-font:var(--font-sans); --title-ink:#14203a;
+  --hero-bg:radial-gradient(circle at 85% 20%,rgba(34,179,201,.45),transparent 40%),linear-gradient(120deg,#0f2147,#2457c5);
+}
+html[data-theme="violet"]{
+  --accent:#6a4bc4; --accent-hover:#5539a6; --accent-2:#e2709a; --accent-soft:#f3effc; --accent-line:#d9cff3;
+  --gold:#8a6ce0; --gold-dark:#6a4bc4; --focus:0 0 0 3px rgba(106,75,196,.25);
+  --bg:#f6f5fa; --surface-soft:#faf9fd; --surface-muted:#f2f0f8; --line:#e5e2ef; --line-strong:#cdc8de; --row-line:#efedf5;
+  --ink:#24213a; --muted:#565170; --faint:#7d7894;
+  --nav-bg:#ffffff;
+  --nav-ink:#3d3858; --nav-muted:#9590ad; --nav-hover:#f5f3fb; --nav-line:#ece9f4;
+  --nav-active-bg:#efe9fd; --nav-active-ink:#4a2fa3; --nav-active-bar:#6a4bc4;
+  --brand-bg:linear-gradient(135deg,#6a4bc4,#d76a95); --brand-ink:#fff; --brand-sub:rgba(255,255,255,.85); --brand-line:transparent;
+  --title-font:var(--font-sans); --title-ink:#211d37;
+  --hero-bg:radial-gradient(circle at 90% 10%,rgba(255,255,255,.25),transparent 35%),linear-gradient(120deg,#5a3fb8,#d76a95);
+}
+
+/* --- 共通：テーマ変数を各部品へ反映 --------------------------------- */
+body{background:var(--bg)}
+.sidebar{background:var(--nav-bg);border-right:1px solid var(--nav-line);color:var(--nav-ink)}
+.imperial-brand-card{background:var(--brand-bg);border-color:var(--brand-line);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.imperial-brand-title{color:var(--brand-ink);font-family:var(--title-font)}
+.imperial-brand-sub{color:var(--brand-sub)}
+.sidebar-section-label{color:var(--nav-muted)}
+.imperial-menu-card{color:var(--nav-ink);gap:10px}
+.imperial-menu-card:hover{background:var(--nav-hover);color:var(--nav-ink)}
+.imperial-menu-card.active{background:var(--nav-active-bg);color:var(--nav-active-ink);border-color:transparent}
+.imperial-menu-card.active:before{background:var(--nav-active-bar)}
+.imperial-system-menu-card:after{color:var(--nav-muted)}
+.sidebar-account{border-top-color:var(--nav-line)}
+.sidebar-account-label{color:var(--nav-muted)}
+.sidebar-account-copy strong{color:var(--nav-ink)}
+.sidebar-account-action{color:var(--nav-ink);border-color:var(--nav-line)}
+.sidebar-account-action:hover{background:var(--nav-hover);color:var(--nav-ink)}
+/* ナビのアイコン（ui-shell.js が挿入） */
+.ui-nav-ico{flex:0 0 18px;width:18px;height:18px;opacity:.8}
+.ui-nav-ico svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.imperial-menu-card.active .ui-nav-ico{opacity:1}
+/* テーマ切替 */
+.ui-theme-switch{margin:14px 8px 0;padding-top:12px;border-top:1px solid var(--nav-line)}
+.ui-theme-switch__label{display:block;margin-bottom:6px;font-size:11px;color:var(--nav-muted);letter-spacing:.06em}
+.ui-theme-switch__row{display:flex;gap:6px}
+.ui-theme-chip{flex:1;height:28px;border-radius:7px;border:2px solid transparent;cursor:pointer;padding:0}
+.ui-theme-chip[aria-pressed="true"]{border-color:var(--nav-active-bar);box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.ui-theme-chip[data-theme-value="imperial"]{background:linear-gradient(135deg,#8c1d2c 50%,#c0923a 50%)}
+.ui-theme-chip[data-theme-value="navy"]{background:linear-gradient(135deg,#132a52 50%,#2f86e6 50%)}
+.ui-theme-chip[data-theme-value="violet"]{background:linear-gradient(135deg,#6a4bc4 50%,#e2709a 50%)}
+
+/* 見出し */
+.page-title{font-family:var(--title-font);color:var(--title-ink)}
+.page-title-en{color:var(--accent)}
+.card-title{display:flex;align-items:center;gap:8px}
+.card-title:before{content:'';flex:0 0 4px;width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,var(--accent),var(--accent-2))}
+.modal .card-title:before{display:none}
+.section-heading-row h2{display:flex;align-items:center;gap:8px}
+
+/* 面 */
+.card,.table-card,.filter-panel,.import-card,.employee-profile .employee-summary,.promotion-progress-panel{border-radius:14px;border-color:var(--line);box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.04)}
+.card-header{border-bottom-color:var(--row-line)}
+th{background:var(--surface-muted)}
+tbody tr:hover{background:color-mix(in srgb,var(--accent) 4%,#fff)}
+tbody tr[onclick]:hover td:first-child,.promo-row:hover td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+
+/* KPI：状態色をうっすら敷いたタイル */
+.stat-card{--tone:var(--accent);--tone-soft:var(--accent-soft);border-radius:14px;border-color:var(--line);background:linear-gradient(135deg,var(--tone-soft) 0%,#fff 62%);box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.stat-card:before{display:none}
+.stat-card.danger{--tone:var(--danger);--tone-soft:#fdeef1}
+.stat-card.warning{--tone:#b46a0f;--tone-soft:#fdf3e3}
+.stat-card.info{--tone:#0b7a8c;--tone-soft:#e9f6f8}
+.stat-card.sakura{--tone:#7c4bb3;--tone-soft:#f3edfb}
+.stat-top>span{display:inline-flex;align-items:center;gap:7px}
+.stat-top>span:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 3px color-mix(in srgb,var(--tone) 18%,transparent)}
+.stat-value{color:var(--tone)}
+.stat-card:not(.danger):not(.warning):not(.info):not(.sakura) .stat-value{color:var(--ink)}
+a.stat-card:hover,button.stat-card:hover{border-color:color-mix(in srgb,var(--tone) 35%,var(--line));box-shadow:0 6px 18px color-mix(in srgb,var(--tone) 12%,transparent)}
+.license-stats .stat-card.active{border-color:var(--tone);box-shadow:0 0 0 2px color-mix(in srgb,var(--tone) 20%,transparent)}
+
+/* ボタン・ページ送り・バー */
+.btn-primary{background:var(--accent);border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.page-btn.active{background:var(--accent);border-color:var(--accent)}
+.text-link{color:var(--accent)}
+.bar,.progress-bar-wrap{height:8px;background:var(--surface-muted)}
+.bar>span,.progress-bar-fill{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.mini-avatar{background:var(--accent-soft);color:var(--accent)}
+.employee-avatar{background:linear-gradient(135deg,var(--accent),var(--accent-2));border:0;color:#fff;font-family:var(--title-font)}
+.badge-primary{color:var(--accent);background:var(--accent-soft);border-color:var(--accent-line)}
+.step-badge{color:var(--accent);background:var(--accent-soft)}
+.flow-step.active{color:var(--accent)}.flow-step.active strong{background:var(--accent)}
+
+/* 選択カード（社員一覧のセンター／月次管理のタブ） */
+.emp-center-card[aria-pressed="true"],body .month-tab[aria-pressed="true"],body .month-center[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+
+/* ダッシュボードのヘッダー：imperialは画像、その他はテーマのグラデーション */
+.page-header.page-header-v2{background:var(--hero-bg)}
+html[data-theme="navy"] .page-header-v2 .page-header-bg-img,html[data-theme="violet"] .page-header-v2 .page-header-bg-img{display:none}
+html[data-theme="navy"] .page-header.page-header-v2:after,html[data-theme="violet"] .page-header.page-header-v2:after{background:radial-gradient(circle at 70% 120%,rgba(255,255,255,.12),transparent 45%)}
+html[data-theme="navy"] .page-header-v2 .page-title,html[data-theme="violet"] .page-header-v2 .page-title{color:#fff;text-shadow:none}
+html[data-theme="navy"] .page-header-v2 .page-title-en,html[data-theme="violet"] .page-header-v2 .page-title-en{color:rgba(255,255,255,.75);text-shadow:none}
+html[data-theme="navy"] .dashboard-hero-copy,html[data-theme="violet"] .dashboard-hero-copy{color:rgba(255,255,255,.85);text-shadow:none}
+.dashboard-section:has(>.section-heading-row:only-child){border-left-color:var(--accent-2)}
+
+/* 明るいサイドバー（violet）のときのスマホ用トップバー */
+@media(max-width:860px){
+  .ui-topbar{background:var(--nav-bg);color:var(--nav-ink);border-bottom-color:var(--nav-line)}
+  .ui-topbar__menu{color:var(--nav-ink);border-color:var(--nav-line)}
+  .ui-topbar__title{color:var(--nav-ink)}
+  .ui-topbar__brand{color:var(--nav-muted)}
+}
+
+/* =====================================================================
+   18. 月次管理（旧：monthly_management.html 内の <style> を移設）
+   ===================================================================== */
+.month-shell{max-width:1600px}
+.month-tools{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 16px}
+.month-tools label{display:flex;flex-direction:column;gap:5px;font-size:var(--fs-xs);font-weight:700;color:var(--muted)}
+.month-tools input,.month-tools select{min-height:40px;min-width:150px;padding:7px 11px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:#fff;font:inherit;font-size:var(--fs-base);color:var(--ink)}
+.month-tools input:focus,.month-tools select:focus{outline:0;border-color:var(--gold);box-shadow:var(--focus)}
+.month-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.month-tab{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:left;cursor:pointer;font:inherit;color:var(--ink);transition:border-color .12s}
+.month-tab:hover{border-color:var(--line-strong)}
+.month-tab strong{display:block;margin-bottom:2px;font-size:var(--fs-lg)}
+.month-tab span{font-size:var(--fs-xs);color:var(--faint)}
+.month-centers{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:12px 0 16px}
+.month-center{padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}
+.month-center:hover{border-color:var(--line-strong)}
+.month-center strong{display:block;font-size:var(--fs-sm)}
+.month-center span{font-size:var(--fs-xs);color:var(--faint)}
+.month-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.month-summary article{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,var(--accent-soft),#fff 62%)}
+.month-summary strong{display:block;margin-top:4px;font-size:26px;font-variant-numeric:tabular-nums}
+.month-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+.month-table{width:100%;min-width:980px;border-collapse:collapse}
+.month-table th,.month-table td{padding:9px 12px;border-bottom:1px solid var(--row-line);text-align:left;font-size:var(--fs-sm)}
+.month-table th{position:sticky;top:0;background:var(--surface-muted);color:var(--muted);font-size:var(--fs-xs)}
+.month-table tbody tr{cursor:pointer}
+.month-table tbody tr:hover{background:color-mix(in srgb,var(--accent) 4%,#fff)}
+.month-report{margin:18px 0}
+.month-report h2{margin:14px 0 10px;font-size:var(--fs-lg)}
+.month-report-table{width:100%;border-collapse:collapse;background:#fff}
+.month-report-table th,.month-report-table td{padding:9px 12px;border-bottom:1px solid var(--row-line);text-align:right;font-size:var(--fs-sm)}
+.month-report-table th:first-child,.month-report-table td:first-child{text-align:left}
+.month-report-table th{background:var(--surface-muted);color:var(--muted);font-size:var(--fs-xs)}
+.month-report-table tfoot{background:var(--surface-muted);font-weight:700}
+.month-note{font-size:var(--fs-sm);color:var(--muted);line-height:1.8}
+.month-error{color:var(--danger)}
+.month-alert{margin:12px 0;padding:12px 14px;border:1px solid var(--warning-line);border-left:4px solid var(--warning);border-radius:var(--radius-sm);background:var(--warning-bg);font-size:var(--fs-sm)}
+.month-detail{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.month-tag{padding:2px 8px;border-radius:999px;background:var(--surface-muted);font-size:var(--fs-xs)}
+@media(max-width:700px){.month-tabs{grid-template-columns:1fr}}

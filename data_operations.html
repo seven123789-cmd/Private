@@ -2,7 +2,7 @@
 <html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>データ運用確認 — 統合管理システム</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/app.css"><link rel="stylesheet" href="assets/css/ui-refresh.css"></head>
+<link rel="stylesheet" href="assets/css/app.css"><link rel="stylesheet" href="assets/css/ui-refresh.css"><script src="assets/js/ui-shell.js"></script></head>
 <body class="data-ops-workspace"><div class="auth-gate-screen" id="auth-gate-screen">認証状態を確認しています…</div><div class="app-shell"><aside class="sidebar" id="sidebar"></aside><div class="page-content"><main class="page-main">
 <div class="page-header"><div class="page-heading"><div class="page-title-block"><div class="page-title">データ運用確認</div><div class="page-title-en">DATA OPERATIONS</div><div class="page-description">DB接続と主要データの読込状態を確認します。推測値ではなく実際の読込結果を表示します。</div></div></div><div class="page-header-actions"><button id="btn-health-refresh" class="btn btn-secondary btn-sm">再確認</button></div></div>
 <div class="stats">
@@ -24,7 +24,7 @@
 </div></div>
 <div class="alert-box gold data-ops-warning"><strong>DB内部の復元基準・スキーマ版・主要整合性はこの画面で確認できます。</strong> Supabase管理側の自動Backup/PITR有効化・保持日数と、Supabase外へのバックアップ保管状況は別途運用確認が必要です。</div>
 </main></div></div><div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script><script src="assets/js/ui-shell.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script>
 <script>
 (async()=>{
   const ok=await APP.enforcePageAuth();
