@@ -266,10 +266,10 @@ window.EmployeeAssignmentHistory = (() => {
     const minDate=currentHistory.effective_from;
     const today=todayJst();
     const dateEl=document.getElementById('assignment-effective-from');
-    dateEl.min=minDate;
+    dateEl.removeAttribute('min');
     dateEl.max=today;
     dateEl.value=today >= minDate ? today : minDate;
-    document.getElementById('assignment-date-help').textContent=`登録可能日：${fmt(minDate)} ～ ${fmt(today)}（本日付・同日変更可／未来日の予約異動は未対応）`;
+    document.getElementById('assignment-date-help').textContent=`本日付・同日変更可。過去の役職訂正は登録時に確認します。所属等の変更は既存履歴開始日以降。`;
     document.getElementById('assignment-memo').value='';
     renderPreview();
     document.getElementById('assignment-change-modal').classList.remove('hidden');
@@ -294,6 +294,11 @@ window.EmployeeAssignmentHistory = (() => {
     }
 
     const summary=diffs.map(x=>`${x.label}: ${x.oldVal} → ${x.newVal}`).join('\n');
+    const titleOnly=diffs.every(x=>x.label==='役職');
+    const correction=titleOnly && confirm('役職定年・登録漏れ・誤登録の訂正として、指定日以降の役職履歴を置き換えますか？\nOK：役職履歴訂正／キャンセル：通常の人事変更');
+    if(!correction && values.effective_from < currentHistory.effective_from){
+      APP.toast('所属等の遡及変更は未対応です','warning');return;
+    }
     if(!confirm(`以下の人事変更を登録します。\n\n適用日: ${values.effective_from}\n${summary}\n\n登録しますか？`)) return;
 
     const btn=document.getElementById('btn-submit-assignment-change');
@@ -310,7 +315,20 @@ window.EmployeeAssignmentHistory = (() => {
       p_memo:values.memo
     };
     try {
-      const result=await sb.rpc('change_employee_hr_atomic_v1',{
+      let result;
+      if(correction){
+        const h=await sb.from('employee_job_title_history').select('*').eq('employee_id',currentEmployee.id).order('id');
+        if(h.error)throw h.error;
+        const reason=prompt('変更理由を入力してください：役職定年／登録漏れ／登録訂正／その他','役職定年');
+        if(!['役職定年','登録漏れ','登録訂正','その他'].includes(reason))throw Error('訂正を中止しました');
+        if(!values.memo?.trim())throw Error('訂正理由の詳細をメモに入力してください');
+        const affected=(h.data||[]).filter(x=>!x.effective_to||x.effective_to>=values.effective_from);
+        const lines=affected.map(x=>x.effective_from+' ～ '+(x.effective_to||'現在')+'：'+(masterOptions.job_titles.find(t=>String(t.id)===String(x.job_title_id))?.title_name||x.job_title_id));
+        if(!confirm('以下の役職履歴が訂正対象です。指定日以降の履歴は置き換えられます。正式発令原本は変更しません。\n'+lines.join('\n')+'\n実行しますか？'))throw Error('訂正を中止しました');
+        result=await sb.rpc('correct_employee_job_titles_v2',{
+          p_employee_id:currentEmployee.id,p_effective_from:values.effective_from,p_job_title_ids:values.job_title_ids||[],p_primary_job_title_id:values.primary_job_title_id||null,p_reason:reason,p_memo:values.memo,p_expected_history:h.data||[]
+        });
+      }else result=await sb.rpc('change_employee_hr_atomic_v1',{
         ...payload,
         p_job_title_ids:values.job_title_ids||[],
         p_primary_job_title_id:values.primary_job_title_id||null,
