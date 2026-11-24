@@ -1,0 +1,325 @@
+/* =====================================================================
+   ui-refresh.css — UI/UX 共通レイヤー（ui-dev / Claude担当）
+   ---------------------------------------------------------------------
+   ・app.css の「後」に読み込み、見た目だけを上書きする。
+   ・HTMLのID・イベント・フォーム項目、JSの業務ロジックには依存しない。
+   ・このファイルを外せば、改修前の見た目にそのまま戻る。
+   構成：
+     0. デザイントークン
+     1. ベース（文字・フォーカス）
+     2. アプリシェル／サイドバー／スマホ用ドロワー
+     3. ページ見出し
+     4. KPIカード
+     5. カード・セクション
+     6. ボタン
+     7. フォーム
+     8. テーブル・一覧
+     9. バッジ・メッセージ
+    10. モーダル
+    11. 画面別：ダッシュボード
+    12. 画面別：社員一覧
+    13. 画面別：社員詳細
+    14. 画面別：人事評価・昇格／月次管理／その他
+    15. レスポンシブ
+    16. 印刷
+   ===================================================================== */
+
+/* 0. デザイントークン ------------------------------------------------ */
+:root{
+  /* 文字サイズ：業務画面の最小は12px */
+  --fs-xs:12px; --fs-sm:13px; --fs-base:14px; --fs-md:15px; --fs-lg:17px; --fs-xl:22px; --fs-2xl:26px;
+  /* 余白：4pxグリッド */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  /* 面・線 */
+  --bg:#f5f3ee; --surface:#fff; --surface-soft:#faf8f4; --surface-muted:#f3f0ea;
+  --line:#e3ddd2; --line-strong:#cbc1b0; --row-line:#eee9e1;
+  --ink:#231f1a; --muted:#5f574d; --faint:#7d7468;
+  /* 状態色（文字に使っても読める濃さ） */
+  --danger:#a3132a; --danger-bg:#fdf0f2; --danger-line:#ecb9c2;
+  --warning:#8a520f; --warning-bg:#fdf6e9; --warning-line:#e6cc9f;
+  --info:#0b6676; --info-bg:#eef7f9; --info-line:#b3d7de;
+  --success:#24603f; --success-bg:#eef7f1; --success-line:#bcd8c6;
+  --radius:10px; --radius-sm:7px;
+  --shadow-sm:0 1px 2px rgba(29,23,16,.05);
+  --shadow:0 4px 14px rgba(29,23,16,.07);
+  --focus:0 0 0 3px rgba(179,136,47,.32);
+  --font-sans:'Noto Sans JP',system-ui,-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;
+  --topbar-h:52px;
+}
+
+/* 1. ベース ---------------------------------------------------------- */
+body{font-family:var(--font-sans);font-size:var(--fs-base);line-height:1.6;color:var(--ink);background:var(--bg)}
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:2px solid var(--gold);outline-offset:2px;box-shadow:none}
+.tabular,.stat-value,td{font-variant-numeric:tabular-nums}
+::selection{background:rgba(179,136,47,.25)}
+
+/* 2. アプリシェル／サイドバー --------------------------------------- */
+.page-main{padding:var(--sp-6) var(--sp-8) 56px;max-width:1600px}
+.sidebar{padding:18px 12px 24px}
+.imperial-brand-card{padding:14px 14px;margin-bottom:14px;border-radius:10px}
+.imperial-brand-title{font-size:17px}
+.imperial-brand-sub{font-size:10px;letter-spacing:.1em}
+.sidebar-nav-section{margin-top:14px}
+.sidebar-section-label{font-size:11px;color:#c9bda8;letter-spacing:.08em;margin:0 10px 4px}
+.imperial-nav,.sidebar-system-section{gap:2px}
+.imperial-menu-card{min-height:40px;padding:8px 34px 8px 12px;border-radius:7px}
+.imperial-menu-title{font-size:var(--fs-base);font-weight:600}
+.imperial-menu-card.active .imperial-menu-title{font-weight:700}
+.sidebar-account{margin:16px 6px 0;padding:12px 8px}
+.sidebar-account-label{font-size:11px}
+.sidebar-account-copy strong{font-size:var(--fs-xs);max-width:150px}
+.sidebar-account-action{font-size:var(--fs-xs);padding:6px 8px;border:1px solid rgba(220,185,95,.4);border-radius:6px}
+
+/* スマホ用トップバー／ドロワー（ui-shell.js が生成） */
+.ui-topbar,.ui-nav-backdrop{display:none}
+
+/* 3. ページ見出し ---------------------------------------------------- */
+.page-header{min-height:0;margin:0 0 var(--sp-5);padding:var(--sp-1) 0 var(--sp-4);align-items:flex-end;gap:var(--sp-4);flex-wrap:wrap}
+.page-heading{flex:1 1 360px;min-width:0;align-items:flex-end;gap:var(--sp-4);flex-wrap:wrap}
+.page-title{font-size:var(--fs-2xl);letter-spacing:.03em}
+.page-title-en{font-size:11px;letter-spacing:.12em}
+.page-description{margin-top:4px;color:var(--muted);font-size:var(--fs-sm);line-height:1.6}
+.page-header-actions{gap:var(--sp-2)}
+/* ダッシュボードの画像ヘッダーは高さを抑え、KPIを1画面目に入れる */
+.page-header.page-header-v2{height:auto;min-height:132px;padding:var(--sp-5) var(--sp-6);border-radius:12px}
+.page-header-v2 .page-title{font-size:30px}
+.page-header-v2 .page-title-en{font-size:11px}
+.dashboard-hero-copy{font-size:var(--fs-sm)}
+.dashboard-refresh{font-size:var(--fs-xs)}
+
+/* 4. KPIカード ------------------------------------------------------- */
+.stats{gap:var(--sp-3);margin-bottom:var(--sp-5)}
+.stat-card{height:auto;min-height:108px;padding:14px 16px 14px 18px;gap:2px;border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.stat-card:before{width:4px}
+.stat-top>span{font-size:var(--fs-sm);font-weight:700;color:var(--muted)}
+.stat-value{font-size:34px;margin:4px 0 2px}
+.stat-sub{font-size:var(--fs-xs);color:var(--faint)}
+a.stat-card,button.stat-card{cursor:pointer}
+a.stat-card:hover,button.stat-card:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.stat-card[href]:after{content:'›';position:absolute;right:14px;top:12px;color:var(--faint);font-size:18px;line-height:1}
+
+/* 5. カード・セクション --------------------------------------------- */
+.card,.table-card,.filter-panel,.import-card{border-color:var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.card-header{min-height:56px;padding:12px 16px;gap:12px;flex-wrap:wrap}
+.card-title{font-family:var(--font-sans);font-size:var(--fs-md);font-weight:700;color:var(--ink);letter-spacing:.01em}
+.card-sub{margin-top:1px;font-size:var(--fs-xs);color:var(--faint)}
+.card-body{padding:16px}
+.content-grid,.dashboard-priority-layout,.dashboard-overview-grid,.profile-stack,.section-stack{gap:16px}
+.section-heading-row{margin-bottom:10px}
+.section-heading-row h2{font-family:var(--font-sans);font-size:var(--fs-lg);font-weight:700;color:var(--ink)}
+.section-heading-row p{font-size:var(--fs-xs);color:var(--faint)}
+.text-link{font-size:var(--fs-sm)}
+.empty{min-height:96px;font-size:var(--fs-sm);color:var(--faint)}
+.quick-card{border-radius:var(--radius)}
+
+/* 6. ボタン ---------------------------------------------------------- */
+.btn{min-height:38px;padding:7px 14px;border-radius:var(--radius-sm);font-size:var(--fs-sm);font-weight:700;gap:6px}
+.btn:hover{transform:none}
+.btn-sm{min-height:32px;padding:5px 11px;font-size:var(--fs-xs)}
+.btn-xs{min-height:28px;padding:4px 9px;font-size:var(--fs-xs)}
+.btn-secondary{color:var(--ink);border-color:var(--line-strong);background:#fff}
+.btn-secondary:hover{background:var(--surface-muted)}
+.btn-primary:active,.btn-secondary:active{filter:brightness(.96)}
+.btn:disabled,.btn[disabled],.page-btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn-dl{min-height:32px;font-size:var(--fs-xs)}
+
+/* 7. フォーム -------------------------------------------------------- */
+.form-label,.field-label{font-size:var(--fs-xs);font-weight:700;color:var(--muted)}
+.form-control,.form-field input,.form-field select,textarea{min-height:40px;padding:7px 11px;font-size:var(--fs-base);border-color:var(--line-strong);border-radius:var(--radius-sm)}
+.form-control:hover,.form-field input:hover,.form-field select:hover{border-color:#b3a691}
+.form-control:focus,.form-field input:focus,.form-field select:focus,textarea:focus{outline:0;border-color:var(--gold);box-shadow:var(--focus)}
+.form-control::placeholder,textarea::placeholder{color:#a39a8d}
+.form-control:disabled,.form-control[readonly]{background:var(--surface-muted);color:var(--muted)}
+.form-control:user-invalid,textarea:user-invalid{border-color:var(--danger);background:#fffafa}
+select.form-control{padding-right:30px;cursor:pointer}
+.form-grid{gap:14px 16px}
+.form-help{margin-top:4px;font-size:var(--fs-xs);color:var(--faint);line-height:1.5}
+.required-mark{display:inline-flex;align-items:center;margin-left:6px;padding:0 5px;height:17px;border-radius:4px;background:var(--danger-bg);color:var(--danger);font-size:11px;font-weight:700;vertical-align:1px}
+.filter-panel{padding:14px 16px;background:var(--surface)}
+.filter-grid{gap:12px}
+.filter-panel-head{margin-bottom:12px}
+
+/* 8. テーブル・一覧 -------------------------------------------------- */
+.table-tools{min-height:52px;padding:10px 16px}
+.table-count{font-size:var(--fs-sm)}
+.table-count strong{font-size:var(--fs-lg)}
+th,td{padding:9px 12px;border-bottom-color:var(--row-line)}
+th{font-size:var(--fs-xs);font-weight:700;color:var(--muted);background:var(--surface-muted);letter-spacing:.02em}
+td{font-size:var(--fs-sm)}
+tbody tr:hover{background:#faf6ee}
+tbody tr[onclick],tbody tr.promo-row,.employee-workspace tbody tr{cursor:pointer}
+tbody tr[onclick]:hover td:first-child,.promo-row:hover td:first-child{box-shadow:inset 3px 0 0 var(--wine)}
+.cell-main,.row-title{font-weight:700}
+.cell-sub,.row-meta{font-size:var(--fs-xs);color:var(--faint)}
+.name-cell{display:flex;align-items:center;gap:10px;min-width:170px}
+.mini-avatar{flex:0 0 30px;font-size:var(--fs-sm)}
+.memo-cell{max-width:280px}
+.pagination{padding:12px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.page-btn{min-width:32px;min-height:32px;font-size:var(--fs-sm)}
+.page-btn:hover:not(:disabled):not(.active){background:var(--surface-muted)}
+.dl-label,.info-item__label{font-size:var(--fs-xs);color:var(--faint)}
+.alert-row,.person-row,.bar-row{padding:10px 0;border-bottom-color:var(--row-line)}
+.bar-head{font-size:var(--fs-sm)}
+.alert-days,.task-days{font-size:var(--fs-xs)}
+
+/* 9. バッジ・メッセージ --------------------------------------------- */
+.badge,.tag,.tag-yes,.tag-no{min-height:22px;padding:2px 8px;font-size:var(--fs-xs);font-weight:700;white-space:nowrap}
+.badge-danger{color:var(--danger);background:var(--danger-bg);border-color:var(--danger-line)}
+.badge-warning{color:var(--warning);background:var(--warning-bg);border-color:var(--warning-line)}
+.badge-info{color:var(--info);background:var(--info-bg);border-color:var(--info-line)}
+.badge-success,.tag-yes{color:var(--success);background:var(--success-bg);border-color:var(--success-line)}
+.alert-box{font-size:var(--fs-sm);line-height:1.65;border-radius:var(--radius-sm);color:var(--ink)}
+.alert-box.gold{background:#fdf8ec;border-color:#e7d6ae;border-left-color:var(--gold)}
+.master-ops-note,.data-health-note,.text-sm{font-size:var(--fs-xs)}
+.data-missing,.retirement-badge,.employee-retired-inline{font-size:11px}
+.toast{font-size:var(--fs-sm)}
+
+/* 10. モーダル ------------------------------------------------------- */
+.modal{border-radius:12px;display:flex;flex-direction:column}
+.modal>form{display:flex;flex-direction:column;min-height:0}
+.modal-header{position:sticky;top:0;z-index:3;background:#fff;align-items:flex-start;gap:12px}
+.modal-footer{position:sticky;bottom:0;z-index:3;background:#fff;box-shadow:0 -4px 10px rgba(29,23,16,.04)}
+.modal-body{padding:18px}
+.modal-close{flex:0 0 34px}
+
+/* 11. ダッシュボード ------------------------------------------------- */
+.dashboard-section{margin-bottom:22px}
+.dashboard-action-stats .stat-card:hover{transform:none}
+.priority-card{min-height:0}
+.dashboard-task-row{grid-template-columns:96px minmax(0,1fr) auto;padding:9px 0}
+.dashboard-person-row{display:flex;align-items:center;gap:12px}
+.dashboard-person-row .mini-avatar{flex:0 0 32px;width:32px;height:32px}
+.dashboard-person-row .text-link{white-space:nowrap}
+.dashboard-overview-grid>.card{min-height:0}
+.data-health-row{font-size:var(--fs-sm)}
+/* 「月次管理」行：見出しだけのセクションを細い帯として表示 */
+.dashboard-section:has(>.section-heading-row:only-child){padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--info);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow-sm)}
+.dashboard-section:has(>.section-heading-row:only-child)>.section-heading-row{margin:0;align-items:center}
+
+/* 12. 社員一覧 ------------------------------------------------------- */
+.emp-section-title{margin:0 0 4px;font-size:var(--fs-md);font-weight:700}
+.emp-section-note{margin:0}
+.emp-center-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0 18px}
+.emp-center-card{padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;text-align:left;cursor:pointer;color:var(--ink);font:inherit;transition:border-color .12s,background .12s}
+.emp-center-card:hover{border-color:var(--line-strong);background:var(--surface-soft)}
+.emp-center-card strong,.emp-center-card span{display:block}
+.emp-center-card strong{font-size:var(--fs-sm)}
+.emp-center-card span{margin-top:2px;font-size:var(--fs-xs);color:var(--faint)}
+.emp-center-card[aria-pressed="true"]{border-color:var(--wine);background:#fbf1f2;box-shadow:inset 3px 0 0 var(--wine)}
+.employee-workspace .filter-grid{grid-template-columns:minmax(200px,1.6fr) repeat(5,minmax(120px,1fr)) auto}
+.employee-workspace #btn-clear-filter{margin-top:0;align-self:end}
+.employee-master-alert{padding:10px 14px;margin:0 0 12px;border:1px solid var(--warning-line);border-left:4px solid var(--warning);border-radius:var(--radius-sm);background:var(--warning-bg);color:var(--warning);font-size:var(--fs-sm)}
+.employee-workspace .table-wrap thead th{position:sticky;top:0}
+
+/* 13. 社員詳細 ------------------------------------------------------- */
+/* 氏名帯は画面上部に固定し、スクロール中も「誰の画面か」を見失わない */
+.employee-profile .employee-summary{position:sticky;top:0;z-index:15;padding:12px 18px;margin-bottom:16px;border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.employee-avatar{width:48px;height:48px;flex-basis:48px;border-radius:10px;font-size:20px}
+.employee-summary__name{font-size:var(--fs-xl)}
+.employee-summary__kana{font-size:var(--fs-xs)}
+.employee-summary__meta{margin-top:6px;font-size:var(--fs-sm);gap:4px 16px}
+.employee-summary__meta>span:not(:first-child):before{content:'';display:inline-block;width:1px;height:11px;margin-right:16px;background:var(--line-strong);vertical-align:-1px}
+.employee-profile .profile-grid{gap:16px}
+.info-grid{gap:0 28px}
+.info-item{padding:10px 0;border-bottom-color:var(--row-line)}
+.info-item__value{font-size:var(--fs-base);font-weight:600}
+.summary-row{padding:9px 0;font-size:var(--fs-sm);border-bottom-color:var(--row-line)}
+/* 人事サマリー：操作ボタンと「人事変更予約」パネルを見出しの下に並べる */
+.employee-profile .card-header:has(#employee-action-group){align-items:flex-start}
+.employee-action-group{gap:6px}
+#employee-hr-schedules{flex:1 0 100%;margin-top:4px;padding:10px 12px;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);background:var(--surface-soft);font-size:var(--fs-sm);line-height:1.6}
+#employee-hr-schedules h3{margin:0 0 2px;font-size:var(--fs-sm);font-weight:700}
+#employee-hr-schedules p{margin:0 0 4px;color:var(--muted);font-size:var(--fs-xs)}
+#employee-hr-schedules>div{margin-top:8px;padding-top:8px;border-top:1px solid var(--row-line)}
+#employee-hr-schedules>div p:first-child{color:var(--ink);font-weight:700;font-size:var(--fs-sm)}
+.employee-profile .employee-hr-history-card{margin-top:16px}
+.employee-profile #emp-hr-timeline .hr-history-table th,
+.employee-profile #emp-hr-timeline .hr-history-table td{padding:9px 12px}
+.evaluation-history-grid span,.assignment-history__grid span,.hr-event__diff-label,.assignment-history__period{font-size:11px}
+.evaluation-history-year span,.hr-event__reason,.hr-event__transfer-note,.assignment-history__memo{font-size:var(--fs-xs)}
+.job-title-choice-list{display:flex;flex-wrap:wrap;gap:6px}
+
+/* 14. 人事評価・昇格／月次管理／その他 ------------------------------ */
+.progress-metric span{font-size:var(--fs-xs)}
+.progress-metric small{font-size:11px}
+.promotion-cycle-status{font-size:var(--fs-sm)}
+.flow-step{font-size:var(--fs-xs)}
+.step-badge,.rs-label,.drop-sub,.external-link-count,.external-link-url{font-size:var(--fs-xs)}
+.login-card-head p,.login-error,.login-mode-note{font-size:var(--fs-sm)}
+/* 月次管理：独自スタイル（ページ内<style>）をテーマ色に合わせる */
+body .page-header>.page-title+.month-note{flex:1 1 320px;margin:0 0 4px;color:var(--muted);font-size:var(--fs-sm)}
+body .month-tabs{gap:10px;margin:0 0 16px}
+body .month-tab{padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);font:inherit;color:var(--ink);transition:border-color .12s}
+body .month-tab:hover{border-color:var(--line-strong)}
+body .month-tab strong{font-size:var(--fs-lg);margin-bottom:2px}
+body .month-tab span{font-size:var(--fs-xs);color:var(--faint)}
+body .month-tab[aria-pressed="true"]{border-color:var(--wine);background:#fbf1f2;box-shadow:inset 4px 0 0 var(--wine)}
+body .month-report-table th{background:var(--surface-muted);color:var(--muted);font-size:var(--fs-xs)}
+body .month-report-table tfoot{background:var(--surface-muted)}
+body .month-report-table th,body .month-report-table td{padding:9px 12px;border-bottom-color:var(--row-line)}
+body .month-alert{border-color:var(--warning-line);background:var(--warning-bg);border-radius:var(--radius-sm);font-size:var(--fs-sm)}
+
+/* 15. レスポンシブ --------------------------------------------------- */
+@media(max-width:1280px){
+  .employee-workspace .filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .employee-workspace #btn-clear-filter{justify-self:start}
+}
+@media(max-width:1180px){.page-main{padding:var(--sp-5) var(--sp-6) 48px}}
+/* タブレット縦・スマホ：サイドバーをドロワー化し、本文を1画面目に出す */
+@media(max-width:860px){
+  .ui-topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;height:var(--topbar-h);padding:0 12px;background:var(--nav-deep);color:#f5efe4;border-bottom:1px solid rgba(179,136,47,.35)}
+  .ui-topbar__menu{width:40px;height:40px;display:grid;place-items:center;border:1px solid rgba(233,213,164,.35);border-radius:8px;background:transparent;color:#f5e6be;cursor:pointer}
+  .ui-topbar__menu span,.ui-topbar__menu span:before,.ui-topbar__menu span:after{display:block;width:18px;height:2px;border-radius:2px;background:currentColor;position:relative;content:''}
+  .ui-topbar__menu span:before{position:absolute;top:-6px}.ui-topbar__menu span:after{position:absolute;top:6px}
+  .ui-topbar__title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--fs-md);font-weight:700;color:#fff3c8}
+  .ui-topbar__brand{margin-left:auto;font-size:11px;color:#c9bda8;white-space:nowrap}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:min(300px,86vw);height:100vh;height:100dvh;padding:16px 12px 24px;transform:translateX(-102%);transition:transform .2s ease;z-index:60;box-shadow:0 0 30px rgba(0,0,0,.35)}
+  body.ui-nav-open .sidebar{transform:none}
+  .ui-nav-backdrop{position:fixed;inset:0;z-index:55;background:rgba(9,12,20,.5)}
+  body.ui-nav-open .ui-nav-backdrop{display:block}
+  body.ui-nav-open{overflow:hidden}
+  .imperial-nav,.sidebar-system-section{grid-template-columns:1fr}
+  .page-main{padding:16px 14px 40px}
+  .page-header{padding-bottom:12px;margin-bottom:14px}
+  .page-title{font-size:var(--fs-xl)}
+  .page-header.page-header-v2{min-height:108px;padding:16px}
+  .page-header-v2 .page-title{font-size:24px}
+  .dashboard-hero-copy{display:none}
+  .stat-card{min-height:92px;padding:12px 14px 12px 16px}
+  .stat-value{font-size:28px}
+  .employee-workspace .filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .employee-workspace .filter-grid>.form-group:first-child{grid-column:1/-1}
+  .emp-center-grid{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px;scroll-snap-type:x proximity}
+  .emp-center-card{flex:0 0 auto;min-width:132px;scroll-snap-align:start}
+  .employee-profile .employee-summary{top:var(--topbar-h);padding:10px 14px}
+  .employee-summary__name{font-size:19px}
+  .table-tools{flex-wrap:wrap}
+  .modal-backdrop{padding:10px;align-items:end}
+  .modal{max-height:94vh}
+}
+@media(max-width:520px){
+  .page-title-en{display:none}
+  .page-header-actions{width:100%}
+  .stats,.stats:has(>.stat-card:nth-child(4):last-child),.stats:has(>.stat-card:nth-child(3):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats>.stat-card:last-child:nth-child(odd){grid-column:1/-1}
+  .stat-card{min-height:84px}
+  .employee-summary__meta>span:not(:first-child):before{display:none}
+  .card-header .btn-sm{min-height:34px}
+  .modal-footer .btn{flex:1}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 16. 印刷（社員詳細などを紙で確認する場合） ------------------------ */
+@media print{
+  .sidebar,.ui-topbar,.ui-nav-backdrop,.page-header-actions,.dashboard-refresh,.toast,#toast-container,.modal-backdrop,.btn,.pagination{display:none!important}
+  .app-shell{display:block}
+  .page-main{padding:0;max-width:none}
+  body{background:#fff;font-size:12px}
+  .card,.table-card,.employee-summary{box-shadow:none!important;break-inside:avoid}
+  .employee-profile .employee-summary{position:static}
+  .page-header.page-header-v2{min-height:0;background:none}
+  .page-header-v2 .page-header-bg-img,.page-header.page-header-v2:after{display:none}
+  .page-header-v2 .page-title{color:var(--ink);text-shadow:none}
+  .table-wrap{overflow:visible}
+  th{position:static}
+}
