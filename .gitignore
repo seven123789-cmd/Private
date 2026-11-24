@@ -1,0 +1,14 @@
+# Local personnel data and credentials — never commit
+.env
+.env.*
+!.env.example
+*.csv
+*.xlsx
+*.xls
+*.dump
+*.bak
+*.backup
+*.zip
+/assets/data/employee_master*.json
+/backups/
+/exports/
